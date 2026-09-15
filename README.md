@@ -4,6 +4,15 @@ Interactive visual guides that explain how backend runtimes and request-processi
 
 The project focuses on making complex concepts easier to understand through animated, step-by-step visualizations.
 
+## Run
+
+Open the HTML visualizations directly in your browser.
+
+Example:
+
+<a href="https://kirilkirkov.github.io/index.html">https://kirilkirkov.github.io/index.html</a> (Node.JS Event-Loop and Express.JS) <br>
+<a href="https://kirilkirkov.github.io/php-fpm.html">https://kirilkirkov.github.io/php-fpm.html</a> (PHP-FPM)
+
 ## Visualizations
 
 ### ⚡ JavaScript Event Loop
@@ -82,17 +91,6 @@ The goal is to answer questions like:
 and:
 
 > Why is this request waiting or executing?
-
-## Run
-
-No backend is required.
-
-Open the HTML visualizations directly in your browser.
-
-Example:
-
-<a href="https://kirilkirkov.github.io/index.html">https://kirilkirkov.github.io/index.html</a> (Node.JS) <br>
-<a href="https://kirilkirkov.github.io/php-fpm.html">https://kirilkirkov.github.io/php-fpm.html</a> (PHP-FPM)
 
 ## Future Visualizations
 
