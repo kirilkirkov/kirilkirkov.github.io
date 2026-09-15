@@ -1,70 +1,112 @@
-# ⚡ JavaScript Event Loop Visualizer
+# ⚡ Interactive Backend Runtime Visualizers
+
+Interactive visual guides that explain how backend runtimes and request-processing systems work internally.
+
+The project focuses on making complex concepts easier to understand through animated, step-by-step visualizations.
+
+## Visualizations
+
+### ⚡ JavaScript Event Loop
 
 Interactive visualization of the JavaScript Event Loop for both **Browser** and **Node.js**.
 
-The goal is to make asynchronous JavaScript easier to understand by showing what actually happens with callbacks, queues, the Call Stack, microtasks, timers, and Node.js Event Loop phases.
+Learn how:
 
-## Features
+* Call Stack works
+* Microtasks are processed
+* Timers are scheduled
+* Promises and `async / await` behave
+* `process.nextTick()` works
+* Node.js Event Loop phases are processed
+* Multiple asynchronous operations can progress concurrently
 
-* 🌐 Browser Event Loop visualization
-* 🟢 Node.js Event Loop visualization
+Includes:
+
+* 🎡 Animated Event Loop visualization
 * 📚 Call Stack
 * ⚡ Microtask Queue
 * ⏱ Timers / Task Queue
 * 🔁 `process.nextTick()`
-* 📡 Node.js phases: `timers → pending → poll → check → close`
-* 🎡 Animated Event Loop wheel
-* 🎯 Visual callback lifecycle
+* 📡 Node.js Event Loop phases
 * 📝 Editable JavaScript examples
 * 🖥 Live console output
 * ⏯ Play / Pause / Stop
 * 🐢 Adjustable animation speed
 * 📱 Responsive design
 
-## Examples
+---
 
-Explore common async JavaScript behavior with:
+### 🐘 Nginx & PHP-FPM
 
-```js
-console.log('A');
-
-setTimeout(() => console.log('B'), 0);
-
-Promise.resolve()
-  .then(() => console.log('C'));
-
-console.log('D');
-```
-
-Output:
+Animated visualization of the full PHP request lifecycle:
 
 ```text
-A
-D
-C
-B
+Client
+  ↓
+Nginx
+  ↓
+FastCGI
+  ↓
+PHP-FPM
+  ↓
+Worker Pool
+  ↓
+PHP Worker
+  ↓
+Response
+  ↓
+Nginx
+  ↓
+Client
 ```
 
-The visualizer shows **why** this execution order happens.
+Learn how:
+
+* Nginx handles incoming requests
+* PHP requests are forwarded to PHP-FPM
+* PHP-FPM manages worker processes
+* One request occupies one PHP-FPM worker
+* Multiple PHP requests are processed concurrently by different workers
+* Requests wait when all workers are busy
+* `pm.max_children` affects concurrency
+* Workers become available again after the response is completed
 
 ## Purpose
 
-Built as a learning tool for understanding:
+This project is built as a learning tool for understanding backend internals visually instead of only reading diagrams or documentation.
 
-* JavaScript concurrency
-* Event Loop scheduling
-* Promises and microtasks
-* `async / await`
-* timers
-* Node.js Event Loop phases
-* `process.nextTick()`
-* `setImmediate()`
+The goal is to answer questions like:
+
+> What is actually happening inside the server right now?
+
+and:
+
+> Why is this request waiting or executing?
 
 ## Run
 
-Open `index.html` in your browser.
+No backend is required.
 
-No backend required.
+Open the HTML visualizations directly in your browser.
+
+Example:
+
+```text
+index.html
+php-fpm.html
+```
+
+## Future Visualizations
+
+More backend concepts may be added in the future, such as:
+
+* Redis
+* Load balancing
+* Worker Threads
+* Message queues
+* Database transactions
+* Connection pools
+* Horizontal scaling
 
 ## License
 
