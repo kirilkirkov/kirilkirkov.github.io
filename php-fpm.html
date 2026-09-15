@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How PHP-FPM Really Works</title>
+<style>
+  :root{
+    --bg:#0b1220;
+    --bg2:#0d1526;
+    --card:#141c2e;
+    --card2:#111827;
+    --border:#26314a;
+    --text:#e7ecf6;
+    --muted:#8b96ab;
+    --accent:#4f8cff;
+    --accent2:#f2b84b;
+    --good:#34d399;
+    --bad:#ef4444;
+    --r1:#3b82f6;
+    --r2:#a855f7;
+    --r3:#14b8a6;
+    --r4:#f97316;
+    --r5:#eab308;
+    --stat:#22c55e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:radial-gradient(1200px 800px at 15% -10%, #14203a 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    margin:0;
+    padding:0 16px 60px;
+  }
+  .wrap{max-width:1220px;margin:0 auto;}
+  header{padding:34px 4px 8px;}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-0.01em;}
+  .subtitle{color:var(--muted);font-size:14.5px;margin:0 0 2px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  .subtitle-bg{color:var(--muted);font-size:13px;margin:6px 0 0;max-width:760px;line-height:1.5;}
+
+  /* controls */
+  .controls{
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+    margin:18px 0 14px;padding:10px 12px;
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+  }
+  .btn{
+    background:var(--card2);color:var(--text);border:1px solid var(--border);
+    padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+    transition:background .15s, border-color .15s;
+  }
+  .btn:hover{border-color:var(--accent);}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .speed-group{display:flex;align-items:center;gap:8px;margin-left:auto;}
+  .speed-label{color:var(--muted);font-size:12px;}
+  .speed-tag{color:var(--text);font-size:12px;font-weight:700;min-width:38px;text-align:right;font-variant-numeric:tabular-nums;}
+  .speed-slider{
+    -webkit-appearance:none;appearance:none;width:140px;height:4px;border-radius:2px;
+    background:var(--border);outline:none;cursor:pointer;
+  }
+  .speed-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:15px;height:15px;border-radius:50%;
+    background:var(--accent);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer;
+  }
+  .speed-slider::-moz-range-thumb{
+    width:15px;height:15px;border-radius:50%;background:var(--accent);border:2px solid #fff;
+    box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer;
+  }
+  .speed-slider::-moz-range-track{background:var(--border);height:4px;border-radius:2px;}
+
+  /* legend */
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:4px 4px 18px;font-size:12px;color:var(--muted);}
+  .legend-item{display:flex;align-items:center;gap:6px;}
+  .legend-item i{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block;}
+  .legend-item i.sq{border-radius:3px;border:2px dashed var(--c);background:transparent;}
+
+  /* flow */
+  .flow{
+    position:relative;
+    display:flex;align-items:center;gap:10px;
+    background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+    padding:26px 20px;
+    overflow:visible;
+  }
+  .arrow{color:var(--muted);font-size:20px;flex:0 0 auto;}
+  .node{
+    position:relative;
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:12px 14px;min-width:0;width:180px;max-width:180px;flex:1 1 160px;
+  }
+  .node-anchor{position:absolute;left:50%;top:100%;margin-top:24px;width:1px;height:1px;}
+  .node-title{font-weight:700;font-size:12.5px;letter-spacing:.02em;}
+  .node-title.small{font-size:10.5px;color:var(--muted);letter-spacing:.04em;}
+  .node-sub{font-size:10.5px;color:var(--muted);margin-top:5px;line-height:1.45;word-break:break-word;}
+  .clients-node{width:160px;max-width:160px;}
+  .fpm-node{width:180px;max-width:180px;}
+
+  .pool-block{flex:1 1 auto;min-width:270px;display:flex;flex-direction:column;gap:10px;}
+  .queue-node{
+    border:1.5px dashed var(--border);border-radius:10px;padding:8px 10px;
+    min-height:56px;position:relative;
+  }
+  .queue-body{position:relative;min-height:36px;}
+  .queue-empty{font-size:10.5px;color:var(--muted);text-align:center;padding-top:6px;}
+
+  .worker-pool{display:flex;gap:8px;flex-wrap:wrap;}
+  .worker{
+    position:relative;flex:1 1 150px;min-width:150px;
+    border:2px solid var(--border);border-radius:10px;padding:9px 11px;
+    background:var(--card);transition:border-color .3s, background .3s;
+  }
+  .worker.free{border-color:var(--border);}
+  .worker.busy{border-color:var(--wc,var(--accent));animation:pulseBusy 1.8s ease-in-out infinite;}
+  @keyframes pulseBusy{
+    0%,100%{box-shadow:0 0 0 1.5px var(--wc,var(--accent)) inset, 0 0 10px -3px var(--wc,var(--accent));}
+    50%{box-shadow:0 0 0 1.5px var(--wc,var(--accent)) inset, 0 0 20px 1px var(--wc,var(--accent));}
+  }
+  .w-head{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:12px;}
+  .w-state{font-size:9.5px;padding:2px 6px;border-radius:6px;letter-spacing:.04em;border:1px solid transparent;}
+  .worker.free .w-state{color:var(--good);border-color:var(--good);}
+  .worker.busy .w-state{background:var(--wc,var(--accent));color:#fff;}
+  .w-main{font-size:10.5px;color:var(--muted);margin-top:5px;}
+  .w-note{font-size:10px;color:var(--accent2);margin-top:2px;min-height:12px;}
+  .dock{position:absolute;right:8px;bottom:6px;width:1px;height:1px;}
+
+  .pool-status{display:flex;gap:16px;font-size:11.5px;color:var(--muted);padding:2px 2px 0;}
+  .pool-status-item b, .pool-status-item span{color:var(--text);font-weight:700;}
+  .pool-status-item small{color:var(--muted);font-weight:600;letter-spacing:.02em;margin-left:3px;}
+  .pool-banner{
+    display:none;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--bad);
+    background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);border-radius:8px;
+    padding:6px 10px;
+  }
+  .pool-banner.show{display:flex;}
+  .pool-footnote{font-size:10px;color:var(--muted);opacity:.8;padding:0 2px;}
+
+  .token-overlay{position:absolute;inset:0;pointer-events:none;z-index:40;}
+  .token{
+    position:absolute;left:0;top:0;
+    transform:translate(-50%,-50%);
+    background:var(--c);color:#fff;
+    padding:5px 9px;border-radius:13px;
+    font-size:10.5px;font-weight:700;white-space:nowrap;
+    box-shadow:0 4px 14px rgba(0,0,0,.4), 0 0 0 2px rgba(255,255,255,.08);
+    transition:left .75s ease, top .75s ease, transform .75s ease, opacity .4s ease;
+    display:flex;flex-direction:column;align-items:center;line-height:1.25;
+  }
+  .token .t-sub{font-weight:500;font-size:8.5px;opacity:.85;}
+  .token.token-square{border-radius:6px;border:2px dashed rgba(255,255,255,.75);}
+  .token.docked .t-sub{display:none;}
+  .token.fading{opacity:0;transition:opacity .4s ease !important;}
+
+  /* panels row */
+  .panels-row{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:12px;margin-top:16px;}
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+  .panel-title{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--muted);margin-bottom:10px;}
+
+  .config-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+  .config-list li{display:flex;justify-content:space-between;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted);}
+  .config-list li b{color:var(--text);}
+  .config-list li.highlight{background:rgba(79,140,255,.1);border:1px solid rgba(79,140,255,.35);border-radius:6px;padding:4px 7px;margin:2px -7px;}
+  .config-list li.highlight span, .config-list li.highlight b{color:var(--accent);}
+  .config-note{margin-top:10px;font-size:11px;color:var(--muted);line-height:1.5;border-top:1px solid var(--border);padding-top:9px;}
+  .config-note b{color:var(--accent);}
+
+  .now-line{font-size:13.5px;font-weight:600;min-height:38px;}
+  .now-line.flash{animation:flashIn .5s ease;}
+  @keyframes flashIn{from{opacity:.25;transform:translateY(-3px);}to{opacity:1;transform:none;}}
+  .now-grid{display:flex;flex-direction:column;gap:5px;margin-top:12px;border-top:1px solid var(--border);padding-top:10px;}
+  .now-grid div{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);}
+  .now-grid b{color:var(--text);font-weight:700;}
+
+  .why-panel{opacity:.35;transition:opacity .3s;}
+  .why-panel.show{opacity:1;}
+  .why-title{color:var(--accent2) !important;}
+  .why-body{display:flex;flex-direction:column;gap:6px;font-size:11.5px;}
+  .why-line{display:flex;gap:6px;}
+  .why-line.ok{color:var(--good);}
+  .why-line.no{color:var(--bad);}
+  .why-line.arrow{color:var(--accent2);font-weight:700;}
+  .why-empty{font-size:11.5px;color:var(--muted);}
+
+  .tip{
+    margin-top:14px;font-size:12px;color:var(--muted);background:var(--card);
+    border:1px solid var(--border);border-radius:10px;padding:10px 14px;line-height:1.55;
+  }
+  .tip b{color:var(--accent2);}
+
+  /* mental model */
+  .mental-model{margin-top:30px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px 22px;}
+  .mental-model h2{font-size:16px;margin:0 0 18px;text-align:center;}
+  .chain{position:relative;max-width:480px;margin:0 auto;padding-left:22px;}
+  .chain::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--border),var(--border));}
+  .chain-pulse{position:absolute;left:1px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px 2px var(--accent);animation:chainMove 7s linear infinite;}
+  @keyframes chainMove{0%{top:0%;opacity:0;}5%{opacity:1;}95%{opacity:1;}100%{top:100%;opacity:0;}}
+  .chain-step{
+    position:relative;font-size:13px;padding:8px 0 8px 14px;color:var(--text);
+  }
+  .chain-step::before{content:"";position:absolute;left:-22px;top:13px;width:8px;height:8px;border-radius:50%;background:var(--card);border:2px solid var(--accent);}
+  .chain-step.warn::before{border-color:var(--bad);}
+  .chain-step.warn{color:var(--bad);font-weight:700;}
+  .chain-step em{color:var(--accent2);font-style:normal;font-weight:700;}
+
+  footer{margin-top:26px;text-align:center;color:var(--muted);font-size:11px;}
+
+  @media (max-width:900px){
+    .flow{flex-direction:column;align-items:stretch;padding:20px 14px;}
+    .arrow{align-self:center;transform:rotate(90deg);margin:0;}
+    .node{width:auto;max-width:none;}
+    .node-anchor{margin-top:16px;}
+    .worker-pool{flex-direction:column;}
+    .worker{min-width:0;}
+    .panels-row{grid-template-columns:1fr;}
+    .speed-group{margin-left:0;width:100%;justify-content:flex-start;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>How PHP-FPM Really Works</h1>
+    <p class="subtitle">Client → Nginx → PHP-FPM → Worker Pool → PHP Process → Response</p>
+    <p class="subtitle-bg">Автоматична, бавна и циклична визуализация на request lifecycle-а. Гледай как заявките текат през системата и как worker pool-ът определя реалния concurrency.</p>
+  </header>
+
+  <div class="controls">
+    <button class="btn primary" id="btn-toggle">⏸ Pause</button>
+    <button class="btn" id="btn-restart">⟲ Restart</button>
+    <div class="speed-group">
+      <span class="speed-label">Slow</span>
+      <input type="range" class="speed-slider" id="speed-slider" min="0.25" max="2" step="0.05" value="1">
+      <span class="speed-label">Fast</span>
+      <span class="speed-tag" id="speed-tag">1.0×</span>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><i style="--c:var(--r1)"></i>REQ #1 · /index.php</span>
+    <span class="legend-item"><i style="--c:var(--r2)"></i>REQ #2 · /report (slow)</span>
+    <span class="legend-item"><i style="--c:var(--r3)"></i>REQ #3 · /index.php</span>
+    <span class="legend-item"><i style="--c:var(--r4)"></i>REQ #4 · /index.php</span>
+    <span class="legend-item"><i style="--c:var(--r5)"></i>REQ #5 · /index.php</span>
+    <span class="legend-item"><i class="sq" style="--c:var(--stat)"></i>/style.css · static asset</span>
+  </div>
+
+  <div class="flow" id="flow">
+    <div class="node clients-node" id="zone-clients">
+      <div class="node-title">CLIENTS</div>
+      <div class="node-sub">Browsers, apps &amp; API callers sending HTTP requests</div>
+      <div class="node-anchor" id="anchor-clients"></div>
+    </div>
+
+    <div class="arrow">➜</div>
+
+    <div class="node nginx-node" id="zone-nginx">
+      <div class="node-title">NGINX</div>
+      <div class="node-sub">Static files → direct response<br>PHP files (.php) → FastCGI to PHP‑FPM</div>
+      <div class="node-anchor" id="anchor-nginx"></div>
+    </div>
+
+    <div class="arrow">➜</div>
+
+    <div class="node fpm-node" id="zone-fpm">
+      <div class="node-title">PHP-FPM MASTER</div>
+      <div class="node-sub">Manages the worker pool. Does <b>not</b> run your PHP code itself.</div>
+      <div class="node-anchor" id="anchor-fpm"></div>
+    </div>
+
+    <div class="arrow">➜</div>
+
+    <div class="pool-block">
+      <div class="queue-node">
+        <div class="node-title small">FPM LISTEN QUEUE</div>
+        <div class="queue-body" id="zone-queue"></div>
+        <div class="queue-empty" id="queue-empty-hint">empty</div>
+      </div>
+
+      <div class="worker-pool" id="worker-pool">
+        <div class="worker free" id="worker-1">
+          <div class="w-head">Worker #1 <span class="w-state">FREE</span></div>
+          <div class="w-main">waiting for request</div>
+          <div class="w-note"></div>
+          <div class="dock" id="w1dock"></div>
+        </div>
+        <div class="worker free" id="worker-2">
+          <div class="w-head">Worker #2 <span class="w-state">FREE</span></div>
+          <div class="w-main">waiting for request</div>
+          <div class="w-note"></div>
+          <div class="dock" id="w2dock"></div>
+        </div>
+        <div class="worker free" id="worker-3">
+          <div class="w-head">Worker #3 <span class="w-state">FREE</span></div>
+          <div class="w-main">waiting for request</div>
+          <div class="w-note"></div>
+          <div class="dock" id="w3dock"></div>
+        </div>
+      </div>
+
+      <div class="pool-status">
+        <div class="pool-status-item"><span id="status-busy-count">0</span> / 3 <small>WORKERS BUSY</small></div>
+        <div class="pool-status-item">Queue: <span id="status-queue-count">0</span> <small>waiting</small></div>
+      </div>
+      <div class="pool-banner" id="pool-banner">⚠ All PHP workers are BUSY</div>
+      <div class="pool-footnote">workers shown pre-forked for clarity — pm.start_servers / min / max_spare govern real-world scaling</div>
+    </div>
+
+    <div class="token-overlay" id="token-overlay"></div>
+  </div>
+
+  <div class="panels-row">
+    <div class="panel config-panel">
+      <div class="panel-title">PHP-FPM POOL: www</div>
+      <ul class="config-list">
+        <li><span>pm</span><b>dynamic</b></li>
+        <li class="highlight"><span>pm.max_children</span><b>3</b></li>
+        <li><span>pm.start_servers</span><b>2</b></li>
+        <li><span>pm.min_spare_servers</span><b>1</b></li>
+        <li><span>pm.max_spare_servers</span><b>2</b></li>
+      </ul>
+      <div class="config-note"><b>pm.max_children</b> = maximum number of PHP requests that can execute <u>concurrently</u> in this pool.</div>
+    </div>
+
+    <div class="panel whats-now">
+      <div class="panel-title">WHAT'S HAPPENING NOW?</div>
+      <div class="now-line" id="now-main" aria-live="polite">Waiting for the first request…</div>
+      <div class="now-grid">
+        <div><span>PHP-FPM</span><b id="now-fpm">0 / 3 workers busy</b></div>
+        <div><span>Queue</span><b id="now-queue">0 waiting requests</b></div>
+        <div><span>Worker #2 (slow /report)</span><b id="now-w2">idle</b></div>
+      </div>
+    </div>
+
+    <div class="panel why-panel" id="why-panel">
+      <div class="panel-title why-title" id="why-title">WHY IS A REQUEST WAITING?</div>
+      <div class="why-body" id="why-body"><div class="why-empty">No requests are currently waiting.</div></div>
+    </div>
+  </div>
+
+  <div class="tip">💡 <b>Note:</b> in PHP-FPM a worker stays BUSY for the entire request — including DB / network waits. Watch Worker #2 while it runs the slow <code>/report</code> request: it stays occupied the whole time. This is different from Node.js's non-blocking event loop, where one process can juggle many waiting requests at once.</div>
+
+  <section class="mental-model">
+    <h2>THE ONE THING TO REMEMBER</h2>
+    <div class="chain">
+      <div class="chain-pulse"></div>
+      <div class="chain-step">Nginx can handle many connections</div>
+      <div class="chain-step">PHP requests go to PHP‑FPM</div>
+      <div class="chain-step">PHP‑FPM has a <em>limited</em> worker pool</div>
+      <div class="chain-step">1 request occupies 1 PHP worker</div>
+      <div class="chain-step">available workers determine PHP concurrency</div>
+      <div class="chain-step warn">if all workers are busy…</div>
+      <div class="chain-step warn">…new PHP requests wait in the queue</div>
+      <div class="chain-step">when a worker finishes</div>
+      <div class="chain-step">it becomes FREE and handles the next request</div>
+    </div>
+  </section>
+
+  <footer>Educational visualization · pm.max_children = 3 · scripted, looping demo</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const C = { r1:'#3b82f6', r2:'#a855f7', r3:'#14b8a6', r4:'#f97316', r5:'#eab308', stat:'#22c55e' };
+
+  const overlay = document.getElementById('token-overlay');
+  const zoneEls = {
+    clients: document.getElementById('anchor-clients'),
+    nginx: document.getElementById('anchor-nginx'),
+    fpm: document.getElementById('anchor-fpm'),
+    queue: document.getElementById('zone-queue'),
+    w1dock: document.getElementById('w1dock'),
+    w2dock: document.getElementById('w2dock'),
+    w3dock: document.getElementById('w3dock'),
+  };
+
+  let tokens = {};
+  let queueOrder = [];
+  let workerBusy = {1:false, 2:false, 3:false};
+  let spawnJitterSeq = 0;
+
+  const state = { speed:1, paused:false, elapsed:0, lastTs:null };
+  const TRAVEL_MS = 750;
+  function travelDuration(){ return TRAVEL_MS / state.speed; }
+
+  /* ---------- token positioning ---------- */
+  function computeZonePoint(zoneKey){
+    const overlayRect = overlay.getBoundingClientRect();
+    const zoneEl = zoneEls[zoneKey];
+    const r = zoneEl.getBoundingClientRect();
+    return { x: r.left - overlayRect.left + r.width/2, y: r.top - overlayRect.top + r.height/2 };
+  }
+  function applyTokenPosition(tok, zoneKey, dy){
+    const p = computeZonePoint(zoneKey);
+    const scale = tok.el.classList.contains('docked') ? 0.6 : 1;
+    tok.el.style.left = p.x + 'px';
+    tok.el.style.top = (p.y + (dy||0)) + 'px';
+    tok.el.style.transform = `translate(-50%,-50%) scale(${scale})`;
+  }
+
+  function spawnToken(id, opts){
+    const { label, sub='', color, shape='pill' } = opts;
+    const el = document.createElement('div');
+    el.className = 'token' + (shape==='square' ? ' token-square' : '');
+    el.style.setProperty('--c', color);
+    el.innerHTML = `<span class="t-label">${label}</span>${sub ? `<span class="t-sub">${sub}</span>` : ''}`;
+    overlay.appendChild(el);
+    const jitter = (spawnJitterSeq++ % 3 - 1) * 13;
+    tokens[id] = { el, label, sub, color, zone:null, offsetIndex:null, jitter };
+    moveToken(id, 'clients', { instant:true, jitter });
+  }
+
+  function moveToken(id, zoneKey, opts){
+    opts = opts || {};
+    const tok = tokens[id];
+    if(!tok) return;
+    tok.zone = zoneKey;
+    tok.offsetIndex = (opts.offsetIndex != null) ? opts.offsetIndex : null;
+    tok.jitter = opts.jitter || 0;
+    tok.el.classList.toggle('docked', !!opts.docked);
+    const dur = opts.instant ? 0 : travelDuration();
+    tok.el.style.transitionDuration = dur + 'ms';
+    const dy = tok.offsetIndex != null ? tok.offsetIndex * 34 : tok.jitter;
+    requestAnimationFrame(function(){ applyTokenPosition(tok, zoneKey, dy); });
+    if (opts.onArrive) setTimeout(opts.onArrive, dur + 40);
+  }
+
+  function finishToken(id){
+    moveToken(id, 'clients', { onArrive: function(){
+      const tok = tokens[id];
+      if (!tok) return;
+      tok.el.classList.add('fading');
+      setTimeout(function(){ if(tok.el.parentNode) tok.el.remove(); delete tokens[id]; }, 430);
+    }});
+  }
+
+  function layoutAll(){
+    Object.values(tokens).forEach(function(tok){
+      if (!tok.zone) return;
+      const prev = tok.el.style.transitionDuration;
+      tok.el.style.transitionDuration = '0ms';
+      const dy = tok.offsetIndex != null ? tok.offsetIndex * 34 : tok.jitter;
+      applyTokenPosition(tok, tok.zone, dy);
+      void tok.el.offsetHeight;
+      tok.el.style.transitionDuration = prev;
+    });
+  }
+  let resizeTimer = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(layoutAll, 120);
+  });
+
+  /* ---------- workers ---------- */
+  function setWorker(n, opts){
+    const st = opts.state;
+    const card = document.getElementById('worker-'+n);
+    card.classList.toggle('busy', st === 'busy');
+    card.classList.toggle('free', st === 'free');
+    if (opts.color) card.style.setProperty('--wc', opts.color); else card.style.removeProperty('--wc');
+    card.querySelector('.w-state').textContent = st === 'busy' ? 'BUSY' : 'FREE';
+    card.querySelector('.w-main').textContent = st === 'busy' ? `${opts.req} · ${opts.script}` : 'waiting for request';
+    card.querySelector('.w-note').textContent = st === 'busy' ? (opts.note || 'PHP executing…') : '';
+  }
+  function updateWorkerNote(n, note){
+    const card = document.getElementById('worker-'+n);
+    if (!card.classList.contains('busy')) return;
+    card.querySelector('.w-note').textContent = note;
+  }
+
+  function dockAt(n, id){
+    const tok = tokens[id];
+    moveToken(id, 'w'+n+'dock', { docked:true, onArrive: function(){
+      workerBusy[n] = true;
+      setWorker(n, { state:'busy', req: tok.label, script: tok.sub, color: tok.color });
+      updateStatus();
+    }});
+  }
+
+  function handleFpmArrival(id){
+    const tok = tokens[id];
+    const free = [1,2,3].find(function(n){ return !workerBusy[n]; });
+    if (free){
+      dockAt(free, id);
+      say(`Worker #${free} → BUSY (${tok.label})`);
+    } else {
+      enqueue(id);
+      say(`All 3 workers busy → ${tok.label} enters the FPM listen queue`);
+    }
+  }
+
+  function enqueue(id){
+    queueOrder.push(id);
+    moveToken(id, 'queue', { offsetIndex: queueOrder.length - 1 });
+    updateStatus();
+    syncWhyPanel();
+  }
+
+  function assignFromQueue(n){
+    if (queueOrder.length === 0) return;
+    const id = queueOrder.shift();
+    queueOrder.forEach(function(qid, idx){ moveToken(qid, 'queue', { offsetIndex: idx }); });
+    syncWhyPanel();
+    const tok = tokens[id];
+    say(`Worker #${n} is free → takes ${tok.label} from the queue`);
+    dockAt(n, id);
+  }
+
+  function completeWorker(n, id){
+    workerBusy[n] = false;
+    setWorker(n, { state:'free' });
+    updateStatus();
+    moveToken(id, 'fpm', { docked:false, onArrive: function(){
+      moveToken(id, 'nginx', { onArrive: function(){ finishToken(id); } });
+    }});
+  }
+  function completeAndReassign(n, id){
+    completeWorker(n, id);
+    setTimeout(function(){ if (queueOrder.length > 0) assignFromQueue(n); }, 300 / state.speed);
+  }
+
+  /* ---------- panels ---------- */
+  function say(text){
+    const el = document.getElementById('now-main');
+    el.textContent = text;
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+  function busyCount(){ return [1,2,3].filter(function(n){ return workerBusy[n]; }).length; }
+
+  function updateStatus(){
+    const busy = busyCount();
+    document.getElementById('status-busy-count').textContent = busy;
+    document.getElementById('status-queue-count').textContent = queueOrder.length;
+    document.getElementById('pool-banner').classList.toggle('show', busy === 3);
+    document.getElementById('queue-empty-hint').style.display = queueOrder.length ? 'none' : 'block';
+    document.getElementById('now-fpm').textContent = `${busy} / 3 workers busy`;
+    document.getElementById('now-queue').textContent = `${queueOrder.length} waiting request${queueOrder.length!==1?'s':''}`;
+    const w2 = document.getElementById('worker-2');
+    document.getElementById('now-w2').textContent = w2.classList.contains('busy') ? w2.querySelector('.w-note').textContent : 'idle';
+  }
+
+  function syncWhyPanel(){
+    const panel = document.getElementById('why-panel');
+    const body = document.getElementById('why-body');
+    const title = document.getElementById('why-title');
+    if (queueOrder.length === 0){
+      panel.classList.remove('show');
+      title.textContent = 'WHY IS A REQUEST WAITING?';
+      body.innerHTML = '<div class="why-empty">No requests are currently waiting.</div>';
+      return;
+    }
+    panel.classList.add('show');
+    const names = queueOrder.map(function(id){ return tokens[id] ? tokens[id].label : id; }).join(', ');
+    title.textContent = `WHY IS ${names} WAITING?`;
+    body.innerHTML =
+      '<div class="why-line ok">✓ PHP request reached PHP-FPM</div>' +
+      '<div class="why-line no">✗ No free workers (3 / 3 busy)</div>' +
+      '<div class="why-line ok">✓ pm.max_children = 3</div>' +
+      '<div class="why-line arrow">→ Request waits in the FPM listen queue</div>';
+  }
+
+  /* ---------- scripted timeline ---------- */
+  const EVENTS = [
+    {t:300,  fn:function(){ spawnToken('r1', {label:'REQ #1', sub:'GET /index.php', color:C.r1}); say('Client sends GET /index.php'); }},
+    {t:900,  fn:function(){ moveToken('r1','nginx', {onArrive:function(){ say('Nginx: .php file → forwarding via FastCGI'); }}); }},
+    {t:1900, fn:function(){ moveToken('r1','fpm', {onArrive:function(){ handleFpmArrival('r1'); }}); }},
+
+    {t:3600, fn:function(){ spawnToken('r2', {label:'REQ #2', sub:'GET /report', color:C.r2}); say('Client sends GET /report (a slow endpoint)'); }},
+    {t:4200, fn:function(){ moveToken('r2','nginx', {onArrive:function(){ say('Nginx forwards /report via FastCGI'); }}); }},
+    {t:5200, fn:function(){ moveToken('r2','fpm', {onArrive:function(){ handleFpmArrival('r2'); }}); }},
+
+    {t:7000, fn:function(){ spawnToken('r3', {label:'REQ #3', sub:'GET /index.php', color:C.r3}); say('Client sends GET /index.php'); }},
+    {t:7600, fn:function(){ moveToken('r3','nginx', {onArrive:function(){ say('Nginx forwards to PHP-FPM'); }}); }},
+    {t:8600, fn:function(){ moveToken('r3','fpm', {onArrive:function(){ handleFpmArrival('r3'); }}); }},
+
+    {t:9300, fn:function(){ updateWorkerNote(2, 'DB query…'); updateStatus(); }},
+
+    {t:10400, fn:function(){ spawnToken('static', {label:'/style.css', sub:'static asset', color:C.stat, shape:'square'}); say('Client requests a static asset (.css)'); }},
+    {t:10900, fn:function(){ moveToken('static','nginx', {onArrive:function(){ say('Nginx serves static files directly — PHP-FPM is never contacted'); }}); }},
+    {t:11900, fn:function(){ finishToken('static'); say('Static response returned instantly — no PHP worker used'); }},
+
+    {t:10700, fn:function(){ spawnToken('r4', {label:'REQ #4', sub:'GET /index.php', color:C.r4}); say('Client sends GET /index.php'); }},
+    {t:11300, fn:function(){ moveToken('r4','nginx', {onArrive:function(){ say('Nginx forwards to PHP-FPM'); }}); }},
+    {t:12300, fn:function(){ moveToken('r4','fpm', {onArrive:function(){ handleFpmArrival('r4'); }}); }},
+
+    {t:13500, fn:function(){ updateWorkerNote(2, 'waiting for DB…'); updateStatus(); }},
+
+    {t:13700, fn:function(){ spawnToken('r5', {label:'REQ #5', sub:'GET /index.php', color:C.r5}); say('Client sends GET /index.php'); }},
+    {t:14300, fn:function(){ moveToken('r5','nginx', {onArrive:function(){ say('Nginx forwards to PHP-FPM'); }}); }},
+    {t:15300, fn:function(){ moveToken('r5','fpm', {onArrive:function(){ handleFpmArrival('r5'); }}); }},
+
+    {t:16200, fn:function(){ updateWorkerNote(2, 'PHP continues…'); updateStatus(); }},
+
+    {t:16800, fn:function(){ say('Worker #1 finishes REQ #1 → response travels back through PHP-FPM & Nginx'); completeAndReassign(1,'r1'); }},
+    {t:19600, fn:function(){ say('Worker #3 finishes REQ #3 → response travels back'); completeAndReassign(3,'r3'); }},
+    {t:24400, fn:function(){ say('Worker #1 finishes REQ #4 → response travels back'); completeAndReassign(1,'r4'); }},
+    {t:26800, fn:function(){ say('Worker #3 finishes REQ #5 → response travels back'); completeAndReassign(3,'r5'); }},
+    {t:30400, fn:function(){ say('Worker #2 finally finishes the slow REQ #2 → response travels back'); completeAndReassign(2,'r2'); }},
+
+    {t:33400, fn:function(){ say('All requests completed ✓ — pool is idle (0 / 3 busy). Cycle restarting…'); }},
+  ];
+  const TOTAL_CYCLE_MS = 37000;
+
+  function resetAndRestart(){
+    Object.values(tokens).forEach(function(tok){ if (tok.el.parentNode) tok.el.remove(); });
+    tokens = {};
+    queueOrder = [];
+    workerBusy = {1:false, 2:false, 3:false};
+    [1,2,3].forEach(function(n){ setWorker(n, {state:'free'}); });
+    updateStatus();
+    syncWhyPanel();
+    say('New scenario starting — client sends the first request…');
+    EVENTS.forEach(function(e){ e.fired = false; });
+    state.elapsed = 0;
+  }
+
+  function tick(ts){
+    if (state.lastTs == null) state.lastTs = ts;
+    const dt = ts - state.lastTs;
+    state.lastTs = ts;
+    if (!state.paused){
+      state.elapsed += dt * state.speed;
+      EVENTS.forEach(function(e){
+        if (!e.fired && state.elapsed >= e.t){ e.fired = true; e.fn(); }
+      });
+      if (state.elapsed >= TOTAL_CYCLE_MS) resetAndRestart();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ---------- controls ---------- */
+  const btnToggle = document.getElementById('btn-toggle');
+  const btnRestart = document.getElementById('btn-restart');
+  btnToggle.addEventListener('click', function(){
+    state.paused = !state.paused;
+    btnToggle.textContent = state.paused ? '▶ Play' : '⏸ Pause';
+    btnToggle.classList.toggle('primary', !state.paused);
+  });
+  btnRestart.addEventListener('click', function(){
+    resetAndRestart();
+    state.paused = false;
+    btnToggle.textContent = '⏸ Pause';
+    btnToggle.classList.add('primary');
+  });
+  const speedSlider = document.getElementById('speed-slider');
+  const speedTag = document.getElementById('speed-tag');
+  speedSlider.addEventListener('input', function(){
+    state.speed = parseFloat(speedSlider.value);
+    speedTag.textContent = state.speed.toFixed(2) + '×';
+  });
+
+  /* ---------- init ---------- */
+  updateStatus();
+  syncWhyPanel();
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
