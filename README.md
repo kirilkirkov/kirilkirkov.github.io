@@ -91,10 +91,8 @@ Open the HTML visualizations directly in your browser.
 
 Example:
 
-```text
-index.html
-php-fpm.html
-```
+<a href="https://kirilkirkov.github.io/index.html">https://kirilkirkov.github.io/index.html</a> (Node.JS) <br>
+<a href="https://kirilkirkov.github.io/php-fpm.html">https://kirilkirkov.github.io/php-fpm.html</a> (PHP-FPM)
 
 ## Future Visualizations
 
