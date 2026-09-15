@@ -62,6 +62,11 @@
     font-weight:800;letter-spacing:.2px;
   }
   header p{margin:0;color:var(--text-dim);font-size:.92rem;max-width:860px;line-height:1.5;}
+  .edu-badge{
+    display:inline-flex;align-items:center;gap:6px;margin:8px 0 0;padding:4px 10px;
+    background:#ff9f5b1a;border:1px solid #ff9f5b55;border-radius:20px;
+    color:#ffbd8a;font-size:.72rem;font-weight:600;
+  }
 
   .toolbar{
     display:flex;flex-direction:column;gap:10px;
@@ -86,9 +91,9 @@
   .mode-btn:hover{color:var(--text);}
   .mode-btn.active{background:linear-gradient(135deg,#5b8cff,#7c5bff);color:#fff;font-weight:600;}
 
-  .speed-row{flex-wrap:nowrap;}
+  .speed-row{flex-wrap:nowrap;justify-content:flex-start;}
   .speed-icon{font-size:.8rem;color:var(--text-dim);flex:none;}
-  .speed-row input[type=range]{flex:1 1 auto;min-width:70px;accent-color:var(--accent);cursor:pointer;height:4px;}
+  .speed-row input[type=range]{flex:0 0 150px;width:150px;accent-color:var(--accent);cursor:pointer;height:4px;}
   #speed-label{font-size:.76rem;color:var(--text);white-space:nowrap;flex:none;}
   @media (max-width:520px){
     .speed-row{flex-wrap:wrap;}
@@ -110,19 +115,76 @@
     background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
     padding:12px 14px 6px;margin-bottom:14px;
   }
-  .wheel-header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px;margin-bottom:2px;}
+  .wheel-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px;margin-bottom:6px;}
+  .wheel-header-left{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .wheel-collapse-btn{
+    display:flex;align-items:center;justify-content:center;flex:none;gap:6px;
+    width:38px;height:38px;border-radius:50%;
+    background:var(--panel-2);border:1px solid var(--border);
+    cursor:pointer;color:var(--text);font-family:var(--sans);transition:.2s;
+  }
+  .wheel-collapse-btn:hover{border-color:var(--accent);background:#2a2c44;box-shadow:0 0 0 4px #7c9cff22;}
+  .wheel-collapse-btn .chevron{display:inline-block;color:var(--text);transition:transform .25s;font-size:1.15rem;font-weight:700;line-height:1;}
+  .wheel-collapse-btn[aria-expanded="false"] .chevron{transform:rotate(-90deg);}
   .wheel-header .wtitle{font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);font-weight:700;}
   .wheel-header .whint{font-size:.72rem;color:var(--text-dim);}
-  .wheel-wrap{display:flex;justify-content:center;}
-  #loop-wheel{width:100%;max-width:400px;height:auto;display:block;margin:0 auto;}
+  .wheel-body{
+    display:grid;grid-template-rows:1fr;transition:grid-template-rows .3s ease, opacity .25s ease;
+    opacity:1;overflow:hidden;
+  }
+  .wheel-body > .eventloop-grid{min-height:0;}
+  .wheel-body.collapsed{grid-template-rows:0fr;opacity:0;}
 
-  .wheel-rim-dash{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:3 11;opacity:.45;}
-  .wheel-rim-dash2{fill:none;stroke:var(--micro);stroke-width:1.5;stroke-dasharray:1.5 15;opacity:.35;}
+  .eventloop-grid{display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:center;}
+  .side-panels{display:flex;flex-direction:column;gap:10px;order:1;min-width:0;}
+  .side-card{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
+  .side-title{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);font-weight:700;margin-bottom:6px;}
+  .up-list, .wn-list{display:flex;flex-direction:column;gap:5px;}
+  .up-empty, .wn-empty{color:var(--text-dim);font-size:.72rem;font-style:italic;}
+  .up-item{
+    display:flex;align-items:flex-start;gap:7px;padding:5px 7px;border-radius:6px;
+    background:var(--panel);border:1px solid var(--border-soft);transition:opacity .2s;
+  }
+  .up-item .up-rank{font-family:var(--mono);font-weight:700;font-size:.7rem;color:var(--text-dim);flex:none;}
+  .up-item .up-body{min-width:0;}
+  .up-item .up-name{font-family:var(--mono);font-size:.74rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .up-item .up-meta{font-size:.64rem;color:var(--text-dim);margin-top:1px;}
+  .up-item.rank-1{opacity:1;}
+  .up-item.rank-2{opacity:.7;}
+  .up-item.rank-3{opacity:.48;}
+  .up-warn{font-size:.66rem;color:#ffbd8a;margin-top:2px;}
+  .wn-item{font-size:.72rem;color:var(--text);line-height:1.5;display:flex;gap:6px;}
+  .wn-item .wn-mark{flex:none;}
+  .wn-item.conclusion{color:var(--accent);font-weight:600;}
+
+  .wheel-wrap{display:flex;justify-content:center;order:2;min-width:0;}
+  #loop-wheel{width:100%;max-width:620px;height:auto;display:block;margin:0 auto;}
+
+  @media (max-width:860px){
+    .eventloop-grid{grid-template-columns:1fr;}
+    .wheel-wrap{order:1;}
+    .side-panels{order:2;flex-direction:row;flex-wrap:wrap;}
+    .side-card{flex:1 1 220px;}
+  }
+  @media (max-width:600px){
+    .wheel-card{padding:10px 10px 4px;}
+    #loop-wheel{max-width:440px;}
+    .whint{display:none;}
+    .side-panels{flex-direction:column;}
+  }
+
+  .wheel-rim-dash{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:3 11;opacity:.4;}
+  .wheel-rim-dash2{fill:none;stroke:var(--micro);stroke-width:1.5;stroke-dasharray:1.5 15;opacity:.3;}
+  .checkpoint-lane{fill:none;stroke:var(--border);stroke-width:1;stroke-dasharray:2 7;opacity:.5;}
+
+  .eli-pointer{transition:opacity .3s;}
+  .eli-pointer-shape{fill:var(--accent);filter:drop-shadow(0 0 6px var(--accent));}
+  .eli-pointer-dot{fill:var(--accent);}
 
   .wsegment-path{
     fill:var(--panel-2); stroke:var(--seg-color); stroke-width:1.5; opacity:.8; transition:fill .25s,opacity .25s,stroke-width .25s;
   }
-  .wsegment.internal .wsegment-path{opacity:.35;stroke-dasharray:3 4;}
+  .wsegment.internal .wsegment-path{opacity:.32;stroke-dasharray:3 4;}
   .wsegment-icon{font-size:19px;}
   .wsegment-label{font-size:10.5px;fill:var(--text);font-family:var(--mono);font-weight:600;}
   .wsegment-badge{font-size:9.5px;fill:var(--text-dim);font-family:var(--mono);}
@@ -130,26 +192,34 @@
   .wsegment.firing .wsegment-path{filter:drop-shadow(0 0 16px var(--seg-color));stroke-width:3;}
 
   .wsat-line{stroke:var(--border);stroke-width:1.4;stroke-dasharray:2 4;}
+  .wsat-arrow{fill:var(--border);}
   .wsat-circle{fill:var(--panel-2);stroke:var(--seg-color);stroke-width:1.5;opacity:.85;transition:fill .25s,opacity .25s;}
   .wsatellite.active .wsat-circle{fill:var(--seg-color);opacity:.35;filter:drop-shadow(0 0 8px var(--seg-color));}
   .wsat-label{font-size:9px;fill:var(--text);font-family:var(--mono);font-weight:600;}
   .wsat-badge{font-size:8.5px;fill:var(--text-dim);font-family:var(--mono);}
 
+  .wext-line{stroke:var(--border);stroke-width:1.3;stroke-dasharray:3 4;}
+  .wext-box{fill:var(--panel-2);stroke:var(--seg-color);stroke-width:1.3;opacity:.75;}
+  .wext-icon{font-size:14px;}
+  .wext-label{font-size:9px;fill:var(--text);font-family:var(--mono);font-weight:600;}
+  .wext-badge{font-size:8.5px;fill:var(--text-dim);font-family:var(--mono);}
+
   .hub-glow{fill:url(#hubGlow);opacity:0;transition:opacity .3s;}
-  .hub-circle{fill:var(--panel-2);stroke:var(--border);stroke-width:2;transition:stroke .3s,fill .3s;}
-  .hub-circle.busy{stroke:var(--stack);fill:#202a4a;filter:drop-shadow(0 0 14px var(--stack-glow));}
-  .hub-circle.busy ~ .hub-glow, .wheel-hub.busy .hub-glow{opacity:1;}
+  .hub-circle{fill:var(--panel-2);stroke:var(--border);stroke-width:2;transition:stroke .3s,fill .3s,opacity .3s;}
+  .hub-circle.busy{stroke:var(--stack);fill:#202a4a;filter:drop-shadow(0 0 14px var(--stack-glow));opacity:1;}
+  .hub-circle.busy ~ .hub-glow{opacity:1;}
+  .hub-circle.empty{stroke:#fff;fill:#2a2c3d;filter:drop-shadow(0 0 16px #ffffff77);animation:stack-empty-pulse .55s ease-out;}
+  .hub-circle.idle{stroke:var(--text-dim);fill:var(--panel-2);opacity:.65;}
+  @keyframes stack-empty-pulse{0%{stroke-width:2;}35%{stroke-width:5;}100%{stroke-width:2;}}
+  .hub-state{font-size:9px;font-family:var(--mono);font-weight:700;letter-spacing:1.2px;fill:var(--text-dim);}
+  .hub-state.running{fill:var(--stack);}
+  .hub-state.empty{fill:#fff;}
+  .hub-state.idle{fill:var(--text-dim);}
   .hub-label{font-size:13px;fill:var(--text);font-family:var(--mono);font-weight:700;}
   .hub-sub{font-size:9.5px;fill:var(--text-dim);font-family:var(--mono);}
 
   .wtoken .wtoken-dot{fill:var(--tok-color, var(--accent));stroke:#fff;stroke-width:1;filter:drop-shadow(0 0 6px var(--tok-color, var(--accent)));}
   .wtoken .wtoken-label{font-size:9px;fill:#fff;font-family:var(--mono);font-weight:600;paint-order:stroke;stroke:#101119cc;stroke-width:3px;stroke-linejoin:round;}
-
-  @media (max-width:600px){
-    .wheel-card{padding:10px 10px 4px;}
-    #loop-wheel{max-width:290px;}
-    .whint{display:none;}
-  }
 
   .grid{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;align-items:start;}
   @media (max-width:980px){.grid{grid-template-columns:1fr;}}
@@ -225,6 +295,8 @@
   .timercard .target{opacity:.65;font-size:.68rem;}
 
   .empty{color:var(--text-dim);font-size:.78rem;font-style:italic;padding:8px 4px;}
+  .tasksources{padding:6px 10px 0;font-size:.68rem;color:var(--text);}
+  .tasksources .dim{color:var(--text-dim);}
 
   .panels{display:flex;flex-direction:column;gap:14px;}
   .qrow{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -298,10 +370,12 @@
   <header>
     <h1>⚡ Event Loop — жива визуализация</h1>
     <p>Пишете (или изберете) реален JS код и натиснете „Пусни“. Кодът наистина се изпълнява
-      (async/await се транспилира на живо с Babel до generator функции), а панелите отразяват <b>реалния</b> ред
-      на изпълнение — не е предварително скриптувана анимация. Превключвайте между модела на <b>браузъра</b>
-      (Call Stack / Web APIs / Microtask / Macrotask) и пълния модел на <b>Node.js</b> (timers → pending → poll →
+      (async/await се транспилира на живо с Babel до generator функции), а визуализацията <b>симулира</b>
+      scheduling модела на Browser/Node.js — със собствена <code>Promise</code> реализация, собствен scheduler и
+      симулирани I/O/close операции (виж badge-а отдолу). Превключвайте между модела на <b>браузъра</b>
+      (Call Stack / Web APIs / Microtask / Task опашки) и пълния модел на <b>Node.js</b> (timers → pending → poll →
       check → close callbacks, plus process.nextTick).</p>
+    <div class="edu-badge">🎓 Educational model — не е debugger на истинския V8 / libuv scheduler</div>
   </header>
 
   <div class="toolbar">
@@ -331,35 +405,61 @@
     </div>
   </div>
 
-  <div class="wheel-card">
+  <div class="wheel-card" id="wheel-card">
     <div class="wheel-header">
-      <span class="wtitle">🎡 Event Loop — на живо</span>
-      <span class="whint">задачите „влизат“ в колелото в мига, в който Event Loop-ът ги вземе за изпълнение</span>
+      <div class="wheel-header-left">
+        <span class="wtitle">🎡 Event Loop — на живо</span>
+        <span class="whint">задачите „влизат“ в колелото в мига, в който Event Loop-ът ги вземе за изпълнение</span>
+      </div>
+      <button id="wheel-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" title="Свий/разгъни визуализацията">
+        <span class="chevron" id="wheel-chevron">⌄</span>
+      </button>
     </div>
-    <div class="wheel-wrap">
-      <svg id="loop-wheel" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#5b8cff" stop-opacity="0.45"/>
-            <stop offset="100%" stop-color="#5b8cff" stop-opacity="0"/>
-          </radialGradient>
-        </defs>
-        <circle cx="240" cy="240" r="228" class="wheel-rim-dash">
-          <animateTransform attributeName="transform" type="rotate" from="0 240 240" to="360 240 240" dur="18s" repeatCount="indefinite"/>
-        </circle>
-        <circle cx="240" cy="240" r="221" class="wheel-rim-dash2">
-          <animateTransform attributeName="transform" type="rotate" from="360 240 240" to="0 240 240" dur="26s" repeatCount="indefinite"/>
-        </circle>
-        <g id="wheel-segments"></g>
-        <g id="wheel-satellites"></g>
-        <g id="wheel-hub">
-          <circle cx="240" cy="240" r="96" class="hub-glow"></circle>
-          <circle cx="240" cy="240" r="74" class="hub-circle" id="hub-circle"></circle>
-          <text x="240" y="234" id="hub-label" class="hub-label" text-anchor="middle">Call Stack</text>
-          <text x="240" y="253" id="hub-sub" class="hub-sub" text-anchor="middle">празен</text>
-        </g>
-        <g id="wheel-tokens"></g>
-      </svg>
+    <div class="wheel-body" id="wheel-body">
+      <div class="eventloop-grid">
+        <div class="side-panels">
+          <div class="side-card">
+            <div class="side-title">⏭ UP NEXT</div>
+            <div class="up-list" id="up-list"><div class="up-empty">— няма планирани задачи —</div></div>
+          </div>
+          <div class="side-card">
+            <div class="side-title">❓ WHY NOW?</div>
+            <div class="wn-list" id="wn-list"><div class="wn-empty">—</div></div>
+          </div>
+        </div>
+        <div class="wheel-wrap">
+          <svg id="loop-wheel" viewBox="0 0 640 640" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#5b8cff" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#5b8cff" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="320" cy="320" r="228" class="wheel-rim-dash">
+              <animateTransform attributeName="transform" type="rotate" from="0 320 320" to="360 320 320" dur="18s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="320" cy="320" r="221" class="wheel-rim-dash2">
+              <animateTransform attributeName="transform" type="rotate" from="360 320 320" to="0 320 320" dur="26s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="320" cy="320" r="124" class="checkpoint-lane"></circle>
+            <g id="wheel-externals"></g>
+            <g id="wheel-segments"></g>
+            <g id="wheel-satellites"></g>
+            <g id="eli-pointer" class="eli-pointer" style="opacity:.15;">
+              <path d="M 320 62 L 307 92 L 333 92 Z" class="eli-pointer-shape"></path>
+              <circle cx="320" cy="96" r="4" class="eli-pointer-dot"></circle>
+            </g>
+            <g id="wheel-hub">
+              <circle cx="320" cy="320" r="96" class="hub-glow"></circle>
+              <circle cx="320" cy="320" r="78" class="hub-circle" id="hub-circle"></circle>
+              <text x="320" y="298" id="hub-state" class="hub-state" text-anchor="middle">READY</text>
+              <text x="320" y="322" id="hub-label" class="hub-label" text-anchor="middle">Call Stack</text>
+              <text x="320" y="341" id="hub-sub" class="hub-sub" text-anchor="middle">празен</text>
+            </g>
+            <g id="wheel-tokens"></g>
+          </svg>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -389,7 +489,8 @@
             <div class="queuebox" id="micro-box"><div class="empty">— празна —</div></div>
           </div>
           <div class="card">
-            <h2><span class="dotlabel"><span class="swatch" style="background:var(--macro)"></span>Macrotask опашка</span><span class="count" id="macro-count">0</span></h2>
+            <h2><span class="dotlabel"><span class="swatch" style="background:var(--macro)"></span>Task опашки</span><span class="count" id="macro-count">0</span></h2>
+            <div class="tasksources">⏱ Timers &nbsp;·&nbsp; <span class="dim">🖱 user events, 🌐 network и др. — не се симулират тук</span></div>
             <div class="queuebox" id="macro-box"><div class="empty">— празна —</div></div>
           </div>
         </div>
@@ -464,7 +565,7 @@
       <div class="legend-item"><span class="legend-swatch" style="background:var(--micro)"></span>
         <div><b>Microtask опашка</b> — продължения на <code>await</code> / <code>.then()</code> / <code>queueMicrotask()</code>. Изпразва се <u>изцяло</u> след всяка задача, преди да се вземе следващият macrotask.</div></div>
       <div class="legend-item"><span class="legend-swatch" style="background:var(--macro)"></span>
-        <div><b>Macrotask опашка</b> — готови за изпълнение callback-и на <code>setTimeout</code>/<code>setInterval</code>, вече свалени от Web APIs.</div></div>
+        <div><b>Task опашки (macrotasks)</b> — в реалния браузър има няколко task source-а (timers, user interaction, networking и др.); браузърът избира измежду тях по вътрешни правила. Тук симулираме само timer-базирани задачи (<code>setTimeout</code>/<code>setInterval</code>), за да е ясен основният принцип, без да претрупваме първия урок.</div></div>
       <div class="legend-item"><span class="legend-swatch" style="background:var(--webapi)"></span>
         <div><b>Web APIs</b> — таймери, които все още чакат реалното си време да изтече (движка ги държи извън стека).</div></div>
     </div>
@@ -493,7 +594,7 @@
   </details>
 
   <p style="text-align:center;color:var(--text-dim);font-size:.72rem;margin-top:18px;">
-    Собствена Promise/scheduler реализация + Babel трансформация на async→generator, изпълнени изцяло в browser-а. Без сървър, без тракинг.
+    <a href="https://github.com/kirilkirkov" target="_blank" style="color:var(--text-dim);text-decoration:none;">by Kiril Kirkov</a>
   </p>
 </div>
 
@@ -643,7 +744,7 @@ function speedFromSlider(v) {
   if (!Number.isFinite(v)) v = 55;
   v = Math.min(100, Math.max(0, v));
   const t = v / 100;
-  const paceMs = Math.round(1400 * Math.pow(1 - t, 1.7));
+  const paceMs = Math.round(3000 * Math.pow(1 - t, 2.5));
   const timerScale = v <= 50 ? 1 : 1 + ((v - 50) / 50) * 15;
   return { paceMs, timerScale };
 }
@@ -801,9 +902,12 @@ function makeBrowserEngine(ctx) {
   const microtaskQueue = [];
   const macrotaskQueue = [];
   const pendingTimers = new Map();
+  const pendingMeta = new Map(); // id -> {label} за таймери, все още в Web APIs (не гарантиран ред помежду им)
   const clearedIntervals = new Set();
   let flushScheduled = false, draining = false;
   const stack = [];
+
+  function originLine() { return (typeof currentExecLine === 'number') ? currentExecLine : null; }
 
   function trackNative(h) { ctx.nativeTimers.add(h); return h; }
   function untrackNative(h) { ctx.nativeTimers.delete(h); }
@@ -815,14 +919,14 @@ function makeBrowserEngine(ctx) {
   }
 
   function enqueueMicrotask(label, runJob) {
-    const job = { id: ++jobCounter, label, runJob };
+    const job = { id: ++jobCounter, label, runJob, originLine: originLine() };
     microtaskQueue.push(job);
     UI.addMicroItem(job.id, label);
     kick();
     return job;
   }
   function enqueueMacrotask(label, runJob) {
-    const task = { id: ++jobCounter, label, runJob };
+    const task = { id: ++jobCounter, label, runJob, originLine: originLine() };
     macrotaskQueue.push(task);
     UI.addMacroItem(task.id, label);
     kick();
@@ -830,7 +934,17 @@ function makeBrowserEngine(ctx) {
   }
   function kick() {
     if (draining) return;
+    UI.refreshUpcoming();
     if (!flushScheduled) { flushScheduled = true; queueMicrotask(runLoop); }
+  }
+
+  function getUpcoming() {
+    const certain = [];
+    for (const j of microtaskQueue) certain.push({ label: j.label, type: 'Microtask', icon: '⚡', wheelKey: 'micro', originLine: j.originLine });
+    for (const j of macrotaskQueue) certain.push({ label: j.label, type: 'Timer', icon: '⏱', wheelKey: 'macro', originLine: j.originLine });
+    if (certain.length) return { certain: certain.slice(0, 3), candidates: [], moreCount: Math.max(0, certain.length - 3) };
+    const candidates = Array.from(pendingMeta.values()).map(m => ({ label: m.label, type: 'Timer (изчаква)', icon: '📡', originLine: m.originLine }));
+    return { certain: [], candidates: candidates.slice(0, 4), moreCount: 0 };
   }
 
   async function runLoop() {
@@ -841,17 +955,23 @@ function makeBrowserEngine(ctx) {
       while (alive(ctx)) {
         if (microtaskQueue.length) {
           UI.setPhase('micro', 'Изчистване на Microtask опашката…', `${microtaskQueue.length} чакащи`);
+          UI.setWhy('micro', { microCount: microtaskQueue.length });
           const job = microtaskQueue.shift();
           UI.removeMicroItem(job.id, job.label);
+          UI.refreshUpcoming();
           await pace(ctx); if (!alive(ctx)) break;
           job.runJob();
           continue;
         }
         if (macrotaskQueue.length) {
-          UI.setPhase('macro', 'Вземане на следваща задача от Macrotask опашката…', '');
+          UI.setPhase('render', 'Render opportunity (концептуално — не се симулира реално рисуване)…', '');
+          await pace(ctx); if (!alive(ctx)) break;
+          UI.setPhase('macro', 'Вземане на следваща задача от Task опашката…', '');
+          UI.setWhy('macro', {});
           await pace(ctx); if (!alive(ctx)) break;
           const task = macrotaskQueue.shift();
           UI.removeMacroItem(task.id, task.label);
+          UI.refreshUpcoming();
           await pace(ctx); if (!alive(ctx)) break;
           task.runJob();
           continue;
@@ -864,6 +984,8 @@ function makeBrowserEngine(ctx) {
     if (alive(ctx)) {
       const stillWaiting = pendingTimers.size > 0;
       UI.setPhase('idle', stillWaiting ? 'Event Loop е свободен — чака таймер от Web APIs…' : 'Event Loop е свободен.', '');
+      UI.setWhy('idle', { stillWaiting });
+      Wheel.hubIdle(stillWaiting);
       if (!stillWaiting) UI.onIdleFinal();
     }
   }
@@ -876,9 +998,11 @@ function makeBrowserEngine(ctx) {
     const wantedDelay = Math.max(0, Number(delay) || 0);
     const realDelay = wantedDelay / currentSpeed.timerScale;
     UI.addWebApiTimer(id, label, realDelay);
+    pendingMeta.set(id, { label, originLine: originLine() });
     const h = trackNative(setTimeout(() => {
       untrackNative(h);
       pendingTimers.delete(id);
+      pendingMeta.delete(id);
       UI.removeWebApiTimer(id);
       if (!alive(ctx)) return;
       enqueueMacrotask(label, () => {
@@ -887,11 +1011,12 @@ function makeBrowserEngine(ctx) {
       });
     }, realDelay));
     pendingTimers.set(id, h);
+    UI.refreshUpcoming();
     return id;
   }
   function myClearTimeout(id) {
     const h = pendingTimers.get(id);
-    if (h) { clearTimeout(h); untrackNative(h); pendingTimers.delete(id); UI.removeWebApiTimer(id); }
+    if (h) { clearTimeout(h); untrackNative(h); pendingTimers.delete(id); pendingMeta.delete(id); UI.removeWebApiTimer(id); UI.refreshUpcoming(); }
   }
   function mySetInterval(fn, delay, ...args) {
     const id = ++timerIdCounter;
@@ -901,8 +1026,10 @@ function makeBrowserEngine(ctx) {
     function scheduleNext() {
       if (clearedIntervals.has(id)) return;
       UI.addWebApiTimer(id, label + ' ↻', realDelay);
+      pendingMeta.set(id, { label: label + ' ↻', originLine: originLine() });
       const h = trackNative(setTimeout(() => {
         untrackNative(h);
+        pendingMeta.delete(id);
         UI.removeWebApiTimer(id);
         if (!alive(ctx) || clearedIntervals.has(id)) return;
         enqueueMacrotask(label, () => {
@@ -912,6 +1039,7 @@ function makeBrowserEngine(ctx) {
         });
       }, realDelay));
       pendingTimers.set(id, h);
+      UI.refreshUpcoming();
     }
     scheduleNext();
     return id;
@@ -920,7 +1048,9 @@ function makeBrowserEngine(ctx) {
     clearedIntervals.add(id);
     const h = pendingTimers.get(id);
     if (h) { clearTimeout(h); untrackNative(h); pendingTimers.delete(id); }
+    pendingMeta.delete(id);
     UI.removeWebApiTimer(id);
+    UI.refreshUpcoming();
   }
   function myQueueMicrotask(fn) {
     enqueueMicrotask(fn.name || 'queueMicrotask()', () => {
@@ -930,7 +1060,7 @@ function makeBrowserEngine(ctx) {
     });
   }
 
-  return { __runAsync, VizPromise, mySetTimeout, myClearTimeout, mySetInterval, myClearInterval, myQueueMicrotask };
+  return { __runAsync, VizPromise, mySetTimeout, myClearTimeout, mySetInterval, myClearInterval, myQueueMicrotask, getUpcoming };
 }
 
 /* ============================================================
@@ -940,15 +1070,20 @@ function makeBrowserEngine(ctx) {
 const NODE_PHASES = ['timers', 'pending', 'poll', 'check', 'close'];
 const NODE_PHASE_LABEL = { timers: 'timers', pending: 'pending callbacks', poll: 'poll', check: 'check', close: 'close callbacks' };
 
+const NODE_PHASE_ICON = { timers: '⏰', pending: '📨', poll: '📡', check: '✅', close: '🔒' };
+
 function makeNodeEngine(ctx) {
   let jobCounter = 0, opIdCounter = 0;
   const phaseQueues = { timers: [], pending: [], poll: [], check: [], close: [] };
   const nextTickQueue = [];
   const microtaskQueue = [];
   const pendingOps = new Map();
+  const pendingMeta = new Map(); // id -> {label, target, originLine} за операции, все още извън event loop-а
   const clearedIntervals = new Set();
   let draining = false, kicked = false;
   const stack = [];
+
+  function originLine() { return (typeof currentExecLine === 'number') ? currentExecLine : null; }
 
   function trackNative(h) { ctx.nativeTimers.add(h); return h; }
   function untrackNative(h) { ctx.nativeTimers.delete(h); }
@@ -960,21 +1095,21 @@ function makeNodeEngine(ctx) {
   }
 
   function enqueuePhase(phase, label, run) {
-    const job = { id: ++jobCounter, label, run };
+    const job = { id: ++jobCounter, label, run, originLine: originLine() };
     phaseQueues[phase].push(job);
     UI.nodeAddPhaseItem(phase, job.id, label);
     kick();
     return job;
   }
   function enqueueNextTick(label, run) {
-    const job = { id: ++jobCounter, label, run };
+    const job = { id: ++jobCounter, label, run, originLine: originLine() };
     nextTickQueue.push(job);
     UI.addNTItem(job.id, label);
     kick();
     return job;
   }
   function enqueueMicrotask(label, runJob) {
-    const job = { id: ++jobCounter, label, runJob };
+    const job = { id: ++jobCounter, label, runJob, originLine: originLine() };
     microtaskQueue.push(job);
     UI.addMicroNodeItem(job.id, label);
     kick();
@@ -982,24 +1117,43 @@ function makeNodeEngine(ctx) {
   }
   function kick() {
     if (draining) return;
+    UI.refreshUpcoming();
     if (!kicked) { kicked = true; queueMicrotask(nodeLoop); }
+  }
+
+  function getUpcoming() {
+    const certain = [];
+    for (const j of nextTickQueue) certain.push({ label: j.label, type: 'nextTick', icon: '🔺', wheelKey: 'nexttick', originLine: j.originLine });
+    for (const j of microtaskQueue) certain.push({ label: j.label, type: 'Microtask', icon: '⚡', wheelKey: 'microtask', originLine: j.originLine });
+    for (const phase of NODE_PHASES) {
+      for (const j of phaseQueues[phase]) {
+        certain.push({ label: j.label, type: NODE_PHASE_LABEL[phase], icon: NODE_PHASE_ICON[phase], wheelKey: phase, originLine: j.originLine });
+      }
+    }
+    if (certain.length) return { certain: certain.slice(0, 3), candidates: [], moreCount: Math.max(0, certain.length - 3) };
+    const candidates = Array.from(pendingMeta.values()).map(m => ({ label: m.label, type: `изчаква → ${m.target}`, icon: '📡', originLine: m.originLine }));
+    return { certain: [], candidates: candidates.slice(0, 4), moreCount: 0 };
   }
 
   async function drainNT() {
     while (alive(ctx) && (nextTickQueue.length || microtaskQueue.length)) {
       while (nextTickQueue.length) {
         UI.nodeSetPhase('nexttick', 'process.nextTick() опашка (най-висок приоритет)…', `${nextTickQueue.length} чакащи`);
+        UI.setWhy('nexttick', { ntCount: nextTickQueue.length });
         await pace(ctx); if (!alive(ctx)) return;
         const job = nextTickQueue.shift();
         UI.removeNTItem(job.id, job.label);
+        UI.refreshUpcoming();
         pushFrame(job.label, job.id);
         try { job.run(); } finally { popFrame(job.id); }
       }
       if (microtaskQueue.length) {
         UI.nodeSetPhase('microtask', 'Microtask опашка (Promise)…', `${microtaskQueue.length} чакащи`);
+        UI.setWhy('microtask', { microCount: microtaskQueue.length });
         await pace(ctx); if (!alive(ctx)) return;
         const job = microtaskQueue.shift();
         UI.removeMicroNodeItem(job.id, job.label);
+        UI.refreshUpcoming();
         job.runJob();
       }
     }
@@ -1023,10 +1177,12 @@ function makeNodeEngine(ctx) {
           if (!q.length) continue;
           ranAny = true;
           UI.nodeSetPhase(phase, `${NODE_PHASE_LABEL[phase]} фаза…`, `${q.length} чакащи`);
+          UI.setWhy(phase, { phaseCount: q.length, phaseLabel: NODE_PHASE_LABEL[phase] });
           while (q.length) {
             await pace(ctx); if (!alive(ctx)) break;
             const job = q.shift();
             UI.nodeRemovePhaseItem(phase, job.id, job.label);
+            UI.refreshUpcoming();
             pushFrame(job.label, job.id);
             try { job.run(); } finally { popFrame(job.id); }
             await drainNT(); if (!alive(ctx)) break;
@@ -1041,6 +1197,8 @@ function makeNodeEngine(ctx) {
     if (alive(ctx)) {
       const stillWaiting = pendingOps.size > 0;
       UI.nodeSetPhase('idle', stillWaiting ? 'Event loop чака следваща операция (таймер / симулирано I/O)…' : 'Event loop е свободен.', '');
+      UI.setWhy('idle', { stillWaiting });
+      Wheel.hubIdle(stillWaiting);
       if (!stillWaiting) UI.onIdleFinal();
     }
   }
@@ -1052,19 +1210,22 @@ function makeNodeEngine(ctx) {
     const label = fn.name || `setTimeout#${id}`;
     const realDelay = Math.max(0, Number(delay) || 0) / currentSpeed.timerScale;
     UI.nodeAddPending(id, label, realDelay, 'timers');
+    pendingMeta.set(id, { label, target: 'timers', originLine: originLine() });
     const h = trackNative(setTimeout(() => {
       untrackNative(h);
       pendingOps.delete(id);
+      pendingMeta.delete(id);
       UI.nodeRemovePending(id);
       if (!alive(ctx)) return;
       enqueuePhase('timers', label, () => fn(...args));
     }, realDelay));
     pendingOps.set(id, h);
+    UI.refreshUpcoming();
     return id;
   }
   function myClearTimeout(id) {
     const h = pendingOps.get(id);
-    if (h) { clearTimeout(h); untrackNative(h); pendingOps.delete(id); UI.nodeRemovePending(id); }
+    if (h) { clearTimeout(h); untrackNative(h); pendingOps.delete(id); pendingMeta.delete(id); UI.nodeRemovePending(id); UI.refreshUpcoming(); }
   }
   function mySetInterval(fn, delay, ...args) {
     const id = ++opIdCounter;
@@ -1073,13 +1234,16 @@ function makeNodeEngine(ctx) {
     function scheduleNext() {
       if (clearedIntervals.has(id)) return;
       UI.nodeAddPending(id, label + ' ↻', realDelay, 'timers');
+      pendingMeta.set(id, { label: label + ' ↻', target: 'timers', originLine: originLine() });
       const h = trackNative(setTimeout(() => {
         untrackNative(h);
+        pendingMeta.delete(id);
         UI.nodeRemovePending(id);
         if (!alive(ctx) || clearedIntervals.has(id)) return;
         enqueuePhase('timers', label, () => { fn(...args); if (!clearedIntervals.has(id)) scheduleNext(); });
       }, realDelay));
       pendingOps.set(id, h);
+      UI.refreshUpcoming();
     }
     scheduleNext();
     return id;
@@ -1088,7 +1252,9 @@ function makeNodeEngine(ctx) {
     clearedIntervals.add(id);
     const h = pendingOps.get(id);
     if (h) { clearTimeout(h); untrackNative(h); pendingOps.delete(id); }
+    pendingMeta.delete(id);
     UI.nodeRemovePending(id);
+    UI.refreshUpcoming();
   }
   function mySetImmediate(fn, ...args) {
     const id = ++opIdCounter;
@@ -1107,28 +1273,34 @@ function makeNodeEngine(ctx) {
     const label = fn.name || `I/O#${id}`;
     const realDelay = Math.max(0, Number(delayMs) || 0) / currentSpeed.timerScale;
     UI.nodeAddPending(id, label, realDelay, 'poll');
+    pendingMeta.set(id, { label, target: 'poll', originLine: originLine() });
     const h = trackNative(setTimeout(() => {
       untrackNative(h);
       pendingOps.delete(id);
+      pendingMeta.delete(id);
       UI.nodeRemovePending(id);
       if (!alive(ctx)) return;
       enqueuePhase('poll', label, () => fn());
     }, realDelay));
     pendingOps.set(id, h);
+    UI.refreshUpcoming();
     return id;
   }
   function mySimulateClose(label, delayMs, fn) {
     const id = ++opIdCounter;
     const realDelay = Math.max(0, Number(delayMs) || 0) / currentSpeed.timerScale;
     UI.nodeAddPending(id, String(label), realDelay, 'close');
+    pendingMeta.set(id, { label: String(label), target: 'close', originLine: originLine() });
     const h = trackNative(setTimeout(() => {
       untrackNative(h);
       pendingOps.delete(id);
+      pendingMeta.delete(id);
       UI.nodeRemovePending(id);
       if (!alive(ctx)) return;
       enqueuePhase('close', String(label), () => fn());
     }, realDelay));
     pendingOps.set(id, h);
+    UI.refreshUpcoming();
     return id;
   }
   function myQueueMicrotask(fn) {
@@ -1141,7 +1313,7 @@ function makeNodeEngine(ctx) {
 
   return {
     __runAsync, VizPromise, mySetTimeout, myClearTimeout, mySetInterval, myClearInterval,
-    mySetImmediate, myClearImmediate, myProcess, mySimulateIO, mySimulateClose, myQueueMicrotask
+    mySetImmediate, myClearImmediate, myProcess, mySimulateIO, mySimulateClose, myQueueMicrotask, getUpcoming
   };
 }
 
@@ -1152,11 +1324,15 @@ function makeNodeEngine(ctx) {
 const WHEEL_CONFIGS = {
   browser: {
     segments: [
-      { key: 'webapi', label: 'Web APIs', icon: '📡', color: 'var(--webapi)' },
-      { key: 'macro', label: 'Macrotask', icon: '📋', color: 'var(--macro)' },
+      { key: 'macro', label: 'Take Task', icon: '📋', color: 'var(--macro)' },
+      { key: 'render', label: 'Render', icon: '🎨', color: 'var(--ok)', internal: true },
+    ],
+    satellites: [
       { key: 'micro', label: 'Microtask', icon: '⚡', color: 'var(--micro)' },
     ],
-    satellites: []
+    externals: [
+      { key: 'webapi', label: 'Web APIs', icon: '📡', color: 'var(--webapi)', feedsInto: 'macro' },
+    ]
   },
   node: {
     segments: [
@@ -1168,15 +1344,16 @@ const WHEEL_CONFIGS = {
       { key: 'close', label: 'close', icon: '🔒', color: 'var(--danger)' },
     ],
     satellites: [
-      { key: 'nexttick', label: 'nextTick', color: 'var(--nexttick)' },
-      { key: 'microtask', label: 'microtask', color: 'var(--micro)' },
-    ]
+      { key: 'nexttick', label: 'nextTick', icon: '🔺', color: 'var(--nexttick)' },
+      { key: 'microtask', label: 'microtask', icon: '⚡', color: 'var(--micro)' },
+    ],
+    externals: []
   }
 };
 
 const Wheel = (() => {
   const SVGNS = 'http://www.w3.org/2000/svg';
-  const cx = 240, cy = 240, r1 = 148, r2 = 216, gap = 3;
+  const cx = 320, cy = 320, r1 = 160, r2 = 220, gap = 3, rCheckpoint = 124, rExternal = 285;
 
   function polar(r, angleDeg) {
     const a = (angleDeg - 90) * Math.PI / 180;
@@ -1192,15 +1369,19 @@ const Wheel = (() => {
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
-  let segGroup, satGroup, tokenLayer, hubCircle, hubLabel, hubSub;
+  let segGroup, satGroup, extGroup, tokenLayer, hubCircle, hubLabel, hubSub, hubStateEl, pointerEl;
+  let pointerAngleAccum = 0;
 
   function init() {
     segGroup = document.getElementById('wheel-segments');
     satGroup = document.getElementById('wheel-satellites');
+    extGroup = document.getElementById('wheel-externals');
     tokenLayer = document.getElementById('wheel-tokens');
     hubCircle = document.getElementById('hub-circle');
     hubLabel = document.getElementById('hub-label');
     hubSub = document.getElementById('hub-sub');
+    hubStateEl = document.getElementById('hub-state');
+    pointerEl = document.getElementById('eli-pointer');
   }
 
   function build(mode) {
@@ -1208,17 +1389,21 @@ const Wheel = (() => {
     const cfg = WHEEL_CONFIGS[mode];
     segGroup.innerHTML = '';
     satGroup.innerHTML = '';
+    extGroup.innerHTML = '';
     const N = cfg.segments.length;
+    const segAngle = {};
     cfg.segments.forEach((seg, i) => {
       const a0 = i * (360 / N) + gap / 2;
       const a1 = (i + 1) * (360 / N) - gap / 2;
       const mid = (a0 + a1) / 2;
+      segAngle[seg.key] = mid;
       const pos = polar((r1 + r2) / 2, mid);
       const g = document.createElementNS(SVGNS, 'g');
       g.setAttribute('class', 'wsegment' + (seg.internal ? ' internal' : ''));
       g.dataset.key = seg.key;
       g.dataset.x = pos.x;
       g.dataset.y = pos.y;
+      g.dataset.angle = mid;
       g.dataset.color = seg.color;
       g.innerHTML = `
         <path d="${donutPath(a0, a1)}" class="wsegment-path" style="--seg-color:${seg.color}"></path>
@@ -1228,36 +1413,82 @@ const Wheel = (() => {
       `;
       segGroup.appendChild(g);
     });
+    const satN = cfg.satellites.length;
+    const satSpread = 44;
     cfg.satellites.forEach((sat, i) => {
-      const angle = i === 0 ? -124 : -56;
-      const pos = polar(116, angle);
+      const angle = (i - (satN - 1) / 2) * satSpread;
+      const pos = polar(rCheckpoint, angle);
+      const edge = polar(rCheckpoint - 30, angle);
       const g = document.createElementNS(SVGNS, 'g');
       g.setAttribute('class', 'wsatellite');
       g.dataset.key = sat.key;
       g.dataset.x = pos.x;
       g.dataset.y = pos.y;
+      g.dataset.angle = angle;
       g.dataset.color = sat.color;
       g.innerHTML = `
-        <line x1="${pos.x}" y1="${pos.y}" x2="${cx}" y2="${cy}" class="wsat-line"></line>
+        <line x1="${pos.x}" y1="${pos.y}" x2="${edge.x}" y2="${edge.y}" class="wsat-line"></line>
         <circle cx="${pos.x}" cy="${pos.y}" r="25" class="wsat-circle" style="--seg-color:${sat.color}"></circle>
-        <text x="${pos.x}" y="${pos.y + 3}" text-anchor="middle" class="wsat-label">${escapeHtml(sat.label)}</text>
+        <text x="${pos.x}" y="${pos.y + 3}" text-anchor="middle" class="wsat-label">${escapeHtml(sat.icon ? sat.icon + ' ' + sat.label : sat.label)}</text>
         <text x="${pos.x}" y="${pos.y + 16}" text-anchor="middle" class="wsat-badge" data-badge></text>
       `;
       satGroup.appendChild(g);
+    });
+    (cfg.externals || []).forEach((ext) => {
+      const targetAngle = segAngle[ext.feedsInto] != null ? segAngle[ext.feedsInto] : 0;
+      const pos = polar(rExternal, targetAngle);
+      const edge = polar(r2, targetAngle);
+      const g = document.createElementNS(SVGNS, 'g');
+      g.setAttribute('class', 'wexternal');
+      g.dataset.key = ext.key;
+      g.dataset.x = pos.x;
+      g.dataset.y = pos.y;
+      g.dataset.color = ext.color;
+      g.innerHTML = `
+        <line x1="${edge.x}" y1="${edge.y}" x2="${pos.x}" y2="${pos.y}" class="wext-line"></line>
+        <rect x="${pos.x - 34}" y="${pos.y - 18}" width="68" height="36" rx="9" class="wext-box" style="--seg-color:${ext.color}"></rect>
+        <text x="${pos.x}" y="${pos.y - 2}" text-anchor="middle" class="wext-icon">${ext.icon}</text>
+        <text x="${pos.x}" y="${pos.y + 12}" text-anchor="middle" class="wext-label">${escapeHtml(ext.label)}</text>
+        <text x="${pos.x}" y="${pos.y + 27}" text-anchor="middle" class="wext-badge" data-badge></text>
+      `;
+      extGroup.appendChild(g);
     });
     resetState();
   }
 
   function findNode(key) {
     return document.querySelector(`#wheel-segments [data-key="${key}"]`) ||
-           document.querySelector(`#wheel-satellites [data-key="${key}"]`);
+           document.querySelector(`#wheel-satellites [data-key="${key}"]`) ||
+           document.querySelector(`#wheel-externals [data-key="${key}"]`);
+  }
+
+  function pointToAngle(targetDeg) {
+    if (!pointerEl) return;
+    if (targetDeg == null) {
+      if (window.gsap) gsap.to(pointerEl, { opacity: 0.15, duration: 0.3 });
+      else pointerEl.style.opacity = '0.15';
+      return;
+    }
+    const delta = (((targetDeg - pointerAngleAccum) % 360) + 540) % 360 - 180;
+    pointerAngleAccum += delta;
+    if (window.gsap) {
+      gsap.to(pointerEl, { opacity: 1, rotation: pointerAngleAccum, svgOrigin: `${cx} ${cy}`, duration: 0.5, ease: 'power2.out' });
+    } else {
+      pointerEl.style.opacity = '1';
+      pointerEl.setAttribute('transform', `rotate(${pointerAngleAccum} ${cx} ${cy})`);
+    }
   }
 
   function setActive(key) {
     document.querySelectorAll('#wheel-segments .wsegment, #wheel-satellites .wsatellite').forEach(el => el.classList.remove('active'));
-    if (!key) return;
+    if (!key) { pointToAngle(null); return; }
     const el = findNode(key);
-    if (el) el.classList.add('active');
+    if (el && (el.parentElement === segGroup || el.parentElement === satGroup)) {
+      el.classList.add('active');
+      pointToAngle(el.dataset.angle != null ? Number(el.dataset.angle) : null);
+    } else {
+      pointToAngle(null);
+    }
   }
 
   function setBadge(key, n) {
@@ -1267,26 +1498,46 @@ const Wheel = (() => {
     if (b) b.textContent = n > 0 ? String(n) : '';
   }
 
+  function setHubState(word, cls) {
+    if (!hubStateEl) return;
+    hubStateEl.textContent = word;
+    hubStateEl.classList.remove('running', 'empty', 'idle');
+    if (cls) hubStateEl.classList.add(cls);
+  }
+
   let hubHoldTimeout = null;
-  function setHub(label, sub, busy) {
+  function hubRunning(label, sub) {
     if (!hubLabel) return;
     if (hubHoldTimeout) { clearTimeout(hubHoldTimeout); hubHoldTimeout = null; }
-    if (busy) {
-      hubLabel.textContent = label;
-      hubSub.textContent = sub || '';
-      hubCircle.classList.add('busy');
-    } else {
-      // изпълнението на един callback често е синхронно и трае под 1ms — по-бързо, отколкото
-      // окото може да го улови. Задържаме последния изпълнен label за кратко, вместо мигновено
-      // да го изчистваме, за да може човек реално да прочете какво тъкмо е минало през стека.
-      const holdMs = Math.max(200, (currentSpeed ? currentSpeed.paceMs : 300) * 0.45);
-      hubHoldTimeout = setTimeout(() => {
-        hubLabel.textContent = 'Call Stack';
-        hubSub.textContent = 'празен';
-        hubCircle.classList.remove('busy');
-        hubHoldTimeout = null;
-      }, holdMs);
-    }
+    hubLabel.textContent = label;
+    hubSub.textContent = sub || '';
+    hubCircle.classList.remove('empty', 'idle');
+    hubCircle.classList.add('busy');
+    setHubState('RUNNING', 'running');
+  }
+  function hubStackEmpty() {
+    if (!hubLabel) return;
+    if (hubHoldTimeout) clearTimeout(hubHoldTimeout);
+    hubCircle.classList.remove('busy', 'idle');
+    hubCircle.classList.add('empty');
+    setHubState('STACK EMPTY', 'empty');
+    const holdMs = Math.max(180, (currentSpeed ? currentSpeed.paceMs : 300) * 0.4);
+    hubHoldTimeout = setTimeout(() => {
+      hubLabel.textContent = 'Call Stack';
+      hubSub.textContent = 'готов';
+      hubCircle.classList.remove('empty');
+      hubHoldTimeout = null;
+    }, holdMs);
+  }
+  function hubIdle(stillWaiting) {
+    if (!hubLabel) return;
+    if (hubHoldTimeout) { clearTimeout(hubHoldTimeout); hubHoldTimeout = null; }
+    hubLabel.textContent = 'Call Stack';
+    hubSub.textContent = stillWaiting ? 'чака следващо събитие…' : 'нищо за изпълнение';
+    hubCircle.classList.remove('busy', 'empty');
+    hubCircle.classList.add('idle');
+    setHubState(stillWaiting ? 'IDLE · чака' : 'IDLE', 'idle');
+    pointToAngle(null);
   }
 
   function fly(key, label) {
@@ -1338,18 +1589,19 @@ const Wheel = (() => {
   }
 
   function resetState() {
-    document.querySelectorAll('#wheel-segments [data-badge], #wheel-satellites [data-badge]').forEach(el => el.textContent = '');
+    document.querySelectorAll('#wheel-segments [data-badge], #wheel-satellites [data-badge], #wheel-externals [data-badge]').forEach(el => el.textContent = '');
     setActive(null);
     if (hubHoldTimeout) { clearTimeout(hubHoldTimeout); hubHoldTimeout = null; }
     if (hubLabel) {
       hubLabel.textContent = 'Call Stack';
       hubSub.textContent = 'празен';
-      hubCircle.classList.remove('busy');
+      hubCircle.classList.remove('busy', 'empty', 'idle');
     }
+    setHubState('READY', null);
     if (tokenLayer) tokenLayer.innerHTML = '';
   }
 
-  return { build, setActive, setBadge, setHub, fly, resetState };
+  return { build, setActive, setBadge, hubRunning, hubStackEmpty, hubIdle, fly, resetState };
 })();
 
 /* ============================================================
@@ -1382,7 +1634,8 @@ const UI = (() => {
   const phaseColors = {
     sync: 'var(--stack)', micro: 'var(--micro)', macro: 'var(--macro)', idle: 'var(--text-dim)',
     timers: 'var(--stack)', pending: 'var(--webapi)', poll: 'var(--webapi)', check: 'var(--macro)',
-    close: 'var(--danger)', nexttick: 'var(--nexttick)', microtask: 'var(--micro)', 'idle-prepare': 'var(--text-dim)'
+    close: 'var(--danger)', nexttick: 'var(--nexttick)', microtask: 'var(--micro)', 'idle-prepare': 'var(--text-dim)',
+    render: 'var(--ok)'
   };
 
   function escapeHtml(s) {
@@ -1390,7 +1643,7 @@ const UI = (() => {
   }
 
   const KIND_TO_WHEEL = {
-    micro: 'micro', macro: 'macro',
+    micro: 'micro', macro: 'macro', render: 'render',
     timers: 'timers', pending: 'pending', poll: 'poll', check: 'check', close: 'close', 'idle-prepare': 'idle-prepare',
     nexttick: 'nexttick', microtask: 'microtask'
   };
@@ -1409,15 +1662,16 @@ const UI = (() => {
     if (!execTop) return;
     const lineTxt = (typeof currentExecLine === 'number') ? ` · ред ${currentExecLine}` : '';
     setPhase('sync', `Изпълнява се: ${execTop}`, `дълбочина на стека: ${execDepth}${lineTxt}`);
-    Wheel.setHub(execTop, `стек: ${execDepth}${lineTxt}`, true);
+    Wheel.hubRunning(execTop, `стек: ${execDepth}${lineTxt}`);
   }
 
   function renderStack(stack) {
     counts.stack.textContent = stack.length;
     if (!stack.length) {
       stackBox.innerHTML = '<div class="empty">— празен —</div>';
+      const wasBusy = execTop !== null;
       execTop = null;
-      Wheel.setHub('Call Stack', 'празен', false);
+      if (wasBusy) Wheel.hubStackEmpty();
       return;
     }
     stackBox.innerHTML = '';
@@ -1539,6 +1793,104 @@ const UI = (() => {
   }
   const NODE_PHASES_SET = new Set(['timers', 'pending', 'poll', 'check', 'close']);
 
+  function refreshUpcoming() {
+    const upList = document.getElementById('up-list');
+    if (!upList) return;
+    if (typeof activeEngine === 'undefined' || !activeEngine || !activeEngine.getUpcoming) {
+      upList.innerHTML = '<div class="up-empty">— няма планирани задачи —</div>';
+      return;
+    }
+    const { certain, candidates, moreCount } = activeEngine.getUpcoming();
+    upList.innerHTML = '';
+    if (certain.length) {
+      certain.forEach((item, i) => {
+        const el = document.createElement('div');
+        el.className = 'up-item rank-' + (i + 1);
+        const lineTxt = item.originLine != null ? ` · ред ${item.originLine}` : '';
+        el.innerHTML = `<span class="up-rank">${i + 1}</span><div class="up-body"><div class="up-name">${escapeHtml(item.icon || '')} ${escapeHtml(item.label)}</div><div class="up-meta">${escapeHtml(item.type)}${lineTxt}</div></div>`;
+        upList.appendChild(el);
+      });
+      if (moreCount > 0) {
+        const more = document.createElement('div');
+        more.className = 'up-warn';
+        more.textContent = `+ ${moreCount} още в опашката`;
+        upList.appendChild(more);
+      }
+    } else if (candidates.length) {
+      const hint = document.createElement('div');
+      hint.className = 'up-warn';
+      hint.textContent = '⚠ Order not guaranteed — изчакват реално време:';
+      upList.appendChild(hint);
+      candidates.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'up-item rank-2';
+        const lineTxt = item.originLine != null ? ` · ред ${item.originLine}` : '';
+        el.innerHTML = `<div class="up-body"><div class="up-name">${escapeHtml(item.icon || '')} ${escapeHtml(item.label)}</div><div class="up-meta">${escapeHtml(item.type)}${lineTxt}</div></div>`;
+        upList.appendChild(el);
+      });
+    } else {
+      upList.innerHTML = '<div class="up-empty">— няма планирани задачи —</div>';
+    }
+  }
+
+  function whyLines(kind, info) {
+    switch (kind) {
+      case 'sync': return [
+        { mark: '✓', text: 'Call Stack получи нов кадър' },
+        { mark: '→', text: 'JavaScript изпълнява синхронно до следващия await/return', conclusion: true }
+      ];
+      case 'micro': return [
+        { mark: '✓', text: 'Call Stack е празен' },
+        { mark: '✓', text: `Microtask опашката съдържа ${info.microCount || '≥1'} job-а` },
+        { mark: '→', text: 'Microtasks се изпълняват преди следващия macrotask', conclusion: true }
+      ];
+      case 'render': return [
+        { mark: '✓', text: 'Microtask опашката е напълно празна' },
+        { mark: '→', text: 'Браузърът МОЖЕ да рисува тук (не се симулира реално в тази страница)', conclusion: true }
+      ];
+      case 'macro': return [
+        { mark: '✓', text: 'Microtask опашката е празна' },
+        { mark: '→', text: 'Event Loop взема следваща Task (напр. timer callback)', conclusion: true }
+      ];
+      case 'nexttick': return [
+        { mark: '✓', text: 'Call Stack е празен' },
+        { mark: '✓', text: `process.nextTick() опашката съдържа ${info.ntCount || '≥1'} job-а` },
+        { mark: '→', text: 'nextTick има най-висок приоритет — преди всичко друго', conclusion: true }
+      ];
+      case 'microtask': return [
+        { mark: '✓', text: 'process.nextTick() опашката е празна' },
+        { mark: '✓', text: `Microtask опашката съдържа ${info.microCount || '≥1'} job-а` },
+        { mark: '→', text: 'Microtasks се изпълняват преди следващата фаза', conclusion: true }
+      ];
+      case 'timers': case 'pending': case 'poll': case 'check': case 'close': return [
+        { mark: '✓', text: 'nextTick и microtask опашките са празни' },
+        { mark: '✓', text: `${info.phaseLabel || kind} съдържа ${info.phaseCount || '≥1'} callback-а` },
+        { mark: '→', text: 'Event Loop изпълнява тази фаза', conclusion: true }
+      ];
+      case 'idle': return info.stillWaiting ? [
+        { mark: '✓', text: 'Всички опашки и фази точно сега са празни' },
+        { mark: '→', text: 'Event Loop чака следващо събитие (таймер / I/O)', conclusion: true }
+      ] : [
+        { mark: '✓', text: 'Всички опашки, фази и таймери са изчерпани' },
+        { mark: '→', text: 'Event Loop е свободен — изпълнението приключи', conclusion: true }
+      ];
+      default: return [];
+    }
+  }
+  function setWhy(kind, info) {
+    const wnList = document.getElementById('wn-list');
+    if (!wnList) return;
+    const lines = whyLines(kind, info || {});
+    wnList.innerHTML = '';
+    if (!lines.length) { wnList.innerHTML = '<div class="wn-empty">—</div>'; return; }
+    lines.forEach(l => {
+      const el = document.createElement('div');
+      el.className = 'wn-item' + (l.conclusion ? ' conclusion' : '');
+      el.innerHTML = `<span class="wn-mark">${l.mark}</span><span>${escapeHtml(l.text)}</span>`;
+      wnList.appendChild(el);
+    });
+  }
+
   function consoleLine(type, text) {
     consoleLines++;
     counts.console.textContent = consoleLines;
@@ -1567,7 +1919,12 @@ const UI = (() => {
     phaseSub.textContent = 'Натиснете „Пусни“, за да изпълните кода отляво.';
     phaseDot.className = 'phase-dot';
     phaseDot.style.background = '';
+    execTop = null; execDepth = 0;
     Wheel.resetState();
+    const upList = document.getElementById('up-list');
+    if (upList) upList.innerHTML = '<div class="up-empty">— няма планирани задачи —</div>';
+    const wnList = document.getElementById('wn-list');
+    if (wnList) wnList.innerHTML = '<div class="wn-empty">—</div>';
   }
 
   function onIdleFinal() {
@@ -1579,6 +1936,7 @@ const UI = (() => {
 
   return {
     setPhase, renderStack, updateExecDisplay, consoleLine, clearAll, onIdleFinal,
+    refreshUpcoming, setWhy,
     addMicroItem, removeMicroItem, addMacroItem, removeMacroItem,
     addWebApiTimer, removeWebApiTimer,
     addNTItem, removeNTItem, addMicroNodeItem, removeMicroNodeItem,
@@ -1943,6 +2301,7 @@ const legendBrowser = document.getElementById('legend-browser');
 const legendNode = document.getElementById('legend-node');
 
 let activeCtx = null;
+let activeEngine = null;
 
 function stopCurrent() {
   currentRunId++;
@@ -1951,6 +2310,7 @@ function stopCurrent() {
     activeCtx.nativeTimers.forEach(h => clearTimeout(h));
     activeCtx.nativeTimers.clear();
   }
+  activeEngine = null;
   paused = false;
   btnPause.textContent = '⏸ Пауза';
   btnStop.disabled = true;
@@ -1958,6 +2318,16 @@ function stopCurrent() {
   btnRun.disabled = false;
   clearLineHighlight();
 }
+
+const wheelCollapseBtn = document.getElementById('wheel-collapse-btn');
+const wheelBody = document.getElementById('wheel-body');
+wheelCollapseBtn.addEventListener('click', () => {
+  const expanded = wheelCollapseBtn.getAttribute('aria-expanded') !== 'false';
+  wheelCollapseBtn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+  wheelBody.classList.toggle('collapsed', expanded);
+  // симулацията продължава да тече отдолу - тук само скриваме/показваме визуализацията (CSS),
+  // без да пипаме engine/ctx състоянието.
+});
 
 function setMode(mode) {
   if (mode === currentMode) return;
@@ -2014,6 +2384,7 @@ function runCode() {
   try {
     if (currentMode === 'browser') {
       const engine = makeBrowserEngine(ctx);
+      activeEngine = engine;
       const fn = new Function(
         '__runAsync', '__markLine', 'Promise', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval',
         'queueMicrotask', 'console', 'performance',
@@ -2025,6 +2396,7 @@ function runCode() {
       );
     } else {
       const engine = makeNodeEngine(ctx);
+      activeEngine = engine;
       const fn = new Function(
         '__runAsync', '__markLine', 'Promise', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval',
         'setImmediate', 'clearImmediate', 'process', 'simulateIO', 'simulateClose',
