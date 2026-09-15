@@ -62,6 +62,16 @@
     font-weight:800;letter-spacing:.2px;
   }
   header p{margin:0;color:var(--text-dim);font-size:.92rem;max-width:860px;line-height:1.5;}
+
+  .lang-switch{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:12px;}
+  .lang-btn{
+    display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:20px;
+    background:var(--panel-2);border:1px solid var(--border);color:var(--text-dim);
+    text-decoration:none;font-size:.78rem;font-weight:600;transition:.15s;
+  }
+  .lang-btn:hover{border-color:var(--accent);color:var(--text);}
+  .lang-btn.active{background:linear-gradient(135deg,#5b8cff,#7c5bff);color:#fff;border-color:transparent;}
+
   .edu-badge{
     display:inline-flex;align-items:center;gap:6px;margin:8px 0 0;padding:4px 10px;
     background:#ff9f5b1a;border:1px solid #ff9f5b55;border-radius:20px;
@@ -358,11 +368,15 @@
   .express-body.collapsed{grid-template-rows:0fr;opacity:0;}
 
   .express-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:8px 0 12px;}
-  .express-toolbar button{
+  .express-toolbar select, .express-toolbar button{
     font-family:var(--sans);font-size:.8rem;color:var(--text);background:var(--panel-2);
     border:1px solid var(--border);border-radius:8px;padding:6px 11px;cursor:pointer;transition:.15s;
   }
-  .express-toolbar button:hover{border-color:var(--accent);}
+  .express-toolbar select:hover, .express-toolbar button:hover{border-color:var(--accent);}
+  .express-toolbar select{min-width:0;flex:1 1 190px;max-width:260px;}
+  @media (max-width:520px){
+    .express-toolbar select{flex-basis:100%;max-width:100%;}
+  }
   .express-speed-wrap{display:flex;align-items:center;gap:6px;}
   .express-speed-wrap input[type=range]{width:110px;accent-color:var(--accent);cursor:pointer;height:4px;}
   .express-scenario-tag{
@@ -396,13 +410,31 @@
   .req-chip-id{font-weight:800;color:var(--req-color);}
   .req-chip-method{font-size:.6rem;color:var(--text-dim);}
   .req-chip-path{font-size:.68rem;color:var(--text-dim);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;}
-  .req-chip-status{font-size:.62rem;color:var(--text-dim);margin-top:3px;font-style:italic;}
-  .req-chip.running{box-shadow:0 0 12px var(--req-color);border-width:2px;}
+  .req-chip-status{font-size:.62rem;color:var(--text-dim);margin-top:3px;font-style:italic;line-height:1.4;}
+  .req-chip-status .dim-sub{color:var(--text-dim);opacity:.75;font-style:normal;}
+  .req-chip.running{box-shadow:0 0 14px var(--req-color);border-width:2px;opacity:1;}
+  .req-chip.running .req-chip-status{color:var(--req-color);font-weight:700;font-style:normal;}
   .req-chip.running.blocking{animation:blocking-pulse .5s ease-in-out infinite alternate;}
   @keyframes blocking-pulse{from{box-shadow:0 0 8px var(--req-color);}to{box-shadow:0 0 22px var(--req-color);}}
-  .req-chip.waiting{opacity:.8;}
-  .req-chip.queued{opacity:.65;}
+  /* йерархия: RUNNING (пълна яркост) > READY (по-ярко от WAITING, но по-слабо от RUNNING) > WAITING (dimmed) */
+  .req-chip.waiting{opacity:.55;}
+  .req-chip.queued{opacity:.92;box-shadow:0 0 9px var(--req-color, transparent);}
+  .req-chip.queued .req-chip-status{color:var(--req-color);font-style:normal;}
   .req-chip.done{opacity:0;transform:scale(.7);}
+
+  .req-mini-code{
+    font-family:var(--mono);font-size:.64rem;color:var(--text);background:#00000030;
+    border-left:2px solid var(--req-color);padding:3px 6px;margin:4px 0 2px;border-radius:3px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;
+  }
+  .req-chip.waiting .req-mini-code::before{content:'⏸ ';opacity:.7;}
+  .req-chip.queued .req-mini-code::before{content:'✓ ';color:var(--req-color);font-weight:700;}
+
+  .express-summary{
+    font-size:.74rem;color:var(--text-dim);margin-bottom:10px;padding:7px 12px;
+    background:var(--panel-2);border:1px solid var(--border);border-radius:8px;
+  }
+  .express-summary b{color:var(--text);}
 
   .express-panels{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
   .express-now-line{font-size:.78rem;color:var(--text);}
@@ -456,15 +488,15 @@
 <body>
 <div class="wrap">
 
+  <div class="lang-switch">
+    <a href="?lang=en" class="lang-btn" data-lang-btn="en">🇬🇧 English</a>
+    <a href="?lang=bg" class="lang-btn" data-lang-btn="bg">🇧🇬 Български</a>
+  </div>
+
   <header>
-    <h1>⚡ Event Loop — жива визуализация</h1>
-    <p>Пишете (или изберете) реален JS код и натиснете „Пусни“. Кодът наистина се изпълнява
-      (async/await се транспилира на живо с Babel до generator функции), а визуализацията <b>симулира</b>
-      scheduling модела на Browser/Node.js — със собствена <code>Promise</code> реализация, собствен scheduler и
-      симулирани I/O/close операции (виж badge-а отдолу). Превключвайте между модела на <b>браузъра</b>
-      (Call Stack / Web APIs / Microtask / Task опашки) и пълния модел на <b>Node.js</b> (timers → pending → poll →
-      check → close callbacks, plus process.nextTick).</p>
-    <div class="edu-badge">🎓 Educational model — не е debugger на истинския V8 / libuv scheduler</div>
+    <h1 data-i18n="mainTitle">⚡ Event Loop — Live Visualization</h1>
+    <p data-i18n="headerIntro"></p>
+    <div class="edu-badge" data-i18n="eduBadge"></div>
   </header>
 
   <div class="toolbar">
@@ -474,9 +506,9 @@
         <button id="mode-node" class="mode-btn">🟢 Node.js</button>
       </div>
       <select id="preset"></select>
-      <button id="btn-run" class="primary">▶ Пусни</button>
-      <button id="btn-stop" class="danger" disabled>■ Спри</button>
-      <button id="btn-pause" disabled>⏸ Пауза</button>
+      <button id="btn-run" class="primary" data-i18n="btnRun">▶ Run</button>
+      <button id="btn-stop" class="danger" disabled data-i18n="btnStop">■ Stop</button>
+      <button id="btn-pause" disabled data-i18n="btnPause">⏸ Pause</button>
     </div>
     <div class="toolbar-row speed-row">
       <span class="speed-icon">🐢</span>
@@ -489,18 +521,18 @@
   <div class="phase-banner">
     <div class="phase-dot" id="phase-dot"></div>
     <div>
-      <div id="phase-text">Готов за старт.</div>
-      <div id="phase-sub">Натиснете „Пусни“, за да изпълните кода отляво.</div>
+      <div id="phase-text" data-i18n="phaseReady">Ready to start.</div>
+      <div id="phase-sub" data-i18n="phaseReadySub">Press ▶ Run to execute the code on the left.</div>
     </div>
   </div>
 
   <div class="wheel-card" id="wheel-card">
     <div class="wheel-header">
       <div class="wheel-header-left">
-        <span class="wtitle">🎡 Event Loop — на живо</span>
-        <span class="whint">задачите „влизат“ в колелото в мига, в който Event Loop-ът ги вземе за изпълнение</span>
+        <span class="wtitle" data-i18n="wheelTitle">🎡 Event Loop — Live</span>
+        <span class="whint" data-i18n="wheelHint"></span>
       </div>
-      <button id="wheel-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" title="Свий/разгъни визуализацията">
+      <button id="wheel-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" data-i18n="collapseTitle" data-i18n-attr="title">
         <span class="chevron" id="wheel-chevron">⌄</span>
       </button>
     </div>
@@ -508,11 +540,11 @@
       <div class="eventloop-grid">
         <div class="side-panels">
           <div class="side-card">
-            <div class="side-title">⏭ UP NEXT</div>
-            <div class="up-list" id="up-list"><div class="up-empty">— няма планирани задачи —</div></div>
+            <div class="side-title" data-i18n="upNext">⏭ UP NEXT</div>
+            <div class="up-list" id="up-list"><div class="up-empty" data-i18n="upEmpty">— no scheduled tasks —</div></div>
           </div>
           <div class="side-card">
-            <div class="side-title">❓ WHY NOW?</div>
+            <div class="side-title" data-i18n="whyNow">❓ WHY NOW?</div>
             <div class="wn-list" id="wn-list"><div class="wn-empty">—</div></div>
           </div>
         </div>
@@ -543,7 +575,7 @@
               <circle cx="320" cy="320" r="78" class="hub-circle" id="hub-circle"></circle>
               <text x="320" y="298" id="hub-state" class="hub-state" text-anchor="middle">READY</text>
               <text x="320" y="322" id="hub-label" class="hub-label" text-anchor="middle">Call Stack</text>
-              <text x="320" y="341" id="hub-sub" class="hub-sub" text-anchor="middle">празен</text>
+              <text x="320" y="341" id="hub-sub" class="hub-sub" text-anchor="middle">empty</text>
             </g>
             <g id="wheel-tokens"></g>
           </svg>
@@ -555,11 +587,11 @@
   <div class="grid">
     <div class="panels">
       <div class="card">
-        <h2><span class="dotlabel">📝 Код (editable)</span><span id="cm-hint" style="text-transform:none;letter-spacing:0;font-weight:400;">⌘/Ctrl + Enter = Пусни</span></h2>
+        <h2><span class="dotlabel" data-i18n="codeTitle">📝 Code (editable)</span><span id="cm-hint" style="text-transform:none;letter-spacing:0;font-weight:400;" data-i18n="cmHint"></span></h2>
         <textarea id="code-editor"></textarea>
       </div>
       <div class="card">
-        <h2><span class="dotlabel">🖥️ Конзола</span><span class="count" id="console-count">0</span></h2>
+        <h2><span class="dotlabel" data-i18n="consoleTitle">🖥️ Console</span><span class="count" id="console-count">0</span></h2>
         <div id="console"></div>
       </div>
     </div>
@@ -567,80 +599,80 @@
     <div class="panels">
       <div class="card">
         <h2><span class="dotlabel"><span class="swatch" style="background:var(--stack)"></span>Call Stack</span><span class="count" id="stack-count">0</span></h2>
-        <div class="stackbox" id="stack-box"><div class="empty">— празен —</div></div>
+        <div class="stackbox" id="stack-box"><div class="empty" data-i18n="stackEmptyLbl">— empty —</div></div>
       </div>
 
       <!-- Browser mode panels -->
       <div id="panels-browser" class="panels" style="gap:14px;">
         <div class="qrow">
           <div class="card">
-            <h2><span class="dotlabel"><span class="swatch" style="background:var(--micro)"></span>Microtask опашка</span><span class="count" id="micro-count">0</span></h2>
-            <div class="queuebox" id="micro-box"><div class="empty">— празна —</div></div>
+            <h2><span class="dotlabel"><span class="swatch" style="background:var(--micro)"></span><span data-i18n="microtaskQueueTitle">Microtask Queue</span></span><span class="count" id="micro-count">0</span></h2>
+            <div class="queuebox" id="micro-box"><div class="empty" data-i18n="queueEmptyLbl">— empty —</div></div>
           </div>
           <div class="card">
-            <h2><span class="dotlabel"><span class="swatch" style="background:var(--macro)"></span>Task опашки</span><span class="count" id="macro-count">0</span></h2>
-            <div class="tasksources">⏱ Timers &nbsp;·&nbsp; <span class="dim">🖱 user events, 🌐 network и др. — не се симулират тук</span></div>
-            <div class="queuebox" id="macro-box"><div class="empty">— празна —</div></div>
+            <h2><span class="dotlabel"><span class="swatch" style="background:var(--macro)"></span><span data-i18n="taskQueuesTitle">Task Queues</span></span><span class="count" id="macro-count">0</span></h2>
+            <div class="tasksources" data-i18n="taskSources"></div>
+            <div class="queuebox" id="macro-box"><div class="empty" data-i18n="queueEmptyLbl">— empty —</div></div>
           </div>
         </div>
         <div class="card">
-          <h2><span class="dotlabel"><span class="swatch" style="background:var(--webapi)"></span>Web APIs (timers в изчакване)</span><span class="count" id="webapi-count">0</span></h2>
-          <div class="webapibox" id="webapi-box"><div class="empty">— няма чакащи таймери —</div></div>
+          <h2><span class="dotlabel"><span class="swatch" style="background:var(--webapi)"></span><span data-i18n="webApisTitle">Web APIs (timers waiting)</span></span><span class="count" id="webapi-count">0</span></h2>
+          <div class="webapibox" id="webapi-box"><div class="empty" data-i18n="webApisEmpty">— no waiting timers —</div></div>
         </div>
       </div>
 
       <!-- Node.js mode panels -->
       <div id="panels-node" class="panels" style="gap:14px;display:none;">
         <div class="card">
-          <h2><span class="dotlabel">🔁 Event Loop фази (libuv)</span></h2>
+          <h2><span class="dotlabel" data-i18n="nodePhasesTitle">🔁 Event Loop phases (libuv)</span></h2>
           <div class="phasering">
             <div class="phasebox" id="phase-timers">
               <div class="phasebox-title"><span class="pnum">1</span><span class="ptitle">⏰ timers</span><span class="phasebox-badge"></span></div>
-              <div class="phasebox-sub">setTimeout / setInterval</div>
+              <div class="phasebox-sub" data-i18n="phaseTimersSub">setTimeout / setInterval</div>
               <div class="phasebox-items"></div>
             </div>
             <div class="phasebox" id="phase-pending">
               <div class="phasebox-title"><span class="pnum">2</span><span class="ptitle">📨 pending</span><span class="phasebox-badge"></span></div>
-              <div class="phasebox-sub">отложени I/O callback-и (напр. TCP грешки)</div>
+              <div class="phasebox-sub" data-i18n="phasePendingSub">deferred I/O callbacks</div>
               <div class="phasebox-items"></div>
             </div>
             <div class="phasebox internal" id="phase-idle-prepare">
               <div class="phasebox-title"><span class="pnum">3</span><span class="ptitle">🌀 idle, prepare</span></div>
-              <div class="phasebox-sub">само вътрешно за Node — няма публично API</div>
+              <div class="phasebox-sub" data-i18n="phaseIdlePrepareSub">internal to Node only</div>
             </div>
             <div class="phasebox" id="phase-poll">
               <div class="phasebox-title"><span class="pnum">4</span><span class="ptitle">📡 poll</span><span class="phasebox-badge"></span></div>
-              <div class="phasebox-sub">I/O callback-и (fs, network...)</div>
+              <div class="phasebox-sub" data-i18n="phasePollSub">I/O callbacks</div>
               <div class="phasebox-items"></div>
             </div>
             <div class="phasebox" id="phase-check">
               <div class="phasebox-title"><span class="pnum">5</span><span class="ptitle">✅ check</span><span class="phasebox-badge"></span></div>
-              <div class="phasebox-sub">setImmediate()</div>
+              <div class="phasebox-sub" data-i18n="phaseCheckSub">setImmediate()</div>
               <div class="phasebox-items"></div>
             </div>
             <div class="phasebox" id="phase-close">
               <div class="phasebox-title"><span class="pnum">6</span><span class="ptitle">🔒 close callbacks</span><span class="phasebox-badge"></span></div>
-              <div class="phasebox-sub">напр. socket.on('close')</div>
+              <div class="phasebox-sub" data-i18n="phaseCloseSub">e.g. socket.on('close')</div>
               <div class="phasebox-items"></div>
             </div>
           </div>
-          <div class="phaseflow">⏰ timers → 📨 pending callbacks → 🌀 idle, prepare → 📡 poll → ✅ check → 🔒 close callbacks → ⟲ … и отново timers</div>
+          <div class="phaseflow" data-i18n="phaseFlow"></div>
         </div>
 
         <div class="qrow">
           <div class="card">
             <h2><span class="dotlabel"><span class="swatch" style="background:var(--nexttick)"></span>process.nextTick()</span><span class="count" id="nt-count">0</span></h2>
-            <div class="queuebox" id="nt-box"><div class="empty">— празна —</div></div>
+            <div class="queuebox" id="nt-box"><div class="empty" data-i18n="queueEmptyLbl">— empty —</div></div>
           </div>
           <div class="card">
             <h2><span class="dotlabel"><span class="swatch" style="background:var(--micro)"></span>Microtask (Promise)</span><span class="count" id="micro-node-count">0</span></h2>
-            <div class="queuebox" id="micro-node-box"><div class="empty">— празна —</div></div>
+            <div class="queuebox" id="micro-node-box"><div class="empty" data-i18n="queueEmptyLbl">— empty —</div></div>
           </div>
         </div>
 
         <div class="card">
-          <h2><span class="dotlabel"><span class="swatch" style="background:var(--webapi)"></span>Извън event loop-а (таймери / симулирано I/O)</span><span class="count" id="node-pending-count">0</span></h2>
-          <div class="webapibox" id="node-pending-box"><div class="empty">— няма чакащи операции —</div></div>
+          <h2><span class="dotlabel"><span class="swatch" style="background:var(--webapi)"></span><span data-i18n="outsideEventLoopTitle">Outside the event loop (timers / simulated I/O)</span></span><span class="count" id="node-pending-count">0</span></h2>
+          <div class="webapibox" id="node-pending-box"><div class="empty" data-i18n="outsideEventLoopEmpty">— no pending operations —</div></div>
         </div>
       </div>
     </div>
@@ -648,50 +680,50 @@
 
   <div class="legend-card" id="legend-browser">
     <div class="wheel-header">
-      <div class="wheel-header-left"><span class="wtitle">ℹ️ Browser модел — как да го чета?</span></div>
-      <button id="legend-browser-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" title="Свий/разгъни">
+      <div class="wheel-header-left"><span class="wtitle" data-i18n="legendBrowserTitle">ℹ️ Browser model — how do I read this?</span></div>
+      <button id="legend-browser-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" data-i18n="collapseTitle" data-i18n-attr="title">
         <span class="chevron">⌄</span>
       </button>
     </div>
     <div class="legend-body" id="legend-browser-body">
       <div class="legend-grid">
         <div class="legend-item"><span class="legend-swatch" style="background:var(--stack)"></span>
-          <div><b>Call Stack</b> — коя функция/задача изпълнява синхронно точно сега. За четимост показваме кадър само за: главния скрипт, async функции и timer/promise callback-и (не всяко вложено извикване).</div></div>
+          <div data-i18n="legB1"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--micro)"></span>
-          <div><b>Microtask опашка</b> — продължения на <code>await</code> / <code>.then()</code> / <code>queueMicrotask()</code>. Изпразва се <u>изцяло</u> след всяка задача, преди да се вземе следващият macrotask.</div></div>
+          <div data-i18n="legB2"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--macro)"></span>
-          <div><b>Task опашки (macrotasks)</b> — в реалния браузър има няколко task source-а (timers, user interaction, networking и др.); браузърът избира измежду тях по вътрешни правила. Тук симулираме само timer-базирани задачи (<code>setTimeout</code>/<code>setInterval</code>), за да е ясен основният принцип, без да претрупваме първия урок.</div></div>
+          <div data-i18n="legB3"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--webapi)"></span>
-          <div><b>Web APIs</b> — таймери, които все още чакат реалното си време да изтече (движка ги държи извън стека).</div></div>
+          <div data-i18n="legB4"></div></div>
       </div>
     </div>
   </div>
 
   <div class="legend-card" id="legend-node" style="display:none;">
     <div class="wheel-header">
-      <div class="wheel-header-left"><span class="wtitle">ℹ️ Node.js модел — как да го чета?</span></div>
-      <button id="legend-node-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" title="Свий/разгъни">
+      <div class="wheel-header-left"><span class="wtitle" data-i18n="legendNodeTitle">ℹ️ Node.js model — how do I read this?</span></div>
+      <button id="legend-node-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" data-i18n="collapseTitle" data-i18n-attr="title">
         <span class="chevron">⌄</span>
       </button>
     </div>
     <div class="legend-body" id="legend-node-body">
       <div class="legend-grid">
         <div class="legend-item"><span class="legend-swatch" style="background:var(--nexttick)"></span>
-          <div><b>process.nextTick()</b> — най-висок приоритет от всичко. Изпразва се напълно преди Promise microtask-овете, и преди всяка фаза.</div></div>
+          <div data-i18n="legN1"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--micro)"></span>
-          <div><b>Microtask (Promise)</b> — след nextTick опашката, но преди която и да е фаза на event loop-а.</div></div>
+          <div data-i18n="legN2"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--stack)"></span>
-          <div><b>timers</b> — изпълнява дошлите на ред callback-и на <code>setTimeout</code>/<code>setInterval</code>.</div></div>
+          <div data-i18n="legN3"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:#41d1a7"></span>
-          <div><b>pending callbacks</b> — I/O callback-и, отложени от предишна итерация (напр. някои TCP грешки).</div></div>
+          <div data-i18n="legN4"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--text-dim)"></span>
-          <div><b>idle, prepare</b> — само вътрешно ползване от Node самия; потребителски код никога не се изпълнява тук.</div></div>
+          <div data-i18n="legN5"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--webapi)"></span>
-          <div><b>poll</b> — получава нови I/O събития и изпълнява почти всички I/O callback-и (тук симулираме <code>simulateIO()</code>).</div></div>
+          <div data-i18n="legN6"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--macro)"></span>
-          <div><b>check</b> — тук и само тук се изпълняват <code>setImmediate()</code> callback-и.</div></div>
+          <div data-i18n="legN7"></div></div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--danger)"></span>
-          <div><b>close callbacks</b> — напр. <code>socket.on('close', …)</code>, тук симулирано през <code>simulateClose()</code>.</div></div>
+          <div data-i18n="legN8"></div></div>
       </div>
     </div>
   </div>
@@ -700,9 +732,9 @@
     <div class="wheel-header">
       <div class="wheel-header-left">
         <span class="wtitle">🚀 Express.js — Concurrent Requests</span>
-        <span class="whint">няколко HTTP заявки могат да са "в процес" едновременно, но JavaScript изпълнява само по една в даден момент</span>
+        <span class="whint" data-i18n="expressHint"></span>
       </div>
-      <button id="express-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" title="Свий/разгъни">
+      <button id="express-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" data-i18n="collapseTitle" data-i18n-attr="title">
         <span class="chevron">⌄</span>
       </button>
     </div>
@@ -710,19 +742,21 @@
       <div>
         <div class="express-toolbar">
           <select id="express-scenario-select">
-            <option value="normal" selected>3 паралелни async заявки</option>
-            <option value="blocking">⚠ CPU-blocking пример</option>
-            <option value="auto">🔀 Редувай автоматично</option>
+            <option value="normal" selected data-i18n="expressScenarioNormal">3 parallel async requests</option>
+            <option value="blocking" data-i18n="expressScenarioBlocking">⚠ CPU-blocking example</option>
+            <option value="auto" data-i18n="expressScenarioAuto">🔀 Alternate automatically</option>
           </select>
-          <button id="express-play-btn">▶ Play</button>
-          <button id="express-restart-btn">↻ Restart</button>
+          <button id="express-play-btn" data-i18n="btnResume">▶ Play</button>
+          <button id="express-restart-btn" data-i18n="expressRestart">↻ Restart</button>
           <div class="express-speed-wrap">
             <span class="speed-icon">🐢</span>
             <input type="range" id="express-speed" min="0" max="100" value="50">
             <span class="speed-icon">⚡</span>
           </div>
-          <span class="express-scenario-tag" id="express-scenario-tag">3 паралелни заявки</span>
+          <span class="express-scenario-tag" id="express-scenario-tag" data-i18n="expressScenarioNormal">3 parallel async requests</span>
         </div>
+
+        <div class="express-summary" id="express-summary">—</div>
 
         <div class="express-flow">
           <div class="express-col">
@@ -741,7 +775,7 @@
                 <div class="express-sublist-body" id="express-waiting"><div class="express-empty">—</div></div>
               </div>
               <div class="express-sublist">
-                <div class="express-sublist-title">📥 Queued</div>
+                <div class="express-sublist-title">✅ Ready</div>
                 <div class="express-sublist-body" id="express-queued"><div class="express-empty">—</div></div>
               </div>
             </div>
@@ -751,7 +785,7 @@
         <div class="express-panels">
           <div class="side-card">
             <div class="side-title">▶ WHAT'S HAPPENING NOW?</div>
-            <div id="express-now"><div class="express-now-line">Стартиране…</div></div>
+            <div id="express-now"><div class="express-now-line" data-i18n="expressStarting">Starting…</div></div>
           </div>
           <div class="side-card">
             <div class="side-title">❓ WHY CAN ANOTHER REQUEST RUN?</div>
@@ -765,9 +799,9 @@
         </div>
 
         <div class="express-timeline-wrap">
-          <div class="express-timeline-title">JS Thread <span class="express-timeline-hint">— никога не се застъпва</span></div>
+          <div class="express-timeline-title">JS Thread <span class="express-timeline-hint" data-i18n="expressJsNeverOverlap">— never overlaps</span></div>
           <svg id="express-tl-js" class="express-timeline" viewBox="0 0 1000 46" preserveAspectRatio="none"></svg>
-          <div class="express-timeline-title">Async / I/O <span class="express-timeline-hint">— може да се застъпва</span></div>
+          <div class="express-timeline-title">Async / I/O <span class="express-timeline-hint" data-i18n="expressIoCanOverlap">— can overlap</span></div>
           <svg id="express-tl-io" class="express-timeline" viewBox="0 0 1000 66" preserveAspectRatio="none"></svg>
         </div>
       </div>
@@ -781,6 +815,297 @@
 
 <script>
 'use strict';
+/* ============================================================
+   0) I18N: EN (default) / BG чрез ?lang=bg
+      Технически/общи термини (Browser, Node.js, Web APIs, Call Stack,
+      timers, poll, check, RUNNING/WAITING/READY и т.н.) НЕ се превеждат —
+      само описателен текст (параграфи, WHY обяснения, конзолни съобщения).
+   ============================================================ */
+const LANG = (new URLSearchParams(location.search).get('lang') === 'bg') ? 'bg' : 'en';
+document.documentElement.lang = LANG;
+
+const I18N = {
+  en: {
+    mainTitle: '⚡ Event Loop — Live Visualization',
+    headerIntro: 'Write (or pick) real JS code and press ▶ Run. The code really executes ' +
+      '(async/await is transpiled live with Babel into generator functions), and the visualization ' +
+      '<b>simulates</b> the Browser/Node.js scheduling model — with its own <code>Promise</code> implementation, ' +
+      'its own scheduler and simulated I/O/close operations (see the badge below). Switch between the ' +
+      '<b>Browser</b> model (Call Stack / Web APIs / Microtask / Task Queues) and the full <b>Node.js</b> model ' +
+      '(timers → pending → poll → check → close callbacks, plus process.nextTick).',
+    eduBadge: '🎓 Educational model — not a debugger of the real V8 / libuv scheduler',
+    btnRun: '▶ Run', btnStop: '■ Stop', btnPause: '⏸ Pause', btnResume: '▶ Resume',
+    speedVerySlow: 'Very slow', speedSlow: 'Slow', speedNormal: 'Normal', speedFast: 'Fast', speedInstant: 'Instant',
+    speedStep: (ms) => `step ~${ms}ms`,
+    speedRealtime: 'real time',
+    speedScale: (x) => `timers ×${x}`,
+    phaseReady: 'Ready to start.',
+    phaseReadySub: 'Press ▶ Run to execute the code on the left.',
+    wheelTitle: '🎡 Event Loop — Live',
+    wheelHint: 'tasks "enter" the wheel the moment the Event Loop picks them up for execution',
+    collapseTitle: 'Collapse/expand',
+    upNext: '⏭ UP NEXT', whyNow: '❓ WHY NOW?',
+    upEmpty: '— no scheduled tasks —',
+    moreInQueue: (n) => `+ ${n} more in queue`,
+    orderWarning: '⚠ Order not guaranteed — waiting on real time:',
+    codeTitle: '📝 Code (editable)', cmHint: '⌘/Ctrl + Enter = Run', consoleTitle: '🖥️ Console',
+    stackEmptyLbl: '— empty —',
+    microtaskQueueTitle: 'Microtask Queue', queueEmptyLbl: '— empty —',
+    taskQueuesTitle: 'Task Queues',
+    taskSources: '⏱ Timers &nbsp;·&nbsp; <span class="dim">🖱 user events, 🌐 network etc. — not simulated here</span>',
+    webApisTitle: 'Web APIs (timers waiting)', webApisEmpty: '— no waiting timers —',
+    nodePhasesTitle: '🔁 Event Loop phases (libuv)',
+    phaseTimersSub: 'setTimeout / setInterval',
+    phasePendingSub: 'deferred I/O callbacks (e.g. some TCP errors)',
+    phaseIdlePrepareSub: 'internal to Node only — no public API',
+    phasePollSub: 'I/O callbacks (fs, network...)',
+    phaseCheckSub: 'setImmediate()',
+    phaseCloseSub: "e.g. socket.on('close')",
+    phaseFlow: '⏰ timers → 📨 pending callbacks → 🌀 idle, prepare → 📡 poll → ✅ check → 🔒 close callbacks → ⟲ … and back to timers',
+    outsideEventLoopTitle: 'Outside the event loop (timers / simulated I/O)',
+    outsideEventLoopEmpty: '— no pending operations —',
+    legendBrowserTitle: 'ℹ️ Browser model — how do I read this?',
+    legendNodeTitle: 'ℹ️ Node.js model — how do I read this?',
+    legB1: '<b>Call Stack</b> — which function/task is executing synchronously right now. For readability we only show a frame for: the main script, async functions, and timer/promise callbacks (not every nested call).',
+    legB2: '<b>Microtask Queue</b> — continuations of <code>await</code> / <code>.then()</code> / <code>queueMicrotask()</code>. Drains <u>completely</u> after every task, before the next macrotask is picked up.',
+    legB3: '<b>Task Queues (macrotasks)</b> — in a real browser there are several task sources (timers, user interaction, networking, etc.); the browser picks between them by internal rules. Here we only simulate timer-based tasks (<code>setTimeout</code>/<code>setInterval</code>), to keep the core idea clear without overloading the first lesson.',
+    legB4: '<b>Web APIs</b> — timers that are still waiting for their real delay to elapse (the engine keeps them off the stack).',
+    legN1: '<b>process.nextTick()</b> — highest priority of all. Drains completely before Promise microtasks, and before every phase.',
+    legN2: '<b>Microtask (Promise)</b> — after the nextTick queue, but before any event loop phase.',
+    legN3: '<b>timers</b> — runs due <code>setTimeout</code>/<code>setInterval</code> callbacks.',
+    legN4: '<b>pending callbacks</b> — I/O callbacks deferred from a previous iteration (e.g. some TCP errors).',
+    legN5: '<b>idle, prepare</b> — internal use by Node itself only; user code never runs here.',
+    legN6: '<b>poll</b> — retrieves new I/O events and runs almost all I/O callbacks (here we simulate <code>simulateIO()</code>).',
+    legN7: '<b>check</b> — this and only this is where <code>setImmediate()</code> callbacks run.',
+    legN8: "<b>close callbacks</b> — e.g. <code>socket.on('close', …)</code>, here simulated via <code>simulateClose()</code>.",
+    expressHint: 'several HTTP requests can be "in progress" concurrently, but JavaScript executes only one at a time',
+    expressScenarioNormal: '3 parallel async requests',
+    expressScenarioBlocking: '⚠ CPU-blocking example',
+    expressScenarioAuto: '🔀 Alternate automatically',
+    expressRestart: '↻ Restart',
+    expressJsNeverOverlap: '— never overlaps',
+    expressIoCanOverlap: '— can overlap',
+    expressStarting: 'Starting…',
+    expressWaitingEmpty: '—', expressReadyEmpty: '—',
+    expressArriving: (id, method, path) => `REQ #${id} ${method} ${path} arriving`,
+    expressMiddleware: 'passing through middleware: logger → auth → route handler',
+    expressRunningLabel: 'RUNNING ON JS THREAD',
+    expressRunningBlockingLabel: '🔥 RUNNING ON JS THREAD <span class="dim-sub">(blocking)</span>',
+    expressRunningNow: (id, label) => `JS Thread is running REQ #${id} — ${label}`,
+    expressBlockingNow: (id) => `🔥 JS Thread is running REQ #${id} — heavy synchronous CPU work`,
+    expressBlockingSub: 'nothing else can execute JS right now',
+    whyBlocking: (id) => [`REQ #${id} does synchronous CPU-bound work (no await)`, 'The Call Stack stays busy until it fully finishes', 'CPU-bound synchronous JavaScript blocks ALL other requests on this thread'],
+    whyFreedBy: (freedBy, id) => [`REQ #${freedBy} reached await / finished its JS`, 'its async operation continues outside the JS thread', 'the Call Stack became empty', `Node.js can now handle REQ #${id}`],
+    whyIdleFree: (id) => ['The JS Thread was free just now', `REQ #${id} starts as soon as it is ready to run`],
+    expressPausedLabel: 'PAUSED AT await<br><span class="dim-sub">Request still in progress · not using JS thread</span>',
+    expressWaitingNow: (id, label) => `REQ #${id} is waiting: ${label}`,
+    expressWaitingSub: 'JavaScript execution is paused here — the request stays in progress',
+    expressReadyLabel: 'READY — Microtask Queue<br><span class="dim-sub">Waiting for JS thread</span>',
+    expressReadyNow: (id) => `REQ #${id}: the async operation finished`,
+    expressReadySub: 'Promise resolved → the continuation entered the Microtask Queue, ready to run JS',
+    expressDoneLabel: '✅ DONE — response sent',
+    expressDoneNow: (id) => `REQ #${id} done — the response was sent to the client`,
+    expressSummaryNone: '—',
+    expressSummary: (total, running, waitReady) => `<b>${total}</b> requests in progress &nbsp;·&nbsp; <b>${running}</b> executing JS &nbsp;·&nbsp; <b>${waitReady}</b> waiting/ready`,
+    expressNewScenarioBlocking: 'New scenario: demonstrating a CPU-blocking request…',
+    expressNewScenarioNormal: 'New scenario: 3 parallel requests arriving…',
+    expressPressPlay: 'Press ▶ Play to start the demo.',
+    expressScenarioDone: 'Scenario finished ✅',
+    expressScenarioPause: 'short pause before the next cycle…',
+    expressArrivingShort: 'arriving…',
+    consoleStarting: (mode) => `▶ Starting (${mode} model)…`,
+    consoleTranspileError: (msg) => `✖ Transpile error: ${msg}`,
+    consoleRuntimeError: (msg) => `✖ Runtime error: ${msg}`,
+    consoleStoppedByUser: '■ Stopped by user.',
+    consolePausedMsg: '⏸ Paused…',
+    consoleResumedMsg: '▶ Resuming…',
+    consoleFinished: '✔ Execution finished — the event loop is completely free.',
+    consoleUncaught: (msg) => `⛔ Uncaught (in promise): ${msg}`,
+    execExecuting: (label) => `Executing: ${label}`,
+    execStackDepth: (n) => `stack depth: ${n}`,
+    execLine: (n) => `line ${n}`,
+    hubCallStack: 'Call Stack', hubEmptyLbl: 'empty', hubReadyLbl: 'ready', hubNothingLbl: 'nothing to run',
+    hubWaitingEvent: 'waiting for next event…',
+    hubStackLbl: (n) => `stack: ${n}`,
+    phaseMicroClearing: 'Draining the Microtask Queue…',
+    phaseWaitingN: (n) => `${n} waiting`,
+    phaseTaskPick: 'Picking next Task from the Task Queue…',
+    phaseRenderOpportunity: 'Render opportunity (conceptual — no real painting simulated)…',
+    phaseEventLoopFreeWaiting: 'Event Loop is free — waiting for a Web APIs timer…',
+    phaseEventLoopFree: 'Event Loop is free.',
+    phaseNextTickQueue: (n) => `process.nextTick() queue (highest priority)… ${n} waiting`,
+    phaseMicrotaskQueue: (n) => `Microtask Queue (Promise)… ${n} waiting`,
+    phaseIdlePrepareRunning: 'idle, prepare (internal to Node, no user code)…',
+    phasePhaseRunning: (label, n) => `${label} phase… ${n} waiting`,
+    phaseNodeEventLoopWaiting: 'Event loop is waiting for the next operation (timer / simulated I/O)…',
+    phaseNodeEventLoopFree: 'Event loop is free.',
+    whySync: ['Call Stack got a new frame', 'JavaScript executes synchronously until the next await/return'],
+    whyMicro: (n) => ['Call Stack is empty', `Microtask Queue holds ${n || '≥1'} job(s)`, 'Microtasks run before the next macrotask'],
+    whyRender: ['Microtask Queue is completely empty', 'The browser COULD paint here (not actually simulated on this page)'],
+    whyMacro: ['Microtask Queue is empty', 'Event Loop picks the next Task (e.g. a timer callback)'],
+    whyNextTick: (n) => ['Call Stack is empty', `process.nextTick() queue holds ${n || '≥1'} job(s)`, 'nextTick has the highest priority — before anything else'],
+    whyMicrotask: (n) => ['process.nextTick() queue is empty', `Microtask Queue holds ${n || '≥1'} job(s)`, 'Microtasks run before the next phase'],
+    whyPhase: (label, n) => ['nextTick and microtask queues are empty', `${label} holds ${n || '≥1'} callback(s)`, 'Event Loop runs this phase'],
+    whyIdleWaiting: ['All queues and phases are empty right now', 'Event Loop waits for the next event (timer / I/O)'],
+    whyIdleDone: ['All queues, phases and timers are exhausted', 'Event Loop is free — execution finished'],
+    timerWaitingType: 'Timer (waiting)',
+    timerWaitingTarget: (target) => `waiting → ${target}`,
+    nodeNextTickLabel: 'process.nextTick() queue (highest priority)…',
+    nodeMicrotaskLabel: 'Microtask Queue (Promise)…',
+    nodePhaseLabel: (label) => `${label} phase…`,
+    hubIdleWaitingTag: 'waiting',
+    phaseMainModuleRunning: 'Executing the main module…',
+    resultSuffix: 'result',
+    continuationSuffix: 'continuation',
+  },
+  bg: {
+    mainTitle: '⚡ Event Loop — жива визуализация',
+    headerIntro: 'Пишете (или изберете) реален JS код и натиснете „Пусни“. Кодът наистина се изпълнява ' +
+      '(async/await се транспилира на живо с Babel до generator функции), а визуализацията <b>симулира</b> ' +
+      'scheduling модела на Browser/Node.js — със собствена <code>Promise</code> реализация, собствен scheduler и ' +
+      'симулирани I/O/close операции (виж badge-а отдолу). Превключвайте между модела на <b>браузъра</b> ' +
+      '(Call Stack / Web APIs / Microtask / Task опашки) и пълния модел на <b>Node.js</b> (timers → pending → poll → ' +
+      'check → close callbacks, plus process.nextTick).',
+    eduBadge: '🎓 Educational model — не е debugger на истинския V8 / libuv scheduler',
+    btnRun: '▶ Пусни', btnStop: '■ Спри', btnPause: '⏸ Пауза', btnResume: '▶ Продължи',
+    speedVerySlow: 'Много бавно', speedSlow: 'Бавно', speedNormal: 'Нормално', speedFast: 'Бързо', speedInstant: 'Мигновено',
+    speedStep: (ms) => `стъпка ~${ms}ms`,
+    speedRealtime: 'реално време',
+    speedScale: (x) => `таймери ×${x}`,
+    phaseReady: 'Готов за старт.',
+    phaseReadySub: 'Натиснете „Пусни“, за да изпълните кода отляво.',
+    wheelTitle: '🎡 Event Loop — на живо',
+    wheelHint: 'задачите „влизат“ в колелото в мига, в който Event Loop-ът ги вземе за изпълнение',
+    collapseTitle: 'Свий/разгъни',
+    upNext: '⏭ UP NEXT', whyNow: '❓ WHY NOW?',
+    upEmpty: '— няма планирани задачи —',
+    moreInQueue: (n) => `+ ${n} още в опашката`,
+    orderWarning: '⚠ Order not guaranteed — изчакват реално време:',
+    codeTitle: '📝 Код (редактируем)', cmHint: '⌘/Ctrl + Enter = Пусни', consoleTitle: '🖥️ Конзола',
+    stackEmptyLbl: '— празен —',
+    microtaskQueueTitle: 'Microtask опашка', queueEmptyLbl: '— празна —',
+    taskQueuesTitle: 'Task опашки',
+    taskSources: '⏱ Timers &nbsp;·&nbsp; <span class="dim">🖱 user events, 🌐 network и др. — не се симулират тук</span>',
+    webApisTitle: 'Web APIs (timers в изчакване)', webApisEmpty: '— няма чакащи таймери —',
+    nodePhasesTitle: '🔁 Event Loop фази (libuv)',
+    phaseTimersSub: 'setTimeout / setInterval',
+    phasePendingSub: 'отложени I/O callback-и (напр. TCP грешки)',
+    phaseIdlePrepareSub: 'само вътрешно за Node — няма публично API',
+    phasePollSub: 'I/O callback-и (fs, network...)',
+    phaseCheckSub: 'setImmediate()',
+    phaseCloseSub: "напр. socket.on('close')",
+    phaseFlow: '⏰ timers → 📨 pending callbacks → 🌀 idle, prepare → 📡 poll → ✅ check → 🔒 close callbacks → ⟲ … и отново timers',
+    outsideEventLoopTitle: 'Извън event loop-а (таймери / симулирано I/O)',
+    outsideEventLoopEmpty: '— няма чакащи операции —',
+    legendBrowserTitle: 'ℹ️ Browser модел — как да го чета?',
+    legendNodeTitle: 'ℹ️ Node.js модел — как да го чета?',
+    legB1: '<b>Call Stack</b> — коя функция/задача изпълнява синхронно точно сега. За четимост показваме кадър само за: главния скрипт, async функции и timer/promise callback-и (не всяко вложено извикване).',
+    legB2: '<b>Microtask опашка</b> — продължения на <code>await</code> / <code>.then()</code> / <code>queueMicrotask()</code>. Изпразва се <u>изцяло</u> след всяка задача, преди да се вземе следващият macrotask.',
+    legB3: '<b>Task опашки (macrotasks)</b> — в реалния браузър има няколко task source-а (timers, user interaction, networking и др.); браузърът избира измежду тях по вътрешни правила. Тук симулираме само timer-базирани задачи (<code>setTimeout</code>/<code>setInterval</code>), за да е ясен основният принцип, без да претрупваме първия урок.',
+    legB4: '<b>Web APIs</b> — таймери, които все още чакат реалното си време да изтече (движка ги държи извън стека).',
+    legN1: '<b>process.nextTick()</b> — най-висок приоритет от всичко. Изпразва се напълно преди Promise microtask-овете, и преди всяка фаза.',
+    legN2: '<b>Microtask (Promise)</b> — след nextTick опашката, но преди която и да е фаза на event loop-а.',
+    legN3: '<b>timers</b> — изпълнява дошлите на ред callback-и на <code>setTimeout</code>/<code>setInterval</code>.',
+    legN4: '<b>pending callbacks</b> — I/O callback-и, отложени от предишна итерация (напр. някои TCP грешки).',
+    legN5: '<b>idle, prepare</b> — само вътрешно ползване от Node самия; потребителски код никога не се изпълнява тук.',
+    legN6: '<b>poll</b> — получава нови I/O събития и изпълнява почти всички I/O callback-и (тук симулираме <code>simulateIO()</code>).',
+    legN7: '<b>check</b> — тук и само тук се изпълняват <code>setImmediate()</code> callback-и.',
+    legN8: "<b>close callbacks</b> — напр. <code>socket.on('close', …)</code>, тук симулирано през <code>simulateClose()</code>.",
+    expressHint: 'няколко HTTP заявки могат да са „в процес“ едновременно, но JavaScript изпълнява само по една в даден момент',
+    expressScenarioNormal: '3 паралелни async заявки',
+    expressScenarioBlocking: '⚠ CPU-blocking пример',
+    expressScenarioAuto: '🔀 Редувай автоматично',
+    expressRestart: '↻ Restart',
+    expressJsNeverOverlap: '— никога не се застъпва',
+    expressIoCanOverlap: '— може да се застъпва',
+    expressStarting: 'Стартиране…',
+    expressWaitingEmpty: '—', expressReadyEmpty: '—',
+    expressArriving: (id, method, path) => `REQ #${id} ${method} ${path} пристига`,
+    expressMiddleware: 'преминава през middleware: logger → auth → route handler',
+    expressRunningLabel: 'RUNNING ON JS THREAD',
+    expressRunningBlockingLabel: '🔥 RUNNING ON JS THREAD <span class="dim-sub">(blocking)</span>',
+    expressRunningNow: (id, label) => `JS Thread изпълнява REQ #${id} — ${label}`,
+    expressBlockingNow: (id) => `🔥 JS Thread изпълнява REQ #${id} — тежка синхронна CPU работа`,
+    expressBlockingSub: 'нищо друго не може да изпълнява JS точно сега',
+    whyBlocking: (id) => [`REQ #${id} прави synchronous CPU-bound работа (без await)`, 'Call Stack-ът остава зает, докато тя не приключи изцяло', 'CPU-bound synchronous JavaScript блокира ВСИЧКИ други заявки на този thread'],
+    whyFreedBy: (freedBy, id) => [`REQ #${freedBy} стигна await / приключи своя JS`, 'неговата async операция продължава извън JS thread-а', 'Call Stack стана празен', `Node.js вече може да обработи REQ #${id}`],
+    whyIdleFree: (id) => ['JS Thread беше свободен точно сега', `REQ #${id} стартира веднага щом е готов за изпълнение`],
+    expressPausedLabel: 'PAUSED AT await<br><span class="dim-sub">Request still in progress · not using JS thread</span>',
+    expressWaitingNow: (id, label) => `REQ #${id} чака: ${label}`,
+    expressWaitingSub: 'JavaScript изпълнението е паузирано тук — заявката остава в процес',
+    expressReadyLabel: 'READY — Microtask Queue<br><span class="dim-sub">Waiting for JS thread</span>',
+    expressReadyNow: (id) => `REQ #${id}: async операцията приключи`,
+    expressReadySub: 'Promise resolved → продължението влезе в Microtask Queue, готово е да изпълни JS',
+    expressDoneLabel: '✅ DONE — отговор изпратен',
+    expressDoneNow: (id) => `REQ #${id} готово — отговорът е изпратен на клиента`,
+    expressSummaryNone: '—',
+    expressSummary: (total, running, waitReady) => `<b>${total}</b> requests in progress &nbsp;·&nbsp; <b>${running}</b> executing JS &nbsp;·&nbsp; <b>${waitReady}</b> waiting/ready`,
+    expressNewScenarioBlocking: 'Нов сценарий: демонстрация на CPU-blocking заявка…',
+    expressNewScenarioNormal: 'Нов сценарий: 3 паралелни заявки пристигат…',
+    expressPressPlay: 'Натисни ▶ Play, за да стартираш демонстрацията.',
+    expressScenarioDone: 'Сценарият приключи ✅',
+    expressScenarioPause: 'кратка пауза преди следващия цикъл…',
+    expressArrivingShort: 'пристига…',
+    consoleStarting: (mode) => `▶ Стартиране (${mode} модел)…`,
+    consoleTranspileError: (msg) => `✖ Грешка при транспилиране: ${msg}`,
+    consoleRuntimeError: (msg) => `✖ Runtime грешка: ${msg}`,
+    consoleStoppedByUser: '■ Спряно от потребителя.',
+    consolePausedMsg: '⏸ На пауза…',
+    consoleResumedMsg: '▶ Продължава…',
+    consoleFinished: '✔ Изпълнението приключи — event loop е напълно свободен.',
+    consoleUncaught: (msg) => `⛔ Uncaught (in promise): ${msg}`,
+    execExecuting: (label) => `Изпълнява се: ${label}`,
+    execStackDepth: (n) => `дълбочина на стека: ${n}`,
+    execLine: (n) => `ред ${n}`,
+    hubCallStack: 'Call Stack', hubEmptyLbl: 'празен', hubReadyLbl: 'готов', hubNothingLbl: 'нищо за изпълнение',
+    hubWaitingEvent: 'чака следващо събитие…',
+    hubStackLbl: (n) => `стек: ${n}`,
+    phaseMicroClearing: 'Изчистване на Microtask опашката…',
+    phaseWaitingN: (n) => `${n} чакащи`,
+    phaseTaskPick: 'Вземане на следваща задача от Task опашката…',
+    phaseRenderOpportunity: 'Render opportunity (концептуално — не се симулира реално рисуване)…',
+    phaseEventLoopFreeWaiting: 'Event Loop е свободен — чака таймер от Web APIs…',
+    phaseEventLoopFree: 'Event Loop е свободен.',
+    phaseNextTickQueue: (n) => `process.nextTick() опашка (най-висок приоритет)… ${n} чакащи`,
+    phaseMicrotaskQueue: (n) => `Microtask опашка (Promise)… ${n} чакащи`,
+    phaseIdlePrepareRunning: 'idle, prepare (вътрешно за Node, без потребителски код)…',
+    phasePhaseRunning: (label, n) => `${label} фаза… ${n} чакащи`,
+    phaseNodeEventLoopWaiting: 'Event loop чака следваща операция (таймер / симулирано I/O)…',
+    phaseNodeEventLoopFree: 'Event loop е свободен.',
+    whySync: ['Call Stack получи нов кадър', 'JavaScript изпълнява синхронно до следващия await/return'],
+    whyMicro: (n) => ['Call Stack е празен', `Microtask опашката съдържа ${n || '≥1'} job-а`, 'Microtasks се изпълняват преди следващия macrotask'],
+    whyRender: ['Microtask опашката е напълно празна', 'Браузърът МОЖЕ да рисува тук (не се симулира реално в тази страница)'],
+    whyMacro: ['Microtask опашката е празна', 'Event Loop взема следваща Task (напр. timer callback)'],
+    whyNextTick: (n) => ['Call Stack е празен', `process.nextTick() опашката съдържа ${n || '≥1'} job-а`, 'nextTick има най-висок приоритет — преди всичко друго'],
+    whyMicrotask: (n) => ['process.nextTick() опашката е празна', `Microtask опашката съдържа ${n || '≥1'} job-а`, 'Microtasks се изпълняват преди следващата фаза'],
+    whyPhase: (label, n) => ['nextTick и microtask опашките са празни', `${label} съдържа ${n || '≥1'} callback-а`, 'Event Loop изпълнява тази фаза'],
+    whyIdleWaiting: ['Всички опашки и фази точно сега са празни', 'Event Loop чака следващо събитие (таймер / I/O)'],
+    whyIdleDone: ['Всички опашки, фази и таймери са изчерпани', 'Event Loop е свободен — изпълнението приключи'],
+    timerWaitingType: 'Timer (изчаква)',
+    timerWaitingTarget: (target) => `изчаква → ${target}`,
+    nodeNextTickLabel: 'process.nextTick() опашка (най-висок приоритет)…',
+    nodeMicrotaskLabel: 'Microtask опашка (Promise)…',
+    nodePhaseLabel: (label) => `${label} фаза…`,
+    hubIdleWaitingTag: 'чака',
+    phaseMainModuleRunning: 'Изпълнение на главния модул…',
+    resultSuffix: 'резултат',
+    continuationSuffix: 'продължение',
+  }
+};
+function tr(key, ...args) {
+  const entry = (I18N[LANG] && I18N[LANG][key] !== undefined) ? I18N[LANG][key] : I18N.en[key];
+  return typeof entry === 'function' ? entry(...args) : entry;
+}
+function applyStaticI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = tr(key);
+    if (val == null) return;
+    if (el.hasAttribute('data-i18n-attr')) el.setAttribute(el.getAttribute('data-i18n-attr'), val);
+    else el.innerHTML = val;
+  });
+}
+
 /* ============================================================
    1) TRANSPILER: async/await -> generator + __runAsync(...)
       (валидирано отделно в Node с реален @babel/standalone)
@@ -930,11 +1255,11 @@ function speedFromSlider(v) {
   return { paceMs, timerScale };
 }
 function speedWord(v) {
-  if (v < 12) return 'Много бавно';
-  if (v < 38) return 'Бавно';
-  if (v < 63) return 'Нормално';
-  if (v < 88) return 'Бързо';
-  return 'Мигновено';
+  if (v < 12) return tr('speedVerySlow');
+  if (v < 38) return tr('speedSlow');
+  if (v < 63) return tr('speedNormal');
+  if (v < 88) return tr('speedFast');
+  return tr('speedInstant');
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -960,7 +1285,7 @@ function createAsyncCore(hooks) {
       if (!alive(ctx)) return;
       if (promise._state === 'rejected' && !promise._handled) {
         const msg = (promise._value && promise._value.message) ? promise._value.message : String(promise._value);
-        UI.consoleLine('uncaught', `⛔ Uncaught (in promise): ${msg}`);
+        UI.consoleLine('uncaught', tr('consoleUncaught', msg));
       }
     }, 0));
   }
@@ -1023,7 +1348,7 @@ function createAsyncCore(hooks) {
         if (remaining === 0) return resolve([]);
         arr.forEach((item, i) => VizPromise.resolve(item)._thenLabeled(
           function promiseAllItem(v) { results[i] = v; if (--remaining === 0) resolve(results); },
-          function promiseAllReject(e) { reject(e); }, 'Promise.all() резултат'
+          function promiseAllReject(e) { reject(e); }, `Promise.all() ${tr('resultSuffix')}`
         ));
       });
     }
@@ -1034,13 +1359,13 @@ function createAsyncCore(hooks) {
         arr.forEach((item, i) => VizPromise.resolve(item)._thenLabeled(
           function onOk(v) { results[i] = { status: 'fulfilled', value: v }; if (--remaining === 0) resolve(results); },
           function onErr(e) { results[i] = { status: 'rejected', reason: e }; if (--remaining === 0) resolve(results); },
-          'Promise.allSettled() резултат'
+          `Promise.allSettled() ${tr('resultSuffix')}`
         ));
       });
     }
     static race(list) {
       return new VizPromise((resolve, reject) => {
-        Array.from(list).forEach(item => VizPromise.resolve(item)._thenLabeled(resolve, reject, 'Promise.race() резултат'));
+        Array.from(list).forEach(item => VizPromise.resolve(item)._thenLabeled(resolve, reject, `Promise.race() ${tr('resultSuffix')}`));
       });
     }
     static any(list) {
@@ -1050,7 +1375,7 @@ function createAsyncCore(hooks) {
         arr.forEach((item, i) => VizPromise.resolve(item)._thenLabeled(
           resolve,
           function onErr(e) { errors[i] = e; if (--remaining === 0) reject(new Error('All promises were rejected')); },
-          'Promise.any() резултат'
+          `Promise.any() ${tr('resultSuffix')}`
         ));
       });
     }
@@ -1066,7 +1391,7 @@ function createAsyncCore(hooks) {
         catch (e) { popFrame(callId); reject(e); return; }
         popFrame(callId);
         if (result.done) resolve(result.value);
-        else VizPromise.resolve(result.value)._thenLabeled(v => step('next', v), e => step('throw', e), `${label} (продължение)`, false);
+        else VizPromise.resolve(result.value)._thenLabeled(v => step('next', v), e => step('throw', e), `${label} (${tr('continuationSuffix')})`, false);
       }
       step('next', undefined);
     });
@@ -1124,7 +1449,7 @@ function makeBrowserEngine(ctx) {
     for (const j of microtaskQueue) certain.push({ label: j.label, type: 'Microtask', icon: '⚡', wheelKey: 'micro', originLine: j.originLine });
     for (const j of macrotaskQueue) certain.push({ label: j.label, type: 'Timer', icon: '⏱', wheelKey: 'macro', originLine: j.originLine });
     if (certain.length) return { certain: certain.slice(0, 3), candidates: [], moreCount: Math.max(0, certain.length - 3) };
-    const candidates = Array.from(pendingMeta.values()).map(m => ({ label: m.label, type: 'Timer (изчаква)', icon: '📡', originLine: m.originLine }));
+    const candidates = Array.from(pendingMeta.values()).map(m => ({ label: m.label, type: tr('timerWaitingType'), icon: '📡', originLine: m.originLine }));
     return { certain: [], candidates: candidates.slice(0, 4), moreCount: 0 };
   }
 
@@ -1135,7 +1460,7 @@ function makeBrowserEngine(ctx) {
     try {
       while (alive(ctx)) {
         if (microtaskQueue.length) {
-          UI.setPhase('micro', 'Изчистване на Microtask опашката…', `${microtaskQueue.length} чакащи`);
+          UI.setPhase('micro', tr('phaseMicroClearing'), tr('phaseWaitingN', microtaskQueue.length));
           UI.setWhy('micro', { microCount: microtaskQueue.length });
           const job = microtaskQueue.shift();
           UI.removeMicroItem(job.id, job.label);
@@ -1145,9 +1470,9 @@ function makeBrowserEngine(ctx) {
           continue;
         }
         if (macrotaskQueue.length) {
-          UI.setPhase('render', 'Render opportunity (концептуално — не се симулира реално рисуване)…', '');
+          UI.setPhase('render', tr('phaseRenderOpportunity'), '');
           await pace(ctx); if (!alive(ctx)) break;
-          UI.setPhase('macro', 'Вземане на следваща задача от Task опашката…', '');
+          UI.setPhase('macro', tr('phaseTaskPick'), '');
           UI.setWhy('macro', {});
           await pace(ctx); if (!alive(ctx)) break;
           const task = macrotaskQueue.shift();
@@ -1164,7 +1489,7 @@ function makeBrowserEngine(ctx) {
     }
     if (alive(ctx)) {
       const stillWaiting = pendingTimers.size > 0;
-      UI.setPhase('idle', stillWaiting ? 'Event Loop е свободен — чака таймер от Web APIs…' : 'Event Loop е свободен.', '');
+      UI.setPhase('idle', stillWaiting ? tr('phaseEventLoopFreeWaiting') : tr('phaseEventLoopFree'), '');
       UI.setWhy('idle', { stillWaiting });
       Wheel.hubIdle(stillWaiting);
       if (!stillWaiting) UI.onIdleFinal();
@@ -1312,14 +1637,14 @@ function makeNodeEngine(ctx) {
       }
     }
     if (certain.length) return { certain: certain.slice(0, 3), candidates: [], moreCount: Math.max(0, certain.length - 3) };
-    const candidates = Array.from(pendingMeta.values()).map(m => ({ label: m.label, type: `изчаква → ${m.target}`, icon: '📡', originLine: m.originLine }));
+    const candidates = Array.from(pendingMeta.values()).map(m => ({ label: m.label, type: tr('timerWaitingTarget', m.target), icon: '📡', originLine: m.originLine }));
     return { certain: [], candidates: candidates.slice(0, 4), moreCount: 0 };
   }
 
   async function drainNT() {
     while (alive(ctx) && (nextTickQueue.length || microtaskQueue.length)) {
       while (nextTickQueue.length) {
-        UI.nodeSetPhase('nexttick', 'process.nextTick() опашка (най-висок приоритет)…', `${nextTickQueue.length} чакащи`);
+        UI.nodeSetPhase('nexttick', tr('nodeNextTickLabel'), tr('phaseWaitingN', nextTickQueue.length));
         UI.setWhy('nexttick', { ntCount: nextTickQueue.length });
         await pace(ctx); if (!alive(ctx)) return;
         const job = nextTickQueue.shift();
@@ -1329,7 +1654,7 @@ function makeNodeEngine(ctx) {
         try { job.run(); } finally { popFrame(job.id); }
       }
       if (microtaskQueue.length) {
-        UI.nodeSetPhase('microtask', 'Microtask опашка (Promise)…', `${microtaskQueue.length} чакащи`);
+        UI.nodeSetPhase('microtask', tr('nodeMicrotaskLabel'), tr('phaseWaitingN', microtaskQueue.length));
         UI.setWhy('microtask', { microCount: microtaskQueue.length });
         await pace(ctx); if (!alive(ctx)) return;
         const job = microtaskQueue.shift();
@@ -1351,13 +1676,13 @@ function makeNodeEngine(ctx) {
         for (const phase of NODE_PHASES) {
           await drainNT(); if (!alive(ctx)) break;
           if (phase === 'poll') {
-            UI.nodeSetPhase('idle-prepare', 'idle, prepare (вътрешно за Node, без потребителски код)…', '');
+            UI.nodeSetPhase('idle-prepare', tr('phaseIdlePrepareRunning'), '');
             await pace(ctx); if (!alive(ctx)) break;
           }
           const q = phaseQueues[phase];
           if (!q.length) continue;
           ranAny = true;
-          UI.nodeSetPhase(phase, `${NODE_PHASE_LABEL[phase]} фаза…`, `${q.length} чакащи`);
+          UI.nodeSetPhase(phase, tr('nodePhaseLabel', NODE_PHASE_LABEL[phase]), tr('phaseWaitingN', q.length));
           UI.setWhy(phase, { phaseCount: q.length, phaseLabel: NODE_PHASE_LABEL[phase] });
           while (q.length) {
             await pace(ctx); if (!alive(ctx)) break;
@@ -1377,7 +1702,7 @@ function makeNodeEngine(ctx) {
     }
     if (alive(ctx)) {
       const stillWaiting = pendingOps.size > 0;
-      UI.nodeSetPhase('idle', stillWaiting ? 'Event loop чака следваща операция (таймер / симулирано I/O)…' : 'Event loop е свободен.', '');
+      UI.nodeSetPhase('idle', stillWaiting ? tr('phaseNodeEventLoopWaiting') : tr('phaseNodeEventLoopFree'), '');
       UI.setWhy('idle', { stillWaiting });
       Wheel.hubIdle(stillWaiting);
       if (!stillWaiting) UI.onIdleFinal();
@@ -1704,8 +2029,8 @@ const Wheel = (() => {
     setHubState('STACK EMPTY', 'empty');
     const holdMs = Math.max(180, (currentSpeed ? currentSpeed.paceMs : 300) * 0.4);
     hubHoldTimeout = setTimeout(() => {
-      hubLabel.textContent = 'Call Stack';
-      hubSub.textContent = 'готов';
+      hubLabel.textContent = tr('hubCallStack');
+      hubSub.textContent = tr('hubReadyLbl');
       hubCircle.classList.remove('empty');
       hubHoldTimeout = null;
     }, holdMs);
@@ -1713,11 +2038,11 @@ const Wheel = (() => {
   function hubIdle(stillWaiting) {
     if (!hubLabel) return;
     if (hubHoldTimeout) { clearTimeout(hubHoldTimeout); hubHoldTimeout = null; }
-    hubLabel.textContent = 'Call Stack';
-    hubSub.textContent = stillWaiting ? 'чака следващо събитие…' : 'нищо за изпълнение';
+    hubLabel.textContent = tr('hubCallStack');
+    hubSub.textContent = stillWaiting ? tr('hubWaitingEvent') : tr('hubNothingLbl');
     hubCircle.classList.remove('busy', 'empty');
     hubCircle.classList.add('idle');
-    setHubState(stillWaiting ? 'IDLE · чака' : 'IDLE', 'idle');
+    setHubState(stillWaiting ? `IDLE · ${tr('hubIdleWaitingTag')}` : 'IDLE', 'idle');
     pointToAngle(null);
   }
 
@@ -1774,8 +2099,8 @@ const Wheel = (() => {
     setActive(null);
     if (hubHoldTimeout) { clearTimeout(hubHoldTimeout); hubHoldTimeout = null; }
     if (hubLabel) {
-      hubLabel.textContent = 'Call Stack';
-      hubSub.textContent = 'празен';
+      hubLabel.textContent = tr('hubCallStack');
+      hubSub.textContent = tr('hubEmptyLbl');
       hubCircle.classList.remove('busy', 'empty', 'idle');
     }
     setHubState('READY', null);
@@ -1841,15 +2166,15 @@ const UI = (() => {
   let execTop = null, execDepth = 0;
   function updateExecDisplay() {
     if (!execTop) return;
-    const lineTxt = (typeof currentExecLine === 'number') ? ` · ред ${currentExecLine}` : '';
-    setPhase('sync', `Изпълнява се: ${execTop}`, `дълбочина на стека: ${execDepth}${lineTxt}`);
-    Wheel.hubRunning(execTop, `стек: ${execDepth}${lineTxt}`);
+    const lineTxt = (typeof currentExecLine === 'number') ? ` · ${tr('execLine', currentExecLine)}` : '';
+    setPhase('sync', tr('execExecuting', execTop), `${tr('execStackDepth', execDepth)}${lineTxt}`);
+    Wheel.hubRunning(execTop, `${tr('hubStackLbl', execDepth)}${lineTxt}`);
   }
 
   function renderStack(stack) {
     counts.stack.textContent = stack.length;
     if (!stack.length) {
-      stackBox.innerHTML = '<div class="empty">— празен —</div>';
+      stackBox.innerHTML = `<div class="empty">${tr('stackEmptyLbl')}</div>`;
       const wasBusy = execTop !== null;
       execTop = null;
       if (wasBusy) Wheel.hubStackEmpty();
@@ -1895,13 +2220,13 @@ const UI = (() => {
   }
 
   const addMicroItem = (id, label) => addQueueItem(microBox, counts.micro, 'micro', id, label, 'micro');
-  const removeMicroItem = (id, label) => removeQueueItem(microBox, counts.micro, id, '— празна —', 'micro', label);
+  const removeMicroItem = (id, label) => removeQueueItem(microBox, counts.micro, id, tr('queueEmptyLbl'), 'micro', label);
   const addMacroItem = (id, label) => addQueueItem(macroBox, counts.macro, 'macro', id, label, 'macro');
-  const removeMacroItem = (id, label) => removeQueueItem(macroBox, counts.macro, id, '— празна —', 'macro', label);
+  const removeMacroItem = (id, label) => removeQueueItem(macroBox, counts.macro, id, tr('queueEmptyLbl'), 'macro', label);
   const addNTItem = (id, label) => addQueueItem(ntBox, counts.nt, 'nexttick', id, label, 'nexttick');
-  const removeNTItem = (id, label) => removeQueueItem(ntBox, counts.nt, id, '— празна —', 'nexttick', label);
+  const removeNTItem = (id, label) => removeQueueItem(ntBox, counts.nt, id, tr('queueEmptyLbl'), 'nexttick', label);
   const addMicroNodeItem = (id, label) => addQueueItem(microNodeBox, counts.microNode, 'micro', id, label, 'microtask');
-  const removeMicroNodeItem = (id, label) => removeQueueItem(microNodeBox, counts.microNode, id, '— празна —', 'microtask', label);
+  const removeMicroNodeItem = (id, label) => removeQueueItem(microNodeBox, counts.microNode, id, tr('queueEmptyLbl'), 'microtask', label);
 
   function addTimerCard(box, countEl, id, label, delayMs, target) {
     const empty = box.querySelector('.empty');
@@ -1929,11 +2254,11 @@ const UI = (() => {
     Wheel.setBadge('webapi', webapiBox.querySelectorAll('.timercard').length);
   };
   const removeWebApiTimer = (id) => {
-    removeTimerCard(webapiBox, counts.webapi, id, '— няма чакащи таймери —');
+    removeTimerCard(webapiBox, counts.webapi, id, tr('webApisEmpty'));
     Wheel.setBadge('webapi', webapiBox.querySelectorAll('.timercard').length);
   };
   const nodeAddPending = (id, label, delayMs, target) => addTimerCard(nodePendingBox, counts.nodePending, id, label, delayMs, target);
-  const nodeRemovePending = (id) => removeTimerCard(nodePendingBox, counts.nodePending, id, '— няма чакащи операции —');
+  const nodeRemovePending = (id) => removeTimerCard(nodePendingBox, counts.nodePending, id, tr('outsideEventLoopEmpty'));
 
   function nodeAddPhaseItem(phase, id, label) {
     const box = document.getElementById('phase-' + phase);
@@ -1978,7 +2303,7 @@ const UI = (() => {
     const upList = document.getElementById('up-list');
     if (!upList) return;
     if (typeof activeEngine === 'undefined' || !activeEngine || !activeEngine.getUpcoming) {
-      upList.innerHTML = '<div class="up-empty">— няма планирани задачи —</div>';
+      upList.innerHTML = `<div class="up-empty">${tr('upEmpty')}</div>`;
       return;
     }
     const { certain, candidates, moreCount } = activeEngine.getUpcoming();
@@ -1987,74 +2312,47 @@ const UI = (() => {
       certain.forEach((item, i) => {
         const el = document.createElement('div');
         el.className = 'up-item rank-' + (i + 1);
-        const lineTxt = item.originLine != null ? ` · ред ${item.originLine}` : '';
+        const lineTxt = item.originLine != null ? ` · ${tr('execLine', item.originLine)}` : '';
         el.innerHTML = `<span class="up-rank">${i + 1}</span><div class="up-body"><div class="up-name">${escapeHtml(item.icon || '')} ${escapeHtml(item.label)}</div><div class="up-meta">${escapeHtml(item.type)}${lineTxt}</div></div>`;
         upList.appendChild(el);
       });
       if (moreCount > 0) {
         const more = document.createElement('div');
         more.className = 'up-warn';
-        more.textContent = `+ ${moreCount} още в опашката`;
+        more.textContent = tr('moreInQueue', moreCount);
         upList.appendChild(more);
       }
     } else if (candidates.length) {
       const hint = document.createElement('div');
       hint.className = 'up-warn';
-      hint.textContent = '⚠ Order not guaranteed — изчакват реално време:';
+      hint.textContent = tr('orderWarning');
       upList.appendChild(hint);
       candidates.forEach(item => {
         const el = document.createElement('div');
         el.className = 'up-item rank-2';
-        const lineTxt = item.originLine != null ? ` · ред ${item.originLine}` : '';
+        const lineTxt = item.originLine != null ? ` · ${tr('execLine', item.originLine)}` : '';
         el.innerHTML = `<div class="up-body"><div class="up-name">${escapeHtml(item.icon || '')} ${escapeHtml(item.label)}</div><div class="up-meta">${escapeHtml(item.type)}${lineTxt}</div></div>`;
         upList.appendChild(el);
       });
     } else {
-      upList.innerHTML = '<div class="up-empty">— няма планирани задачи —</div>';
+      upList.innerHTML = `<div class="up-empty">${tr('upEmpty')}</div>`;
     }
   }
 
+  function linesFromArr(arr) {
+    return (arr || []).map((text, i) => i === arr.length - 1 ? { mark: '→', text, conclusion: true } : { mark: '✓', text });
+  }
   function whyLines(kind, info) {
     switch (kind) {
-      case 'sync': return [
-        { mark: '✓', text: 'Call Stack получи нов кадър' },
-        { mark: '→', text: 'JavaScript изпълнява синхронно до следващия await/return', conclusion: true }
-      ];
-      case 'micro': return [
-        { mark: '✓', text: 'Call Stack е празен' },
-        { mark: '✓', text: `Microtask опашката съдържа ${info.microCount || '≥1'} job-а` },
-        { mark: '→', text: 'Microtasks се изпълняват преди следващия macrotask', conclusion: true }
-      ];
-      case 'render': return [
-        { mark: '✓', text: 'Microtask опашката е напълно празна' },
-        { mark: '→', text: 'Браузърът МОЖЕ да рисува тук (не се симулира реално в тази страница)', conclusion: true }
-      ];
-      case 'macro': return [
-        { mark: '✓', text: 'Microtask опашката е празна' },
-        { mark: '→', text: 'Event Loop взема следваща Task (напр. timer callback)', conclusion: true }
-      ];
-      case 'nexttick': return [
-        { mark: '✓', text: 'Call Stack е празен' },
-        { mark: '✓', text: `process.nextTick() опашката съдържа ${info.ntCount || '≥1'} job-а` },
-        { mark: '→', text: 'nextTick има най-висок приоритет — преди всичко друго', conclusion: true }
-      ];
-      case 'microtask': return [
-        { mark: '✓', text: 'process.nextTick() опашката е празна' },
-        { mark: '✓', text: `Microtask опашката съдържа ${info.microCount || '≥1'} job-а` },
-        { mark: '→', text: 'Microtasks се изпълняват преди следващата фаза', conclusion: true }
-      ];
-      case 'timers': case 'pending': case 'poll': case 'check': case 'close': return [
-        { mark: '✓', text: 'nextTick и microtask опашките са празни' },
-        { mark: '✓', text: `${info.phaseLabel || kind} съдържа ${info.phaseCount || '≥1'} callback-а` },
-        { mark: '→', text: 'Event Loop изпълнява тази фаза', conclusion: true }
-      ];
-      case 'idle': return info.stillWaiting ? [
-        { mark: '✓', text: 'Всички опашки и фази точно сега са празни' },
-        { mark: '→', text: 'Event Loop чака следващо събитие (таймер / I/O)', conclusion: true }
-      ] : [
-        { mark: '✓', text: 'Всички опашки, фази и таймери са изчерпани' },
-        { mark: '→', text: 'Event Loop е свободен — изпълнението приключи', conclusion: true }
-      ];
+      case 'sync': return linesFromArr(tr('whySync'));
+      case 'micro': return linesFromArr(tr('whyMicro', info.microCount));
+      case 'render': return linesFromArr(tr('whyRender'));
+      case 'macro': return linesFromArr(tr('whyMacro'));
+      case 'nexttick': return linesFromArr(tr('whyNextTick', info.ntCount));
+      case 'microtask': return linesFromArr(tr('whyMicrotask', info.microCount));
+      case 'timers': case 'pending': case 'poll': case 'check': case 'close':
+        return linesFromArr(tr('whyPhase', info.phaseLabel || kind, info.phaseCount));
+      case 'idle': return linesFromArr(info.stillWaiting ? tr('whyIdleWaiting') : tr('whyIdleDone'));
       default: return [];
     }
   }
@@ -2083,33 +2381,33 @@ const UI = (() => {
   }
 
   function clearAll() {
-    stackBox.innerHTML = '<div class="empty">— празен —</div>';
-    microBox.innerHTML = '<div class="empty">— празна —</div>';
-    macroBox.innerHTML = '<div class="empty">— празна —</div>';
-    webapiBox.innerHTML = '<div class="empty">— няма чакащи таймери —</div>';
-    ntBox.innerHTML = '<div class="empty">— празна —</div>';
-    microNodeBox.innerHTML = '<div class="empty">— празна —</div>';
-    nodePendingBox.innerHTML = '<div class="empty">— няма чакащи операции —</div>';
+    stackBox.innerHTML = `<div class="empty">${tr('stackEmptyLbl')}</div>`;
+    microBox.innerHTML = `<div class="empty">${tr('queueEmptyLbl')}</div>`;
+    macroBox.innerHTML = `<div class="empty">${tr('queueEmptyLbl')}</div>`;
+    webapiBox.innerHTML = `<div class="empty">${tr('webApisEmpty')}</div>`;
+    ntBox.innerHTML = `<div class="empty">${tr('queueEmptyLbl')}</div>`;
+    microNodeBox.innerHTML = `<div class="empty">${tr('queueEmptyLbl')}</div>`;
+    nodePendingBox.innerHTML = `<div class="empty">${tr('outsideEventLoopEmpty')}</div>`;
     document.querySelectorAll('.phasebox-items').forEach(el => el.innerHTML = '');
     document.querySelectorAll('.phasebox-badge').forEach(el => el.textContent = '');
     document.querySelectorAll('.phasebox').forEach(el => el.classList.remove('active'));
     consoleBox.innerHTML = '';
     consoleLines = 0;
     Object.values(counts).forEach(c => c.textContent = '0');
-    phaseText.textContent = 'Готов за старт.';
-    phaseSub.textContent = 'Натиснете „Пусни“, за да изпълните кода отляво.';
+    phaseText.textContent = tr('phaseReady');
+    phaseSub.textContent = tr('phaseReadySub');
     phaseDot.className = 'phase-dot';
     phaseDot.style.background = '';
     execTop = null; execDepth = 0;
     Wheel.resetState();
     const upList = document.getElementById('up-list');
-    if (upList) upList.innerHTML = '<div class="up-empty">— няма планирани задачи —</div>';
+    if (upList) upList.innerHTML = `<div class="up-empty">${tr('upEmpty')}</div>`;
     const wnList = document.getElementById('wn-list');
     if (wnList) wnList.innerHTML = '<div class="wn-empty">—</div>';
   }
 
   function onIdleFinal() {
-    consoleLine('sys', '✔ Изпълнението приключи — event loop е напълно свободен.');
+    consoleLine('sys', tr('consoleFinished'));
     document.getElementById('btn-stop').disabled = true;
     document.getElementById('btn-pause').disabled = true;
     document.getElementById('btn-run').disabled = false;
@@ -2130,7 +2428,7 @@ const UI = (() => {
    ============================================================ */
 const PRESETS_BROWSER = {
   cpuwork: {
-    label: '⚙️ CPU работа + Promise.all (по подразбиране)',
+    label: { en: '⚙️ CPU work + Promise.all (default)', bg: '⚙️ CPU работа + Promise.all (по подразбиране)' },
     code: `async function cpuWork(id) {
   console.log('start', id)
 
@@ -2155,7 +2453,7 @@ console.timeEnd('total')
 `
   },
   classic: {
-    label: '🧩 Класическа подредба: sync / microtask / macrotask',
+    label: { en: '🧩 Classic ordering: sync / microtask / macrotask', bg: '🧩 Класическа подредба: sync / microtask / macrotask' },
     code: `console.log('1: синхронно начало');
 
 setTimeout(() => console.log('2: macrotask (setTimeout)'), 0);
@@ -2168,7 +2466,7 @@ console.log('4: синхронен край');
 `
   },
   chain: {
-    label: '🔗 Promise верига и грешки (unhandled rejection)',
+    label: { en: '🔗 Promise chain & errors (unhandled rejection)', bg: '🔗 Promise верига и грешки (unhandled rejection)' },
     code: `function delay(ms, val) {
   return new Promise(resolve => setTimeout(() => resolve(val), ms));
 }
@@ -2190,7 +2488,7 @@ boom(); // никой не хваща грешката -> ще видите "Unc
 `
   },
   interval: {
-    label: '⏲️ setInterval / clearInterval',
+    label: { en: '⏲️ setInterval / clearInterval', bg: '⏲️ setInterval / clearInterval' },
     code: `let ticks = 0;
 
 const id = setInterval(() => {
@@ -2206,7 +2504,7 @@ console.log('интервалът е стартиран (синхронно)');
 `
   },
   awaitchain: {
-    label: '⛓️ Последователни await-и (една задача)',
+    label: { en: '⛓️ Sequential awaits (a single task)', bg: '⛓️ Последователни await-и (една задача)' },
     code: `function wait(ms, label) {
   return new Promise(resolve => setTimeout(() => resolve(label), ms));
 }
@@ -2227,7 +2525,7 @@ console.log('този ред е синхронен и излиза първи');
 `
   },
   nestedThen: {
-    label: '🪆 Вложени .then() вериги (promise, връщащ promise)',
+    label: { en: '🪆 Nested .then() chains (a promise returning a promise)', bg: '🪆 Вложени .then() вериги (promise, връщащ promise)' },
     code: `function delay(ms, val) {
   return new Promise(resolve => setTimeout(() => resolve(val), ms));
 }
@@ -2248,7 +2546,7 @@ console.log('синхронен край');
 `
   },
   raceAllSettled: {
-    label: '🏁 Promise.race / Promise.any / Promise.allSettled',
+    label: { en: '🏁 Promise.race / Promise.any / Promise.allSettled', bg: '🏁 Promise.race / Promise.any / Promise.allSettled' },
     code: `function delay(ms, val, fail) {
   return new Promise((resolve, reject) =>
     setTimeout(() => fail ? reject(new Error(val)) : resolve(val), ms)
@@ -2270,7 +2568,7 @@ console.log('стартирани race + any + allSettled (синхронно)')
 `
   },
   microtaskStorm: {
-    label: '🌀 Рекурсивни microtasks vs. чакащ setTimeout',
+    label: { en: '🌀 Recursive microtasks vs. a waiting setTimeout', bg: '🌀 Рекурсивни microtasks vs. чакащ setTimeout' },
     code: `let n = 0;
 
 function spin() {
@@ -2291,7 +2589,7 @@ Promise.resolve().then(spin);
 
 const PRESETS_NODE = {
   kitchen: {
-    label: '🎛️ Всички фази + приоритети (обзорен пример)',
+    label: { en: '🎛️ All phases + priorities (overview example)', bg: '🎛️ Всички фази + приоритети (обзорен пример)' },
     code: `console.log('1: синхронно (главен модул)');
 
 setTimeout(() => console.log('2: TIMERS фаза — setTimeout(0)'), 0);
@@ -2310,7 +2608,7 @@ console.log('8: синхронно (край на главния модул)');
 `
   },
   deterministic: {
-    label: '🔬 setImmediate vs setTimeout — вътре в I/O (детерминирано)',
+    label: { en: '🔬 setImmediate vs setTimeout — inside I/O (deterministic)', bg: '🔬 setImmediate vs setTimeout — вътре в I/O (детерминирано)' },
     code: `console.log('главен модул: старт');
 
 simulateIO(0, () => {
@@ -2325,7 +2623,7 @@ simulateIO(0, () => {
 `
   },
   nondeterministic: {
-    label: '🎲 setImmediate vs setTimeout — от главния модул (недетерминирано)',
+    label: { en: '🎲 setImmediate vs setTimeout — from the main module (non-deterministic)', bg: '🎲 setImmediate vs setTimeout — от главния модул (недетерминирано)' },
     code: `setTimeout(() => console.log('setTimeout(0) от главния модул'), 0);
 setImmediate(() => console.log('setImmediate() от главния модул'));
 
@@ -2334,7 +2632,7 @@ console.log('в тази симулация setImmediate обикновено п
 `
   },
   nextTickStarve: {
-    label: '⚠️ process.nextTick() може да „гладува“ event loop-а',
+    label: { en: '⚠️ process.nextTick() can "starve" the event loop', bg: '⚠️ process.nextTick() може да „гладува“ event loop-а' },
     code: `let count = 0;
 
 function recurse() {
@@ -2352,7 +2650,7 @@ process.nextTick(recurse);
 `
   },
   closeCallback: {
-    label: '🔌 Close callbacks — симулиран socket',
+    label: { en: '🔌 Close callbacks — simulated socket', bg: '🔌 Close callbacks — симулиран socket' },
     code: `function createFakeSocket(name) {
   const listeners = {};
   return {
@@ -2376,7 +2674,7 @@ console.log('главният модул продължава синхронно
 `
   },
   nestedAllPhases: {
-    label: '🧵 Усукан пример: nextTick + Promise + I/O + setImmediate, вложени',
+    label: { en: '🧵 A tangled example: nextTick + Promise + I/O + setImmediate, nested', bg: '🧵 Усукан пример: nextTick + Promise + I/O + setImmediate, вложени' },
     code: `console.log('старт');
 
 simulateIO(20, () => {
@@ -2429,6 +2727,12 @@ const ExpressDemo = (() => {
     '/b': { code: "app.get('/b', (req, res) => {\n  res.send('ok');\n});", jsLine: 1, awaitLine: null, doneLine: 2 },
     '/c': { code: "app.get('/c', (req, res) => {\n  res.send('ok');\n});", jsLine: 1, awaitLine: null, doneLine: 2 },
   };
+  function lineText(path, lineNum) {
+    const snip = ROUTE_SNIPPETS[path];
+    if (!snip || lineNum == null) return '';
+    const lines = snip.code.split('\n');
+    return (lines[lineNum - 1] || '').trim();
+  }
   let codeCM = null, codeLastLine = -1, codeCurrentPath = null;
   function initCodeCM() {
     if (codeCM || typeof CodeMirror === 'undefined') return;
@@ -2436,7 +2740,7 @@ const ExpressDemo = (() => {
     if (!holder) return;
     codeCM = CodeMirror(holder, { mode: 'javascript', theme: 'dracula', readOnly: true, lineNumbers: false, viewportMargin: Infinity });
   }
-  function showCode(path, lineNum) {
+  function showCode(reqId, path, lineNum) {
     if (!codeCM) initCodeCM();
     if (!codeCM) return;
     const snip = ROUTE_SNIPPETS[path];
@@ -2446,7 +2750,7 @@ const ExpressDemo = (() => {
       codeCurrentPath = path;
       codeLastLine = -1;
       const routeEl = document.getElementById('express-code-route');
-      if (routeEl) routeEl.textContent = path;
+      if (routeEl) routeEl.textContent = 'REQ #' + reqId + ' · ' + path;
     }
     if (codeLastLine >= 0) {
       codeCM.removeLineClass(codeLastLine, 'background', 'cm-exec-line');
@@ -2464,6 +2768,9 @@ const ExpressDemo = (() => {
 
   // Чист, детерминиран "разписание"-генератор: единствен JS thread (сегментите НИКОГА не се
   // застъпват), I/O чакания могат да се застъпват свободно. Валидирано отделно в Node преди вграждане.
+  const READY_DWELL = 120; // виртуални ms - минимално видимо време в READY, дори когато JS thread-ът е свободен
+                           // (представя реалния, макар и кратък overhead на microtask checkpoint-а; иначе READY
+                           // може да трае 0ms и никога да не се вижда, ако thread-ът вече е свободен).
   function buildScenario(specs) {
     let jsFreeAt = 0;
     const ready = [];
@@ -2474,7 +2781,8 @@ const ExpressDemo = (() => {
     while (ready.length) {
       ready.sort((a, b) => a.readyAt - b.readyAt);
       const next = ready.shift();
-      const start = Math.max(jsFreeAt, next.readyAt);
+      const minStart = next.phase === 'out' ? next.readyAt + READY_DWELL : next.readyAt;
+      const start = Math.max(jsFreeAt, minStart);
       const end = start + next.duration;
       const wasIdle = start > jsFreeAt;
       const spec = specs.find(s => s.id === next.reqId);
@@ -2519,17 +2827,28 @@ const ExpressDemo = (() => {
     card.innerHTML =
       '<div class="req-chip-top"><span class="req-chip-id">#' + spec.id + '</span><span class="req-chip-method">' + spec.method + '</span></div>' +
       '<div class="req-chip-path">' + spec.path + '</div>' +
-      '<div class="req-chip-status">пристига…</div>';
+      '<div class="req-chip-status">' + tr('expressArrivingShort') + '</div>';
     return card;
   }
 
-  function moveCard(reqId, containerId, statusText, extraClass) {
+  function moveCard(reqId, containerId, statusHtml, extraClass, codeLine) {
     const card = cardsByReq[reqId];
     if (!card) return;
     const oldContainer = card.parentElement;
     card.className = 'req-chip' + (extraClass ? ' ' + extraClass : '');
     const statusEl = card.querySelector('.req-chip-status');
-    if (statusEl && statusText) statusEl.textContent = statusText;
+    if (statusEl && statusHtml) statusEl.innerHTML = statusHtml;
+    let codeEl = card.querySelector('.req-mini-code');
+    if (codeLine) {
+      if (!codeEl) {
+        codeEl = document.createElement('div');
+        codeEl.className = 'req-mini-code';
+        card.insertBefore(codeEl, statusEl);
+      }
+      codeEl.textContent = codeLine;
+    } else if (codeEl) {
+      codeEl.remove();
+    }
     const container = byId(containerId);
     if (container) {
       const empty = container.querySelector('.express-empty, .express-running-empty');
@@ -2537,6 +2856,17 @@ const ExpressDemo = (() => {
       container.appendChild(card);
     }
     if (oldContainer && oldContainer !== container) ensureEmpty(oldContainer);
+  }
+
+  function updateSummary() {
+    const el = byId('express-summary');
+    if (!el) return;
+    const runningN = document.querySelectorAll('#express-running .req-chip').length;
+    const waitingN = document.querySelectorAll('#express-waiting .req-chip').length;
+    const readyN = document.querySelectorAll('#express-queued .req-chip').length;
+    const total = runningN + waitingN + readyN;
+    if (total === 0) { el.innerHTML = tr('expressSummaryNone'); return; }
+    el.innerHTML = tr('expressSummary', total, runningN, waitingN + readyN);
   }
 
   function setNow(text, sub) {
@@ -2609,57 +2939,61 @@ const ExpressDemo = (() => {
 
   function applyEvent(e) {
     const spec = scenario.specs.find(s => s.id === e.reqId);
+    const snip = ROUTE_SNIPPETS[spec.path];
     switch (e.type) {
       case 'arrive': {
         const card = makeCard(spec);
         cardsByReq[e.reqId] = card;
         const incoming = byId('express-incoming');
         if (incoming) incoming.appendChild(card);
-        setNow('REQ #' + e.reqId + ' ' + e.method + ' ' + e.path + ' пристига', 'преминава през middleware: logger → auth → route handler');
-        showCode(e.path, null);
+        setNow(tr('expressArriving', e.reqId, e.method, e.path), tr('expressMiddleware'));
         break;
       }
       case 'js-start': {
-        moveCard(e.reqId, 'express-running', e.label, e.blocking ? 'running blocking' : 'running');
-        const snip = ROUTE_SNIPPETS[spec.path];
-        showCode(spec.path, e.phase === 'in' ? (snip && snip.jsLine) : (snip && snip.doneLine));
+        const runLabel = e.blocking ? tr('expressRunningBlockingLabel') : tr('expressRunningLabel');
+        moveCard(e.reqId, 'express-running', runLabel, e.blocking ? 'running blocking' : 'running', null);
+        showCode(e.reqId, spec.path, e.phase === 'in' ? (snip && snip.jsLine) : (snip && snip.doneLine));
         if (e.blocking) {
-          setNow('🔥 JS Thread изпълнява REQ #' + e.reqId + ' — тежка синхронна CPU работа', 'нищо друго не може да изпълнява JS точно сега');
-          setWhy(['REQ #' + e.reqId + ' прави synchronous CPU-bound работа (без await)', 'Call Stack-ът остава зает, докато тя не приключи изцяло', 'CPU-bound synchronous JavaScript блокира ВСИЧКИ други заявки на този thread']);
+          setNow(tr('expressBlockingNow', e.reqId), tr('expressBlockingSub'));
+          setWhy(tr('whyBlocking', e.reqId));
         } else {
-          setNow('JS Thread изпълнява REQ #' + e.reqId + ' — ' + e.label);
+          setNow(tr('expressRunningNow', e.reqId, e.label));
           if (e.freedBy != null) {
-            setWhy(['REQ #' + e.freedBy + ' стигна await / приключи своя JS', 'неговата async операция продължава извън JS thread-а', 'Call Stack стана празен', 'Node.js вече може да обработи REQ #' + e.reqId]);
+            setWhy(tr('whyFreedBy', e.freedBy, e.reqId));
           } else {
-            setWhy(['JS Thread беше свободен точно сега', 'REQ #' + e.reqId + ' стартира веднага щом е готов за изпълнение']);
+            setWhy(tr('whyIdleFree', e.reqId));
           }
         }
+        updateSummary();
         break;
       }
       case 'io-start': {
-        moveCard(e.reqId, 'express-waiting', '⏳ ' + e.label, 'waiting');
+        const awaitTxt = lineText(spec.path, snip && snip.awaitLine);
+        moveCard(e.reqId, 'express-waiting', tr('expressPausedLabel'), 'waiting', awaitTxt);
         ensureEmpty(byId('express-running'));
-        setNow('REQ #' + e.reqId + ' чака: ' + e.label, 'REQ #' + e.reqId + ' does NOT block the JS thread — то е свободно за други заявки');
-        const snip = ROUTE_SNIPPETS[spec.path];
-        showCode(spec.path, snip && snip.awaitLine);
+        setNow(tr('expressWaitingNow', e.reqId, e.label), tr('expressWaitingSub'));
+        updateSummary();
         break;
       }
       case 'io-end': {
-        moveCard(e.reqId, 'express-queued', 'готов — чака свободен JS thread', 'queued');
+        const awaitTxt = lineText(spec.path, snip && snip.awaitLine);
+        moveCard(e.reqId, 'express-queued', tr('expressReadyLabel'), 'queued', awaitTxt);
+        setNow(tr('expressReadyNow', e.reqId), tr('expressReadySub'));
+        updateSummary();
         break;
       }
       case 'response': {
         const card = cardsByReq[e.reqId];
         if (card) {
           const statusEl = card.querySelector('.req-chip-status');
-          if (statusEl) statusEl.textContent = '✅ отговор изпратен';
+          if (statusEl) statusEl.innerHTML = tr('expressDoneLabel');
           card.classList.add('done');
-          setTimeout(() => { if (card.parentNode) { const p = card.parentNode; card.remove(); ensureEmpty(p); } }, 600);
+          setTimeout(() => { if (card.parentNode) { const p = card.parentNode; card.remove(); ensureEmpty(p); updateSummary(); } }, 600);
         }
         ensureEmpty(byId('express-running'));
-        setNow('REQ #' + e.reqId + ' готово — отговорът е изпратен на клиента');
-        const snip = ROUTE_SNIPPETS[spec.path];
-        showCode(spec.path, snip && snip.doneLine);
+        setNow(tr('expressDoneNow', e.reqId));
+        showCode(e.reqId, spec.path, snip && snip.doneLine);
+        updateSummary();
         break;
       }
     }
@@ -2670,6 +3004,7 @@ const ExpressDemo = (() => {
     Object.keys(cardsByReq).forEach(k => delete cardsByReq[k]);
     ['express-incoming', 'express-waiting', 'express-queued', 'express-running'].forEach(id => { const el = byId(id); if (el) el.innerHTML = ''; ensureEmpty(el); });
     setWhy(['—']);
+    updateSummary();
   }
 
   function specsForMode() {
@@ -2684,15 +3019,15 @@ const ExpressDemo = (() => {
     const isBlocking = specs === BLOCKING_SPECS;
     const tag = byId('express-scenario-tag');
     if (tag) {
-      tag.textContent = isBlocking ? '⚠ CPU-blocking пример' : '3 паралелни async заявки';
+      tag.textContent = isBlocking ? tr('expressScenarioBlocking') : tr('expressScenarioNormal');
       tag.classList.toggle('blocking', isBlocking);
     }
     resetPanels();
     scenario = buildScenario(specs);
     idx = 0; virtualNow = 0; lastRealTs = null; waitingRestart = false;
     setNow(playing
-      ? (isBlocking ? 'Нов сценарий: демонстрация на CPU-blocking заявка…' : 'Нов сценарий: 3 паралелни заявки пристигат…')
-      : 'Натисни ▶ Play, за да стартираш демонстрацията.');
+      ? (isBlocking ? tr('expressNewScenarioBlocking') : tr('expressNewScenarioNormal'))
+      : tr('expressPressPlay'));
     drawTimelines();
   }
 
@@ -2709,7 +3044,7 @@ const ExpressDemo = (() => {
       drawTimelines();
       if (virtualNow > scenario.totalDuration + 500) {
         waitingRestart = true;
-        setNow('Сценарият приключи ✅', 'кратка пауза преди следващия цикъл…');
+        setNow(tr('expressScenarioDone'), tr('expressScenarioPause'));
         setTimeout(startNextScenario, 1400);
       }
     }
@@ -2732,6 +3067,12 @@ const ExpressDemo = (() => {
 /* ============================================================
    7) Bootstrap / UI wiring
    ============================================================ */
+document.title = (LANG === 'bg') ? 'Event Loop — жива визуализация' : 'Event Loop — Live Visualization';
+document.querySelectorAll('[data-lang-btn]').forEach(a => {
+  a.classList.toggle('active', a.getAttribute('data-lang-btn') === LANG);
+});
+applyStaticI18n();
+
 const cm = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
   mode: 'javascript',
   theme: 'dracula',
@@ -2777,7 +3118,7 @@ function rebuildPresetOptions() {
   presetSelect.innerHTML = '';
   Object.entries(currentPresets()).forEach(([key, p]) => {
     const opt = document.createElement('option');
-    opt.value = key; opt.textContent = p.label;
+    opt.value = key; opt.textContent = (p.label && typeof p.label === 'object') ? (p.label[LANG] || p.label.en) : p.label;
     presetSelect.appendChild(opt);
   });
   presetSelect.value = Object.keys(currentPresets())[0];
@@ -2795,8 +3136,8 @@ const speedLabelEl = document.getElementById('speed-label');
 function updateSpeedFromSlider() {
   const v = Number(speedSlider.value);
   currentSpeed = speedFromSlider(v);
-  const scaleTxt = currentSpeed.timerScale > 1.05 ? `, таймери ×${currentSpeed.timerScale.toFixed(1)}` : ', реално време';
-  speedLabelEl.textContent = `${speedWord(v)} — стъпка ~${currentSpeed.paceMs}ms${scaleTxt}`;
+  const scaleTxt = currentSpeed.timerScale > 1.05 ? tr('speedScale', currentSpeed.timerScale.toFixed(1)) : tr('speedRealtime');
+  speedLabelEl.textContent = `${speedWord(v)} — ${tr('speedStep', currentSpeed.paceMs)}, ${scaleTxt}`;
 }
 speedSlider.addEventListener('input', updateSpeedFromSlider);
 updateSpeedFromSlider();
@@ -2823,7 +3164,7 @@ function stopCurrent() {
   }
   activeEngine = null;
   paused = false;
-  btnPause.textContent = '⏸ Пауза';
+  btnPause.textContent = tr('btnPause');
   btnStop.disabled = true;
   btnPause.disabled = true;
   btnRun.disabled = false;
@@ -2895,15 +3236,15 @@ function runCode() {
   try {
     code = transpile(source);
   } catch (e) {
-    UI.consoleLine('err', '✖ Грешка при транспилиране: ' + e.message);
+    UI.consoleLine('err', tr('consoleTranspileError', e.message));
     return;
   }
 
   btnRun.disabled = true;
   btnStop.disabled = false;
   btnPause.disabled = false;
-  UI.setPhase('sync', 'Изпълнение на главния модул…', '');
-  UI.consoleLine('sys', '▶ Стартиране (' + (currentMode === 'browser' ? 'Browser' : 'Node.js') + ' модел)…');
+  UI.setPhase('sync', tr('phaseMainModuleRunning'), '');
+  UI.consoleLine('sys', tr('consoleStarting', currentMode === 'browser' ? 'Browser' : 'Node.js'));
 
   const fakeConsole = {
     log: (...a) => UI.consoleLine('log', a.map(fmt).join(' ')),
@@ -2947,7 +3288,7 @@ function runCode() {
       );
     }
   } catch (e) {
-    UI.consoleLine('err', '✖ Runtime грешка: ' + e.message);
+    UI.consoleLine('err', tr('consoleRuntimeError', e.message));
     stopCurrent();
   }
 }
@@ -2958,11 +3299,11 @@ function fmt(v) {
 }
 
 btnRun.addEventListener('click', runCode);
-btnStop.addEventListener('click', () => { stopCurrent(); UI.consoleLine('sys', '■ Спряно от потребителя.'); });
+btnStop.addEventListener('click', () => { stopCurrent(); UI.consoleLine('sys', tr('consoleStoppedByUser')); });
 btnPause.addEventListener('click', () => {
   paused = !paused;
-  btnPause.textContent = paused ? '▶ Продължи' : '⏸ Пауза';
-  if (paused) UI.consoleLine('sys', '⏸ На пауза…'); else UI.consoleLine('sys', '▶ Продължава…');
+  btnPause.textContent = paused ? tr('btnResume') : tr('btnPause');
+  if (paused) UI.consoleLine('sys', tr('consolePausedMsg')); else UI.consoleLine('sys', tr('consoleResumedMsg'));
 });
 
 cm.setOption('extraKeys', {
