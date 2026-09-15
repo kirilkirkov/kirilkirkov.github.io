@@ -329,16 +329,105 @@
     border-top:1px dashed var(--border-soft);margin:2px 12px 0;
   }
 
-  details.legend{
+  .legend-card{
     margin-top:16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
     padding:10px 14px;font-size:.85rem;color:var(--text-dim);line-height:1.6;
   }
-  details.legend summary{cursor:pointer;color:var(--text);font-weight:600;}
-  details.legend b{color:var(--text);}
-  details.legend code{color:#ffd8a8;}
+  .legend-card b{color:var(--text);}
+  .legend-card code{color:#ffd8a8;}
+  .legend-body{
+    display:grid;grid-template-rows:1fr;transition:grid-template-rows .3s ease, opacity .25s ease;
+    opacity:1;overflow:hidden;
+  }
+  .legend-body > .legend-grid{min-height:0;}
+  .legend-body.collapsed{grid-template-rows:0fr;opacity:0;}
   .legend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px;}
   .legend-item{display:flex;gap:8px;align-items:flex-start;}
   .legend-swatch{width:11px;height:11px;border-radius:3px;margin-top:3px;flex:none;}
+
+  /* Express.js concurrent requests demo */
+  .express-card{
+    margin-top:16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+    padding:12px 14px 14px;
+  }
+  .express-body{
+    display:grid;grid-template-rows:1fr;transition:grid-template-rows .3s ease, opacity .25s ease;
+    opacity:1;overflow:hidden;
+  }
+  .express-body > div{min-height:0;}
+  .express-body.collapsed{grid-template-rows:0fr;opacity:0;}
+
+  .express-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:8px 0 12px;}
+  .express-toolbar button{
+    font-family:var(--sans);font-size:.8rem;color:var(--text);background:var(--panel-2);
+    border:1px solid var(--border);border-radius:8px;padding:6px 11px;cursor:pointer;transition:.15s;
+  }
+  .express-toolbar button:hover{border-color:var(--accent);}
+  .express-speed-wrap{display:flex;align-items:center;gap:6px;}
+  .express-speed-wrap input[type=range]{width:110px;accent-color:var(--accent);cursor:pointer;height:4px;}
+  .express-scenario-tag{
+    margin-left:auto;font-size:.72rem;color:var(--text-dim);background:var(--panel-2);
+    border:1px solid var(--border);border-radius:20px;padding:3px 10px;
+  }
+  .express-scenario-tag.blocking{color:#ffb3b3;border-color:var(--danger);}
+
+  .express-flow{display:grid;grid-template-columns:1fr auto 1.4fr;gap:10px;align-items:stretch;margin-bottom:12px;}
+  .express-col-title{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);font-weight:700;margin-bottom:6px;}
+  .express-flow-arrow{display:flex;align-items:center;color:var(--text-dim);font-size:1.2rem;}
+  .express-incoming{
+    display:flex;flex-direction:column;gap:6px;min-height:90px;background:var(--panel-2);
+    border:1px dashed var(--border);border-radius:8px;padding:8px;
+  }
+  .express-core{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;}
+  .express-running{min-height:60px;display:flex;align-items:center;justify-content:center;}
+  .express-running-empty{color:var(--text-dim);font-size:.78rem;font-style:italic;}
+  .express-sublists{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .express-sublist{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:8px;min-height:56px;}
+  .express-sublist-title{font-size:.64rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text-dim);font-weight:700;margin-bottom:6px;}
+  .express-sublist-body{display:flex;flex-wrap:wrap;gap:6px;}
+  .express-empty{color:var(--text-dim);font-size:.7rem;font-style:italic;}
+
+  .req-chip{
+    background:var(--panel);border:1.5px solid var(--req-color, var(--border));border-radius:8px;
+    padding:6px 9px;font-family:var(--mono);font-size:.7rem;color:var(--text);min-width:96px;
+    animation:slide-in .25s ease-out;transition:box-shadow .2s,border-color .2s,opacity .5s,transform .5s;
+  }
+  .req-chip-top{display:flex;justify-content:space-between;align-items:center;gap:6px;}
+  .req-chip-id{font-weight:800;color:var(--req-color);}
+  .req-chip-method{font-size:.6rem;color:var(--text-dim);}
+  .req-chip-path{font-size:.68rem;color:var(--text-dim);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;}
+  .req-chip-status{font-size:.62rem;color:var(--text-dim);margin-top:3px;font-style:italic;}
+  .req-chip.running{box-shadow:0 0 12px var(--req-color);border-width:2px;}
+  .req-chip.running.blocking{animation:blocking-pulse .5s ease-in-out infinite alternate;}
+  @keyframes blocking-pulse{from{box-shadow:0 0 8px var(--req-color);}to{box-shadow:0 0 22px var(--req-color);}}
+  .req-chip.waiting{opacity:.8;}
+  .req-chip.queued{opacity:.65;}
+  .req-chip.done{opacity:0;transform:scale(.7);}
+
+  .express-panels{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+  .express-now-line{font-size:.78rem;color:var(--text);}
+  .express-now-sub{font-size:.7rem;color:var(--text-dim);margin-top:3px;}
+
+  .express-code-wrap{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:12px;}
+  .express-code-wrap .side-title{margin-bottom:6px;}
+  #express-code-route{color:var(--text);font-family:var(--mono);font-weight:700;text-transform:none;letter-spacing:0;}
+  #express-code-holder .CodeMirror{height:auto;min-height:70px;font-size:.76rem;line-height:1.5;background:#101119;border-radius:6px;}
+  #express-code-holder .CodeMirror-lines{padding:6px 0;}
+
+  .express-timeline-wrap{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:10px;}
+  .express-timeline-title{font-size:.68rem;text-transform:uppercase;letter-spacing:.4px;color:var(--text-dim);font-weight:700;margin:6px 0 4px;}
+  .express-timeline-hint{text-transform:none;letter-spacing:0;font-weight:400;opacity:.8;}
+  .express-timeline{width:100%;height:44px;display:block;background:#14151f;border-radius:6px;}
+  #express-tl-io{height:66px;}
+
+  @media (max-width:820px){
+    .express-flow{grid-template-columns:1fr;}
+    .express-flow-arrow{display:none;}
+    .express-panels{grid-template-columns:1fr;}
+  }
+  @media (max-width:600px){
+    .express-sublists{grid-template-columns:1fr;}
+  }
 
   ::-webkit-scrollbar{width:9px;height:9px;}
   ::-webkit-scrollbar-thumb{background:#3a3d54;border-radius:6px;}
@@ -557,41 +646,133 @@
     </div>
   </div>
 
-  <details class="legend" id="legend-browser" open>
-    <summary>ℹ️ Browser модел — как да го чета?</summary>
-    <div class="legend-grid">
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--stack)"></span>
-        <div><b>Call Stack</b> — коя функция/задача изпълнява синхронно точно сега. За четимост показваме кадър само за: главния скрипт, async функции и timer/promise callback-и (не всяко вложено извикване).</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--micro)"></span>
-        <div><b>Microtask опашка</b> — продължения на <code>await</code> / <code>.then()</code> / <code>queueMicrotask()</code>. Изпразва се <u>изцяло</u> след всяка задача, преди да се вземе следващият macrotask.</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--macro)"></span>
-        <div><b>Task опашки (macrotasks)</b> — в реалния браузър има няколко task source-а (timers, user interaction, networking и др.); браузърът избира измежду тях по вътрешни правила. Тук симулираме само timer-базирани задачи (<code>setTimeout</code>/<code>setInterval</code>), за да е ясен основният принцип, без да претрупваме първия урок.</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--webapi)"></span>
-        <div><b>Web APIs</b> — таймери, които все още чакат реалното си време да изтече (движка ги държи извън стека).</div></div>
+  <div class="legend-card" id="legend-browser">
+    <div class="wheel-header">
+      <div class="wheel-header-left"><span class="wtitle">ℹ️ Browser модел — как да го чета?</span></div>
+      <button id="legend-browser-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" title="Свий/разгъни">
+        <span class="chevron">⌄</span>
+      </button>
     </div>
-  </details>
+    <div class="legend-body" id="legend-browser-body">
+      <div class="legend-grid">
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--stack)"></span>
+          <div><b>Call Stack</b> — коя функция/задача изпълнява синхронно точно сега. За четимост показваме кадър само за: главния скрипт, async функции и timer/promise callback-и (не всяко вложено извикване).</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--micro)"></span>
+          <div><b>Microtask опашка</b> — продължения на <code>await</code> / <code>.then()</code> / <code>queueMicrotask()</code>. Изпразва се <u>изцяло</u> след всяка задача, преди да се вземе следващият macrotask.</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--macro)"></span>
+          <div><b>Task опашки (macrotasks)</b> — в реалния браузър има няколко task source-а (timers, user interaction, networking и др.); браузърът избира измежду тях по вътрешни правила. Тук симулираме само timer-базирани задачи (<code>setTimeout</code>/<code>setInterval</code>), за да е ясен основният принцип, без да претрупваме първия урок.</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--webapi)"></span>
+          <div><b>Web APIs</b> — таймери, които все още чакат реалното си време да изтече (движка ги държи извън стека).</div></div>
+      </div>
+    </div>
+  </div>
 
-  <details class="legend" id="legend-node" style="display:none;" open>
-    <summary>ℹ️ Node.js модел — как да го чета?</summary>
-    <div class="legend-grid">
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--nexttick)"></span>
-        <div><b>process.nextTick()</b> — най-висок приоритет от всичко. Изпразва се напълно преди Promise microtask-овете, и преди всяка фаза.</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--micro)"></span>
-        <div><b>Microtask (Promise)</b> — след nextTick опашката, но преди която и да е фаза на event loop-а.</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--stack)"></span>
-        <div><b>timers</b> — изпълнява дошлите на ред callback-и на <code>setTimeout</code>/<code>setInterval</code>.</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:#41d1a7"></span>
-        <div><b>pending callbacks</b> — I/O callback-и, отложени от предишна итерация (напр. някои TCP грешки).</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--text-dim)"></span>
-        <div><b>idle, prepare</b> — само вътрешно ползване от Node самия; потребителски код никога не се изпълнява тук.</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--webapi)"></span>
-        <div><b>poll</b> — получава нови I/O събития и изпълнява почти всички I/O callback-и (тук симулираме <code>simulateIO()</code>).</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--macro)"></span>
-        <div><b>check</b> — тук и само тук се изпълняват <code>setImmediate()</code> callback-и.</div></div>
-      <div class="legend-item"><span class="legend-swatch" style="background:var(--danger)"></span>
-        <div><b>close callbacks</b> — напр. <code>socket.on('close', …)</code>, тук симулирано през <code>simulateClose()</code>.</div></div>
+  <div class="legend-card" id="legend-node" style="display:none;">
+    <div class="wheel-header">
+      <div class="wheel-header-left"><span class="wtitle">ℹ️ Node.js модел — как да го чета?</span></div>
+      <button id="legend-node-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" title="Свий/разгъни">
+        <span class="chevron">⌄</span>
+      </button>
     </div>
-  </details>
+    <div class="legend-body" id="legend-node-body">
+      <div class="legend-grid">
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--nexttick)"></span>
+          <div><b>process.nextTick()</b> — най-висок приоритет от всичко. Изпразва се напълно преди Promise microtask-овете, и преди всяка фаза.</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--micro)"></span>
+          <div><b>Microtask (Promise)</b> — след nextTick опашката, но преди която и да е фаза на event loop-а.</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--stack)"></span>
+          <div><b>timers</b> — изпълнява дошлите на ред callback-и на <code>setTimeout</code>/<code>setInterval</code>.</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#41d1a7"></span>
+          <div><b>pending callbacks</b> — I/O callback-и, отложени от предишна итерация (напр. някои TCP грешки).</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--text-dim)"></span>
+          <div><b>idle, prepare</b> — само вътрешно ползване от Node самия; потребителски код никога не се изпълнява тук.</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--webapi)"></span>
+          <div><b>poll</b> — получава нови I/O събития и изпълнява почти всички I/O callback-и (тук симулираме <code>simulateIO()</code>).</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--macro)"></span>
+          <div><b>check</b> — тук и само тук се изпълняват <code>setImmediate()</code> callback-и.</div></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--danger)"></span>
+          <div><b>close callbacks</b> — напр. <code>socket.on('close', …)</code>, тук симулирано през <code>simulateClose()</code>.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="express-card" id="express-card">
+    <div class="wheel-header">
+      <div class="wheel-header-left">
+        <span class="wtitle">🚀 Express.js — Concurrent Requests</span>
+        <span class="whint">няколко HTTP заявки могат да са "в процес" едновременно, но JavaScript изпълнява само по една в даден момент</span>
+      </div>
+      <button id="express-collapse-btn" class="wheel-collapse-btn" aria-expanded="true" title="Свий/разгъни">
+        <span class="chevron">⌄</span>
+      </button>
+    </div>
+    <div class="express-body" id="express-body">
+      <div>
+        <div class="express-toolbar">
+          <select id="express-scenario-select">
+            <option value="normal" selected>3 паралелни async заявки</option>
+            <option value="blocking">⚠ CPU-blocking пример</option>
+            <option value="auto">🔀 Редувай автоматично</option>
+          </select>
+          <button id="express-play-btn">▶ Play</button>
+          <button id="express-restart-btn">↻ Restart</button>
+          <div class="express-speed-wrap">
+            <span class="speed-icon">🐢</span>
+            <input type="range" id="express-speed" min="0" max="100" value="50">
+            <span class="speed-icon">⚡</span>
+          </div>
+          <span class="express-scenario-tag" id="express-scenario-tag">3 паралелни заявки</span>
+        </div>
+
+        <div class="express-flow">
+          <div class="express-col">
+            <div class="express-col-title">Clients</div>
+            <div class="express-incoming" id="express-incoming"></div>
+          </div>
+          <div class="express-flow-arrow">→</div>
+          <div class="express-col">
+            <div class="express-col-title">Express + JS Thread</div>
+            <div class="express-core">
+              <div class="express-running" id="express-running"><div class="express-running-empty">IDLE</div></div>
+            </div>
+            <div class="express-sublists">
+              <div class="express-sublist">
+                <div class="express-sublist-title">⏳ Waiting (I/O)</div>
+                <div class="express-sublist-body" id="express-waiting"><div class="express-empty">—</div></div>
+              </div>
+              <div class="express-sublist">
+                <div class="express-sublist-title">📥 Queued</div>
+                <div class="express-sublist-body" id="express-queued"><div class="express-empty">—</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="express-panels">
+          <div class="side-card">
+            <div class="side-title">▶ WHAT'S HAPPENING NOW?</div>
+            <div id="express-now"><div class="express-now-line">Стартиране…</div></div>
+          </div>
+          <div class="side-card">
+            <div class="side-title">❓ WHY CAN ANOTHER REQUEST RUN?</div>
+            <div id="express-why"><div class="wn-empty">—</div></div>
+          </div>
+        </div>
+
+        <div class="express-code-wrap">
+          <div class="side-title">📄 HANDLER CODE — <span id="express-code-route">—</span></div>
+          <div id="express-code-holder"></div>
+        </div>
+
+        <div class="express-timeline-wrap">
+          <div class="express-timeline-title">JS Thread <span class="express-timeline-hint">— никога не се застъпва</span></div>
+          <svg id="express-tl-js" class="express-timeline" viewBox="0 0 1000 46" preserveAspectRatio="none"></svg>
+          <div class="express-timeline-title">Async / I/O <span class="express-timeline-hint">— може да се застъпва</span></div>
+          <svg id="express-tl-io" class="express-timeline" viewBox="0 0 1000 66" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <p style="text-align:center;color:var(--text-dim);font-size:.72rem;margin-top:18px;">
     <a href="https://github.com/kirilkirkov" target="_blank" style="color:var(--text-dim);text-decoration:none;">by Kiril Kirkov</a>
@@ -2219,6 +2400,336 @@ console.log('край на синхронния код');
 };
 
 /* ============================================================
+   6b) EXPRESS.JS DEMO: самостоятелна, вечно повтаряща се анимация
+       (собствен discrete-event "разписание" — НЕ е свързана с
+       редактора/Babel/реалния scheduler по-горе; чисто illustration)
+   ============================================================ */
+const ExpressDemo = (() => {
+  const NORMAL_SPECS = [
+    { id: 1, method: 'GET', path: '/users', color: '#5b8cff', arriveAt: 0, jsIn: 20, ioMs: 1800, ioLabel: 'database.findUser()', jsOut: 20 },
+    { id: 2, method: 'GET', path: '/products', color: '#c07cff', arriveAt: 10, jsIn: 20, ioMs: 900, ioLabel: 'fetch external API', jsOut: 15 },
+    { id: 3, method: 'POST', path: '/orders', color: '#ff9f5b', arriveAt: 900, jsIn: 30, ioMs: 1200, ioLabel: 'database write (order)', jsOut: 20 },
+  ];
+  const BLOCKING_SPECS = [
+    { id: 9, method: 'GET', path: '/heavy', color: '#ff5b7f', arriveAt: 0, jsIn: 2200, ioMs: 0, jsOut: 0, blocking: true, ioLabel: '' },
+    { id: 10, method: 'GET', path: '/a', color: '#41d1a7', arriveAt: 300, jsIn: 15, ioMs: 0, jsOut: 0, ioLabel: '' },
+    { id: 11, method: 'GET', path: '/b', color: '#c07cff', arriveAt: 700, jsIn: 15, ioMs: 0, jsOut: 0, ioLabel: '' },
+    { id: 12, method: 'GET', path: '/c', color: '#5b8cff', arriveAt: 1200, jsIn: 15, ioMs: 0, jsOut: 0, ioLabel: '' },
+  ];
+  const BASE_MS_PER_VIRTUAL_MS = 10; // забавя виртуалния сценарий, за да "гледа се" спокойно (~20-30s / цикъл)
+
+  // Кратки, илюстративни (не изпълнявани) примери на Express handler-и, показвани докато
+  // съответната заявка е активна - чисто за да се вижда на какъв реален код отговаря анимацията.
+  const ROUTE_SNIPPETS = {
+    '/users': { code: "app.get('/users', async (req, res) => {\n  const user = await db.findUser();\n\n  res.json(user);\n});", jsLine: 1, awaitLine: 2, doneLine: 4 },
+    '/products': { code: "app.get('/products', async (req, res) => {\n  const data = await fetch(apiUrl);\n\n  res.json(data);\n});", jsLine: 1, awaitLine: 2, doneLine: 4 },
+    '/orders': { code: "app.post('/orders', async (req, res) => {\n  await db.insertOrder(req.body);\n\n  res.status(201).send();\n});", jsLine: 1, awaitLine: 2, doneLine: 4 },
+    '/heavy': { code: "app.get('/heavy', (req, res) => {\n  heavyCpuCalculation(); // блокира JS thread-а!\n\n  res.send('done');\n});", jsLine: 1, awaitLine: null, doneLine: 4 },
+    '/a': { code: "app.get('/a', (req, res) => {\n  res.send('ok');\n});", jsLine: 1, awaitLine: null, doneLine: 2 },
+    '/b': { code: "app.get('/b', (req, res) => {\n  res.send('ok');\n});", jsLine: 1, awaitLine: null, doneLine: 2 },
+    '/c': { code: "app.get('/c', (req, res) => {\n  res.send('ok');\n});", jsLine: 1, awaitLine: null, doneLine: 2 },
+  };
+  let codeCM = null, codeLastLine = -1, codeCurrentPath = null;
+  function initCodeCM() {
+    if (codeCM || typeof CodeMirror === 'undefined') return;
+    const holder = document.getElementById('express-code-holder');
+    if (!holder) return;
+    codeCM = CodeMirror(holder, { mode: 'javascript', theme: 'dracula', readOnly: true, lineNumbers: false, viewportMargin: Infinity });
+  }
+  function showCode(path, lineNum) {
+    if (!codeCM) initCodeCM();
+    if (!codeCM) return;
+    const snip = ROUTE_SNIPPETS[path];
+    if (!snip) return;
+    if (codeCurrentPath !== path) {
+      codeCM.setValue(snip.code);
+      codeCurrentPath = path;
+      codeLastLine = -1;
+      const routeEl = document.getElementById('express-code-route');
+      if (routeEl) routeEl.textContent = path;
+    }
+    if (codeLastLine >= 0) {
+      codeCM.removeLineClass(codeLastLine, 'background', 'cm-exec-line');
+      codeCM.removeLineClass(codeLastLine, 'gutter', 'cm-exec-line-gutter');
+    }
+    if (lineNum != null) {
+      const idx2 = lineNum - 1;
+      codeCM.addLineClass(idx2, 'background', 'cm-exec-line');
+      codeCM.addLineClass(idx2, 'gutter', 'cm-exec-line-gutter');
+      codeLastLine = idx2;
+    } else {
+      codeLastLine = -1;
+    }
+  }
+
+  // Чист, детерминиран "разписание"-генератор: единствен JS thread (сегментите НИКОГА не се
+  // застъпват), I/O чакания могат да се застъпват свободно. Валидирано отделно в Node преди вграждане.
+  function buildScenario(specs) {
+    let jsFreeAt = 0;
+    const ready = [];
+    specs.forEach(s => ready.push({ reqId: s.id, phase: 'in', duration: s.jsIn, readyAt: s.arriveAt, label: 'route handler' }));
+    const events = [];
+    specs.forEach(s => events.push({ t: s.arriveAt, type: 'arrive', reqId: s.id, method: s.method, path: s.path, color: s.color }));
+    let lastFreedBy = null;
+    while (ready.length) {
+      ready.sort((a, b) => a.readyAt - b.readyAt);
+      const next = ready.shift();
+      const start = Math.max(jsFreeAt, next.readyAt);
+      const end = start + next.duration;
+      const wasIdle = start > jsFreeAt;
+      const spec = specs.find(s => s.id === next.reqId);
+      events.push({ t: start, type: 'js-start', reqId: next.reqId, phase: next.phase, label: next.label, freedBy: wasIdle ? null : lastFreedBy, blocking: !!spec.blocking });
+      events.push({ t: end, type: 'js-end', reqId: next.reqId, phase: next.phase });
+      jsFreeAt = end;
+      lastFreedBy = next.reqId;
+      if (next.phase === 'in' && spec.ioMs > 0) {
+        events.push({ t: end, type: 'io-start', reqId: next.reqId, label: spec.ioLabel, duration: spec.ioMs });
+        const ioEnd = end + spec.ioMs;
+        events.push({ t: ioEnd, type: 'io-end', reqId: next.reqId });
+        ready.push({ reqId: next.reqId, phase: 'out', duration: spec.jsOut, readyAt: ioEnd, label: 'continuation' });
+      } else {
+        events.push({ t: end, type: 'response', reqId: next.reqId });
+      }
+    }
+    events.sort((a, b) => a.t - b.t || (a.type === 'io-end' ? -1 : 1));
+    const totalDuration = Math.max(1, ...events.map(e => e.t));
+    return { events, specs, totalDuration };
+  }
+
+  let scenario = null, idx = 0, virtualNow = 0, lastRealTs = null;
+  let playing = false, speedMult = 1, loopCount = 0, rafHandle = null, waitingRestart = false;
+  let scenarioMode = 'normal'; // 'normal' | 'blocking' | 'auto'
+  const cardsByReq = {};
+
+  function byId(id) { return document.getElementById(id); }
+
+  function ensureEmpty(container) {
+    if (!container) return;
+    if (container.querySelector('.req-chip')) return;
+    container.innerHTML = container.id === 'express-running'
+      ? '<div class="express-running-empty">IDLE</div>'
+      : '<div class="express-empty">—</div>';
+  }
+
+  function makeCard(spec) {
+    const card = document.createElement('div');
+    card.className = 'req-chip';
+    card.style.setProperty('--req-color', spec.color);
+    card.dataset.req = spec.id;
+    card.innerHTML =
+      '<div class="req-chip-top"><span class="req-chip-id">#' + spec.id + '</span><span class="req-chip-method">' + spec.method + '</span></div>' +
+      '<div class="req-chip-path">' + spec.path + '</div>' +
+      '<div class="req-chip-status">пристига…</div>';
+    return card;
+  }
+
+  function moveCard(reqId, containerId, statusText, extraClass) {
+    const card = cardsByReq[reqId];
+    if (!card) return;
+    const oldContainer = card.parentElement;
+    card.className = 'req-chip' + (extraClass ? ' ' + extraClass : '');
+    const statusEl = card.querySelector('.req-chip-status');
+    if (statusEl && statusText) statusEl.textContent = statusText;
+    const container = byId(containerId);
+    if (container) {
+      const empty = container.querySelector('.express-empty, .express-running-empty');
+      if (empty) empty.remove();
+      container.appendChild(card);
+    }
+    if (oldContainer && oldContainer !== container) ensureEmpty(oldContainer);
+  }
+
+  function setNow(text, sub) {
+    const now = byId('express-now');
+    if (!now) return;
+    now.innerHTML = '<div class="express-now-line">' + text + '</div>' + (sub ? '<div class="express-now-sub">' + sub + '</div>' : '');
+  }
+  function setWhy(lines) {
+    const why = byId('express-why');
+    if (!why) return;
+    why.innerHTML = '';
+    lines.forEach((l, i) => {
+      const d = document.createElement('div');
+      d.className = 'wn-item' + (i === lines.length - 1 ? ' conclusion' : '');
+      d.innerHTML = '<span class="wn-mark">' + (i === lines.length - 1 ? '→' : '✓') + '</span><span>' + l + '</span>';
+      why.appendChild(d);
+    });
+  }
+
+  function colorFor(reqId) {
+    const spec = scenario.specs.find(s => s.id === reqId);
+    return spec ? spec.color : '#7c9cff';
+  }
+
+  function drawTimelines() {
+    const jsSvg = byId('express-tl-js'), ioSvg = byId('express-tl-io');
+    if (!jsSvg || !ioSvg || !scenario) return;
+    const total = scenario.totalDuration;
+    const W = 1000;
+    const scaleX = t => (t / total) * W;
+    const now = Math.max(0, virtualNow);
+
+    const starts = {};
+    const jsSegs = [];
+    scenario.events.forEach(e => {
+      if (e.type === 'js-start') starts[e.reqId + ':' + e.phase] = e;
+      if (e.type === 'js-end') {
+        const s = starts[e.reqId + ':' + e.phase];
+        if (s) jsSegs.push({ reqId: e.reqId, start: s.t, end: e.t, blocking: s.blocking });
+      }
+    });
+    let jsHtml = '';
+    jsSegs.forEach(seg => {
+      if (seg.start > now) return;
+      const end = Math.min(seg.end, now);
+      const x = scaleX(seg.start), w = Math.max(1.5, scaleX(end) - scaleX(seg.start));
+      jsHtml += '<rect x="' + x + '" y="8" width="' + w + '" height="30" rx="4" fill="' + colorFor(seg.reqId) + '" opacity="' + (seg.blocking ? 0.95 : 0.85) + '"></rect>';
+    });
+    const px = scaleX(now);
+    jsHtml += '<line x1="' + px + '" y1="0" x2="' + px + '" y2="46" stroke="#fff" stroke-width="1.5" opacity="0.55"></line>';
+    jsSvg.innerHTML = jsHtml;
+
+    const reqIds = scenario.specs.map(s => s.id);
+    const rowH = 64 / Math.max(reqIds.length, 1);
+    let ioHtml = '';
+    scenario.events.forEach(e => {
+      if (e.type !== 'io-start') return;
+      const endEvt = scenario.events.find(ev => ev.type === 'io-end' && ev.reqId === e.reqId && ev.t >= e.t);
+      const end = endEvt ? endEvt.t : e.t;
+      if (e.t > now) return;
+      const shownEnd = Math.min(end, now);
+      const rowIdx = reqIds.indexOf(e.reqId);
+      const x = scaleX(e.t), w = Math.max(1.5, scaleX(shownEnd) - scaleX(e.t));
+      const y = rowIdx * rowH + 3;
+      ioHtml += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + (rowH - 6) + '" rx="4" fill="' + colorFor(e.reqId) + '" opacity="0.55"></rect>';
+    });
+    ioHtml += '<line x1="' + px + '" y1="0" x2="' + px + '" y2="66" stroke="#fff" stroke-width="1.5" opacity="0.55"></line>';
+    ioSvg.innerHTML = ioHtml;
+  }
+
+  function applyEvent(e) {
+    const spec = scenario.specs.find(s => s.id === e.reqId);
+    switch (e.type) {
+      case 'arrive': {
+        const card = makeCard(spec);
+        cardsByReq[e.reqId] = card;
+        const incoming = byId('express-incoming');
+        if (incoming) incoming.appendChild(card);
+        setNow('REQ #' + e.reqId + ' ' + e.method + ' ' + e.path + ' пристига', 'преминава през middleware: logger → auth → route handler');
+        showCode(e.path, null);
+        break;
+      }
+      case 'js-start': {
+        moveCard(e.reqId, 'express-running', e.label, e.blocking ? 'running blocking' : 'running');
+        const snip = ROUTE_SNIPPETS[spec.path];
+        showCode(spec.path, e.phase === 'in' ? (snip && snip.jsLine) : (snip && snip.doneLine));
+        if (e.blocking) {
+          setNow('🔥 JS Thread изпълнява REQ #' + e.reqId + ' — тежка синхронна CPU работа', 'нищо друго не може да изпълнява JS точно сега');
+          setWhy(['REQ #' + e.reqId + ' прави synchronous CPU-bound работа (без await)', 'Call Stack-ът остава зает, докато тя не приключи изцяло', 'CPU-bound synchronous JavaScript блокира ВСИЧКИ други заявки на този thread']);
+        } else {
+          setNow('JS Thread изпълнява REQ #' + e.reqId + ' — ' + e.label);
+          if (e.freedBy != null) {
+            setWhy(['REQ #' + e.freedBy + ' стигна await / приключи своя JS', 'неговата async операция продължава извън JS thread-а', 'Call Stack стана празен', 'Node.js вече може да обработи REQ #' + e.reqId]);
+          } else {
+            setWhy(['JS Thread беше свободен точно сега', 'REQ #' + e.reqId + ' стартира веднага щом е готов за изпълнение']);
+          }
+        }
+        break;
+      }
+      case 'io-start': {
+        moveCard(e.reqId, 'express-waiting', '⏳ ' + e.label, 'waiting');
+        ensureEmpty(byId('express-running'));
+        setNow('REQ #' + e.reqId + ' чака: ' + e.label, 'REQ #' + e.reqId + ' does NOT block the JS thread — то е свободно за други заявки');
+        const snip = ROUTE_SNIPPETS[spec.path];
+        showCode(spec.path, snip && snip.awaitLine);
+        break;
+      }
+      case 'io-end': {
+        moveCard(e.reqId, 'express-queued', 'готов — чака свободен JS thread', 'queued');
+        break;
+      }
+      case 'response': {
+        const card = cardsByReq[e.reqId];
+        if (card) {
+          const statusEl = card.querySelector('.req-chip-status');
+          if (statusEl) statusEl.textContent = '✅ отговор изпратен';
+          card.classList.add('done');
+          setTimeout(() => { if (card.parentNode) { const p = card.parentNode; card.remove(); ensureEmpty(p); } }, 600);
+        }
+        ensureEmpty(byId('express-running'));
+        setNow('REQ #' + e.reqId + ' готово — отговорът е изпратен на клиента');
+        const snip = ROUTE_SNIPPETS[spec.path];
+        showCode(spec.path, snip && snip.doneLine);
+        break;
+      }
+    }
+  }
+
+  function resetPanels() {
+    Object.values(cardsByReq).forEach(c => c.remove());
+    Object.keys(cardsByReq).forEach(k => delete cardsByReq[k]);
+    ['express-incoming', 'express-waiting', 'express-queued', 'express-running'].forEach(id => { const el = byId(id); if (el) el.innerHTML = ''; ensureEmpty(el); });
+    setWhy(['—']);
+  }
+
+  function specsForMode() {
+    if (scenarioMode === 'blocking') return BLOCKING_SPECS;
+    if (scenarioMode === 'normal') return NORMAL_SPECS;
+    loopCount++; // 'auto': редува се, но е изричен избор на потребителя, не подразбиране
+    return (loopCount % 3 === 0) ? BLOCKING_SPECS : NORMAL_SPECS;
+  }
+
+  function startNextScenario() {
+    const specs = specsForMode();
+    const isBlocking = specs === BLOCKING_SPECS;
+    const tag = byId('express-scenario-tag');
+    if (tag) {
+      tag.textContent = isBlocking ? '⚠ CPU-blocking пример' : '3 паралелни async заявки';
+      tag.classList.toggle('blocking', isBlocking);
+    }
+    resetPanels();
+    scenario = buildScenario(specs);
+    idx = 0; virtualNow = 0; lastRealTs = null; waitingRestart = false;
+    setNow(playing
+      ? (isBlocking ? 'Нов сценарий: демонстрация на CPU-blocking заявка…' : 'Нов сценарий: 3 паралелни заявки пристигат…')
+      : 'Натисни ▶ Play, за да стартираш демонстрацията.');
+    drawTimelines();
+  }
+
+  function tick(nowReal) {
+    if (lastRealTs == null) lastRealTs = nowReal;
+    const dtReal = Math.min(200, nowReal - lastRealTs); // защита срещу огромен скок (напр. tab е бил в background)
+    lastRealTs = nowReal;
+    if (playing && scenario && !waitingRestart) {
+      virtualNow += (dtReal / BASE_MS_PER_VIRTUAL_MS) * speedMult;
+      while (idx < scenario.events.length && scenario.events[idx].t <= virtualNow) {
+        applyEvent(scenario.events[idx]);
+        idx++;
+      }
+      drawTimelines();
+      if (virtualNow > scenario.totalDuration + 500) {
+        waitingRestart = true;
+        setNow('Сценарият приключи ✅', 'кратка пауза преди следващия цикъл…');
+        setTimeout(startNextScenario, 1400);
+      }
+    }
+    rafHandle = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    if (rafHandle) return;
+    startNextScenario();
+    rafHandle = requestAnimationFrame(tick);
+  }
+  function setPlaying(p) { playing = p; if (p) lastRealTs = null; }
+  function restart() { startNextScenario(); }
+  function setSpeed(mult) { speedMult = mult; }
+  function setMode(mode) { scenarioMode = mode; startNextScenario(); }
+
+  return { start, setPlaying, restart, setSpeed, setMode };
+})();
+
+/* ============================================================
    7) Bootstrap / UI wiring
    ============================================================ */
 const cm = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
@@ -2319,15 +2830,40 @@ function stopCurrent() {
   clearLineHighlight();
 }
 
-const wheelCollapseBtn = document.getElementById('wheel-collapse-btn');
-const wheelBody = document.getElementById('wheel-body');
-wheelCollapseBtn.addEventListener('click', () => {
-  const expanded = wheelCollapseBtn.getAttribute('aria-expanded') !== 'false';
-  wheelCollapseBtn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-  wheelBody.classList.toggle('collapsed', expanded);
-  // симулацията продължава да тече отдолу - тук само скриваме/показваме визуализацията (CSS),
-  // без да пипаме engine/ctx състоянието.
+function makeCollapsible(btnId, bodyId) {
+  const btn = document.getElementById(btnId);
+  const body = document.getElementById(bodyId);
+  if (!btn || !body) return;
+  btn.addEventListener('click', () => {
+    const expanded = btn.getAttribute('aria-expanded') !== 'false';
+    btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    body.classList.toggle('collapsed', expanded);
+    // само CSS показва/скрива визуализацията - симулацията отдолу не се пипа/ресетва.
+  });
+}
+makeCollapsible('wheel-collapse-btn', 'wheel-body');
+makeCollapsible('legend-browser-collapse-btn', 'legend-browser-body');
+makeCollapsible('legend-node-collapse-btn', 'legend-node-body');
+makeCollapsible('express-collapse-btn', 'express-body');
+
+const expressPlayBtn = document.getElementById('express-play-btn');
+let expressPlaying = false;
+expressPlayBtn.addEventListener('click', () => {
+  expressPlaying = !expressPlaying;
+  ExpressDemo.setPlaying(expressPlaying);
+  expressPlayBtn.textContent = expressPlaying ? '⏸ Pause' : '▶ Play';
 });
+document.getElementById('express-restart-btn').addEventListener('click', () => ExpressDemo.restart());
+document.getElementById('express-scenario-select').addEventListener('change', (e) => {
+  ExpressDemo.setMode(e.target.value);
+});
+const expressSpeedSlider = document.getElementById('express-speed');
+function updateExpressSpeed() {
+  const v = Number(expressSpeedSlider.value);
+  ExpressDemo.setSpeed(Math.pow(2, (v - 50) / 25));
+}
+expressSpeedSlider.addEventListener('input', updateExpressSpeed);
+updateExpressSpeed();
 
 function setMode(mode) {
   if (mode === currentMode) return;
@@ -2436,6 +2972,7 @@ cm.setOption('extraKeys', {
 
 // автоматично стартиране на примера при зареждане
 runCode();
+ExpressDemo.start();
 </script>
 </body>
 </html>
