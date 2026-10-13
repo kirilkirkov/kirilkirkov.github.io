@@ -1,0 +1,369 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="4470" viewBox="0 0 2400 4470" role="img" aria-labelledby="title desc">
+<title id="title">Vue.js отвътре: от .vue, Vite и VNodes до реактивност и истински DOM</title>
+<desc id="desc">Техническа схема на български за Vue 3.5.43, Render Functions, Virtual DOM, реактивност, patch, child updates, lifecycle, batching, key и computed.</desc>
+<defs>
+<linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061717"/><stop offset="0.52" stop-color="#0A2528"/><stop offset="1" stop-color="#14202B"/></linearGradient>
+<radialGradient id="flare"><stop stop-color="#32B98B" stop-opacity="0.26"/><stop offset="1" stop-color="#32B98B" stop-opacity="0"/></radialGradient>
+<pattern id="dotgrid" width="42" height="42" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.2" fill="#B8FFE3" opacity="0.10"/></pattern>
+</defs>
+<rect width="2400" height="4470" fill="url(#background)"/>
+<rect width="2400" height="4470" fill="url(#dotgrid)"/>
+<circle cx="2260" cy="260" r="870" fill="url(#flare)"/>
+
+<path d="M2070 97 L2123 97 L2162 164 L2200 97 L2253 97 L2162 255 Z" fill="none" stroke="#81E7BA" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2113 97 L2141 97 L2162 135 L2183 97 L2211 97 L2162 179 Z" fill="none" stroke="#E5FFEE" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="69" y="57" width="386" height="51" rx="25" fill="#173B34" stroke="#73E7B0" stroke-width="1.2"/>
+<text x="262.0" y="90.42" font-family="DejaVu Sans, sans-serif" fill="#73E7B0" font-size="22" font-weight="740" text-anchor="middle">VUE 3 · АРХИТЕКТУРА</text>
+<rect x="1510" y="58" width="496" height="48" rx="24" fill="#193C3B" stroke="#51DBCB" stroke-width="1.2"/>
+<text x="1758.0" y="88.84" font-family="DejaVu Sans, sans-serif" fill="#51DBCB" font-size="19" font-weight="740" text-anchor="middle">3.5.43 СТАБИЛНА · 12.10.2026</text>
+<text x="69" y="161" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="77" font-weight="860">Как Vue работи отвътре</text>
+<text x="70" y="220" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="30" font-weight="400">От .vue компоненти до VNodes, reactivity, patch и Real DOM — с реални примери</text>
+<rect x="70" y="245" width="2230" height="4" rx="2" fill="#73E7B0"/>
+<rect x="65" y="288" width="89" height="44" rx="22" fill="#3D3B2C" stroke="#FFCF8C" stroke-width="1.2"/>
+<text x="109.5" y="317.92" font-family="DejaVu Sans, sans-serif" fill="#FFCF8C" font-size="22" font-weight="740" text-anchor="middle">01</text>
+<text x="177" y="320" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="35" font-weight="810">От .vue файла до browser runtime</text>
+<text x="177" y="360" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="23" font-weight="400">Vue SFC се компилира при build; в bundle-а не лежи предварително създадено VNode дърво.</text>
+<rect x="69" y="390" width="538" height="171" rx="19" fill="#102B2E" stroke="#FFCF8C" stroke-width="1.5"/>
+<rect x="415" y="403" width="170" height="34" rx="17" fill="#18363A" stroke="#FFCF8C" stroke-width="1.2"/>
+<text x="500.0" y="426.12" font-family="DejaVu Sans, sans-serif" fill="#FFCF8C" font-size="17" font-weight="740" text-anchor="middle">ТВОЯТ КОД</text>
+<text x="100" y="454" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="26" font-weight="760">App.vue / Child.vue</text>
+<text x="100" y="502" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">&lt;script setup&gt; + &lt;template&gt;</text>
+<text x="100" y="533" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">Компонентен source code</text>
+<path d="M610 483 L631 483" fill="none" stroke="#51DBCB" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M622 474 L631 483 L622 492" fill="none" stroke="#51DBCB" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="633" y="390" width="538" height="171" rx="19" fill="#102B2E" stroke="#73E7B0" stroke-width="1.5"/>
+<rect x="979" y="403" width="170" height="34" rx="17" fill="#18363A" stroke="#73E7B0" stroke-width="1.2"/>
+<text x="1064.0" y="426.12" font-family="DejaVu Sans, sans-serif" fill="#73E7B0" font-size="17" font-weight="740" text-anchor="middle">BUILD</text>
+<text x="664" y="454" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="26" font-weight="760">VITE + plugin-vue</text>
+<text x="664" y="502" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">@vue/compiler-sfc</text>
+<text x="664" y="533" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">Template → render function</text>
+<path d="M1174 483 L1195 483" fill="none" stroke="#51DBCB" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1186 474 L1195 483 L1186 492" fill="none" stroke="#51DBCB" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1197" y="390" width="538" height="171" rx="19" fill="#102B2E" stroke="#86C9FF" stroke-width="1.5"/>
+<rect x="1543" y="403" width="170" height="34" rx="17" fill="#18363A" stroke="#86C9FF" stroke-width="1.2"/>
+<text x="1628.0" y="426.12" font-family="DejaVu Sans, sans-serif" fill="#86C9FF" font-size="17" font-weight="740" text-anchor="middle">РЕЗУЛТАТ</text>
+<text x="1228" y="454" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="26" font-weight="760">JS BUNDLE / CHUNKS</text>
+<text x="1228" y="502" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">setup / render + Vue runtime</text>
+<text x="1228" y="533" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">+ CSS assets</text>
+<path d="M1738 483 L1759 483" fill="none" stroke="#51DBCB" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1750 474 L1759 483 L1750 492" fill="none" stroke="#51DBCB" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1761" y="390" width="538" height="171" rx="19" fill="#102B2E" stroke="#51DBCB" stroke-width="1.5"/>
+<rect x="2107" y="403" width="170" height="34" rx="17" fill="#18363A" stroke="#51DBCB" stroke-width="1.2"/>
+<text x="2192.0" y="426.12" font-family="DejaVu Sans, sans-serif" fill="#51DBCB" font-size="17" font-weight="740" text-anchor="middle">RUNTIME</text>
+<text x="1792" y="454" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="26" font-weight="760">BROWSER + MOUNT</text>
+<text x="1792" y="502" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">Изпълнява JS</text>
+<text x="1792" y="533" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">createApp(App).mount(...)</text>
+<rect x="69" y="590" width="1097" height="640" rx="22" fill="#102B31" stroke="#43676A" stroke-width="1.6"/>
+<rect x="99" y="607" width="7" height="55" rx="3" fill="#73E7B0"/>
+<text x="127" y="631" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="29" font-weight="790">App.vue · компонентът, който пишеш</text>
+<text x="127" y="668" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="21" font-weight="400">Composition API · &lt;script setup&gt; и &lt;template&gt;</text>
+<rect x="100" y="704" width="1035" height="481" rx="17" fill="#081E26" stroke="#38656B" stroke-width="1.4"/>
+<rect x="101" y="705" width="1033" height="56" rx="16" fill="#1A373E"/>
+<rect x="101" y="745" width="1033" height="15" rx="0" fill="#1A373E"/>
+<circle cx="126" cy="732" r="6" fill="#FDAAAA"/>
+<circle cx="150" cy="732" r="6" fill="#FFCF8C"/>
+<circle cx="174" cy="732" r="6" fill="#73E7B0"/>
+<text x="218" y="741" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21" font-weight="740">App.vue · source</text>
+<text x="152" y="800" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">01</text>
+<text x="172" y="800" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#73E7B0">&lt;script</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#86C9FF">setup</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<text x="152" y="829" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">02</text>
+<text x="172" y="829" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#C7A7FA">import</tspan><tspan fill="#F1FCFA"> { </tspan><tspan fill="#51DBCB">ref</tspan><tspan fill="#F1FCFA"> } </tspan><tspan fill="#C7A7FA">from</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#FFCF8C">'vue'</tspan></text>
+<text x="152" y="858" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">03</text>
+<text x="172" y="858" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#C7A7FA">import</tspan><tspan fill="#F1FCFA"> Child </tspan><tspan fill="#C7A7FA">from</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#FFCF8C">'./Child.vue'</tspan></text>
+<text x="152" y="887" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">04</text>
+<text x="172" y="887" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#C7A7FA">const</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#86C9FF">count</tspan><tspan fill="#F1FCFA"> = </tspan><tspan fill="#51DBCB">ref</tspan><tspan fill="#F1FCFA">(</tspan><tspan fill="#FDAAAA">0</tspan><tspan fill="#F1FCFA">)</tspan></text>
+<text x="152" y="916" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">05</text>
+<text x="172" y="916" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#73E7B0">&lt;/script</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<text x="152" y="945" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">06</text>
+<text x="172" y="945" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"></text>
+<text x="152" y="974" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">07</text>
+<text x="172" y="974" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#73E7B0">&lt;template</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<text x="152" y="1003" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">08</text>
+<text x="172" y="1003" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#F1FCFA">  </tspan><tspan fill="#73E7B0">&lt;main</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<text x="152" y="1032" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">09</text>
+<text x="172" y="1032" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#F1FCFA">    </tspan><tspan fill="#73E7B0">&lt;button</tspan><tspan fill="#F1FCFA"> @click=</tspan><tspan fill="#FFCF8C">&quot;count++&quot;</tspan><tspan fill="#73E7B0">&gt;</tspan><tspan fill="#F1FCFA">{{ </tspan><tspan fill="#86C9FF">count</tspan><tspan fill="#F1FCFA"> }}</tspan><tspan fill="#73E7B0">&lt;/button</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<text x="152" y="1061" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">10</text>
+<text x="172" y="1061" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#F1FCFA">    </tspan><tspan fill="#73E7B0">&lt;Child</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#86C9FF">label</tspan><tspan fill="#F1FCFA">=</tspan><tspan fill="#FFCF8C">&quot;A&quot;</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#73E7B0">/&gt;</tspan></text>
+<text x="152" y="1090" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">11</text>
+<text x="172" y="1090" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#F1FCFA">    </tspan><tspan fill="#73E7B0">&lt;Child</tspan><tspan fill="#F1FCFA"> :</tspan><tspan fill="#86C9FF">label</tspan><tspan fill="#F1FCFA">=</tspan><tspan fill="#FFCF8C">&quot;String(count)&quot;</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#73E7B0">/&gt;</tspan></text>
+<text x="152" y="1119" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">12</text>
+<text x="172" y="1119" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#F1FCFA">  </tspan><tspan fill="#73E7B0">&lt;/main</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<text x="152" y="1148" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19.5" font-weight="400" text-anchor="end">13</text>
+<text x="172" y="1148" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22.5"><tspan fill="#73E7B0">&lt;/template</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<rect x="1193" y="590" width="1107" height="640" rx="22" fill="#102B31" stroke="#43676A" stroke-width="1.6"/>
+<rect x="1223" y="607" width="7" height="55" rx="3" fill="#86C9FF"/>
+<text x="1251" y="631" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="29" font-weight="790">Другите два файла</text>
+<text x="1251" y="668" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="21" font-weight="400">Vue renderer стартира с createApp() в браузъра</text>
+<rect x="1223" y="703" width="1047" height="189" rx="17" fill="#081E26" stroke="#38656B" stroke-width="1.4"/>
+<rect x="1224" y="704" width="1045" height="56" rx="16" fill="#1A373E"/>
+<rect x="1224" y="744" width="1045" height="15" rx="0" fill="#1A373E"/>
+<circle cx="1249" cy="731" r="6" fill="#FDAAAA"/>
+<circle cx="1273" cy="731" r="6" fill="#FFCF8C"/>
+<circle cx="1297" cy="731" r="6" fill="#73E7B0"/>
+<text x="1341" y="740" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21" font-weight="740">main.js</text>
+<text x="1275" y="799" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19" font-weight="400" text-anchor="end">01</text>
+<text x="1295" y="799" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22"><tspan fill="#C7A7FA">import</tspan><tspan fill="#F1FCFA"> { </tspan><tspan fill="#51DBCB">createApp</tspan><tspan fill="#F1FCFA"> } </tspan><tspan fill="#C7A7FA">from</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#FFCF8C">'vue'</tspan></text>
+<text x="1275" y="829" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19" font-weight="400" text-anchor="end">02</text>
+<text x="1295" y="829" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22"><tspan fill="#C7A7FA">import</tspan><tspan fill="#F1FCFA"> App </tspan><tspan fill="#C7A7FA">from</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#FFCF8C">'./App.vue'</tspan></text>
+<text x="1275" y="859" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="19" font-weight="400" text-anchor="end">03</text>
+<text x="1295" y="859" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="22"><tspan fill="#51DBCB">createApp</tspan><tspan fill="#F1FCFA">(App).mount(</tspan><tspan fill="#FFCF8C">'#app'</tspan><tspan fill="#F1FCFA">)</tspan></text>
+<rect x="1223" y="908" width="1047" height="198" rx="17" fill="#081E26" stroke="#38656B" stroke-width="1.4"/>
+<rect x="1224" y="909" width="1045" height="56" rx="16" fill="#1A373E"/>
+<rect x="1224" y="949" width="1045" height="15" rx="0" fill="#1A373E"/>
+<circle cx="1249" cy="936" r="6" fill="#FDAAAA"/>
+<circle cx="1273" cy="936" r="6" fill="#FFCF8C"/>
+<circle cx="1297" cy="936" r="6" fill="#73E7B0"/>
+<text x="1341" y="945" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21" font-weight="740">Child.vue · отделен компонент</text>
+<text x="1275" y="1004" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="18.5" font-weight="400" text-anchor="end">01</text>
+<text x="1295" y="1004" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="21.5"><tspan fill="#73E7B0">&lt;script</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#86C9FF">setup</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<text x="1275" y="1032" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="18.5" font-weight="400" text-anchor="end">02</text>
+<text x="1295" y="1032" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="21.5"><tspan fill="#51DBCB">defineProps</tspan><tspan fill="#F1FCFA">({ </tspan><tspan fill="#86C9FF">label</tspan><tspan fill="#F1FCFA">: String })</tspan></text>
+<text x="1275" y="1060" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="18.5" font-weight="400" text-anchor="end">03</text>
+<text x="1295" y="1060" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="21.5"><tspan fill="#73E7B0">&lt;/script</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<text x="1275" y="1088" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="18.5" font-weight="400" text-anchor="end">04</text>
+<text x="1295" y="1088" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="21.5"><tspan fill="#73E7B0">&lt;template</tspan><tspan fill="#73E7B0">&gt;</tspan><tspan fill="#73E7B0">&lt;p</tspan><tspan fill="#73E7B0">&gt;</tspan><tspan fill="#F1FCFA">{{ </tspan><tspan fill="#86C9FF">label</tspan><tspan fill="#F1FCFA"> }}</tspan><tspan fill="#73E7B0">&lt;/p</tspan><tspan fill="#73E7B0">&gt;</tspan><tspan fill="#73E7B0">&lt;/template</tspan><tspan fill="#73E7B0">&gt;</tspan></text>
+<rect x="1240" y="1124" width="1005" height="66" rx="33" fill="#193C36" stroke="#73E7B0" stroke-width="1.2"/>
+<text x="1742.5" y="1163.84" font-family="DejaVu Sans, sans-serif" fill="#73E7B0" font-size="19" font-weight="740" text-anchor="middle">&lt;script setup&gt; се изпълнява при създаване на инстанцията, не при всеки render.</text>
+<rect x="69" y="1252" width="2231" height="116" rx="16" fill="#173937" stroke="#477C71" stroke-width="1.2"/>
+<text x="105" y="1297" font-family="DejaVu Sans, sans-serif" fill="#73E7B0" font-size="23" font-weight="800">КОМПИЛИРАН КОД (схематично):</text>
+<text x="665" y="1297" font-family="DejaVu Sans Mono, monospace" fill="#F1FCFA" font-size="22" font-weight="620">template → render() → VNodes + patch flags</text>
+<text x="105" y="1341" font-family="DejaVu Sans Mono, monospace" fill="#F1FCFA" font-size="22" font-weight="580">createElementBlock('button', ..., toDisplayString(count.value), 1 /* TEXT */)</text>
+<text x="1673" y="1341" font-family="DejaVu Sans, sans-serif" fill="#51DBCB" font-size="19" font-weight="400">1 = flag за динамичен текст</text>
+<rect x="65" y="1393" width="89" height="44" rx="22" fill="#3D3B2C" stroke="#FFCF8C" stroke-width="1.2"/>
+<text x="109.5" y="1422.92" font-family="DejaVu Sans, sans-serif" fill="#FFCF8C" font-size="22" font-weight="740" text-anchor="middle">02</text>
+<text x="177" y="1425" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="35" font-weight="810">Reactivity + Virtual DOM · две различни роли</text>
+<text x="177" y="1465" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="23" font-weight="400"></text>
+<rect x="69" y="1471" width="2231" height="991" rx="25" fill="#122C32" stroke="#C7A7FA" stroke-width="2.1" stroke-dasharray="12 7"/>
+<rect x="91" y="1447" width="811" height="49" rx="24" fill="#343044" stroke="#C7A7FA" stroke-width="1.2"/>
+<text x="496.5" y="1480.14" font-family="DejaVu Sans, sans-serif" fill="#C7A7FA" font-size="24" font-weight="740" text-anchor="middle">VIRTUAL DOM = ДЪРВО ОТ VNODE ОБЕКТИ</text>
+<rect x="94" y="1521" width="1082" height="891" rx="21" fill="#0D2B2D" stroke="#3B786D" stroke-width="1.6"/>
+<rect x="125" y="1554" width="7" height="55" rx="3" fill="#73E7B0"/>
+<text x="153" y="1578" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="29" font-weight="790">А. REACTIVITY ENGINE</text>
+<text x="153" y="1615" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="21" font-weight="400">@vue/reactivity · следи кои данни се четат</text>
+<rect x="128" y="1654" width="454" height="104" rx="14" fill="#1A3F3B" stroke="#73E7B0" stroke-width="1.5"/>
+<text x="355" y="1695" font-family="DejaVu Sans Mono, monospace" fill="#F1FCFA" font-size="27" font-weight="740" text-anchor="middle">ref(0)</text>
+<text x="355" y="1730" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="440" text-anchor="middle">reactive source</text>
+<rect x="672" y="1654" width="462" height="104" rx="14" fill="#1C3A42" stroke="#86C9FF" stroke-width="1.5"/>
+<text x="901" y="1695" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="26" font-weight="740" text-anchor="middle">render effect</text>
+<text x="901" y="1730" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19" font-weight="440" text-anchor="middle">запомня dependency</text>
+<path d="M583 1690 L663 1690" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M654 1681 L663 1690 L654 1699" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="623" y="1678" font-family="DejaVu Sans, sans-serif" fill="#51DBCB" font-size="18" font-weight="700" text-anchor="middle">track</text>
+<path d="M675 1726 L615 1726" fill="none" stroke="#FFCF8C" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="642" y="1756" font-family="DejaVu Sans, sans-serif" fill="#FFCF8C" font-size="18" font-weight="700" text-anchor="middle">trigger</text>
+<rect x="127" y="1789" width="1009" height="245" rx="17" fill="#081E26" stroke="#38656B" stroke-width="1.4"/>
+<rect x="128" y="1790" width="1007" height="56" rx="16" fill="#1A373E"/>
+<rect x="128" y="1830" width="1007" height="15" rx="0" fill="#1A373E"/>
+<circle cx="153" cy="1817" r="6" fill="#FDAAAA"/>
+<circle cx="177" cy="1817" r="6" fill="#FFCF8C"/>
+<circle cx="201" cy="1817" r="6" fill="#73E7B0"/>
+<text x="245" y="1826" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21" font-weight="740">Pseudo-code · принцип на ref()</text>
+<text x="179" y="1885" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.3" font-weight="400" text-anchor="end">01</text>
+<text x="199" y="1885" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.3"><tspan fill="#F1FCFA">get </tspan><tspan fill="#86C9FF">value</tspan><tspan fill="#F1FCFA">() { </tspan><tspan fill="#51DBCB">track</tspan><tspan fill="#F1FCFA">(); </tspan><tspan fill="#C7A7FA">return</tspan><tspan fill="#F1FCFA"> n; }</tspan></text>
+<text x="179" y="1916" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.3" font-weight="400" text-anchor="end">02</text>
+<text x="199" y="1916" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.3"><tspan fill="#F1FCFA">set </tspan><tspan fill="#86C9FF">value</tspan><tspan fill="#F1FCFA">(v) { n = v; </tspan><tspan fill="#51DBCB">trigger</tspan><tspan fill="#F1FCFA">(); }</tspan></text>
+<text x="179" y="1947" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.3" font-weight="400" text-anchor="end">03</text>
+<text x="199" y="1947" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.3"><tspan fill="#88AFAD">// reactive({}) използва JavaScript Proxy</tspan></text>
+<rect x="128" y="2055" width="1007" height="317" rx="17" fill="#113536" stroke="#40796D" stroke-width="1.2"/>
+<text x="152" y="2105" font-family="DejaVu Sans, sans-serif" fill="#73E7B0" font-size="26" font-weight="730">Кога Vue знае, че трябва update?</text>
+<text x="152" y="2162" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="22" font-weight="400">1. Render функцията прочита count.value.</text>
+<text x="152" y="2202" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="22" font-weight="400">2. Effect-ът става зависим от този ref.</text>
+<text x="152" y="2242" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="22" font-weight="400">3. count.value++ задейства trigger().</text>
+<text x="152" y="2282" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="22" font-weight="400">4. Scheduler поставя update в queue.</text>
+<text x="152" y="2322" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="22" font-weight="400">5. Render effect се изпълнява отново.</text>
+<rect x="1198" y="1521" width="1075" height="891" rx="21" fill="#102B35" stroke="#63759B" stroke-width="1.6"/>
+<rect x="1229" y="1554" width="7" height="55" rx="3" fill="#C7A7FA"/>
+<text x="1257" y="1578" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="29" font-weight="790">Б. VIRTUAL DOM / VNodes</text>
+<text x="1257" y="1615" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="21" font-weight="400">@vue/runtime-core · описания на желаните DOM възли</text>
+<rect x="1230" y="1650" width="1012" height="340" rx="17" fill="#081E26" stroke="#38656B" stroke-width="1.4"/>
+<rect x="1231" y="1651" width="1010" height="56" rx="16" fill="#1A373E"/>
+<rect x="1231" y="1691" width="1010" height="15" rx="0" fill="#1A373E"/>
+<circle cx="1256" cy="1678" r="6" fill="#FDAAAA"/>
+<circle cx="1280" cy="1678" r="6" fill="#FFCF8C"/>
+<circle cx="1304" cy="1678" r="6" fill="#73E7B0"/>
+<text x="1348" y="1687" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21" font-weight="740">VNode · примерен JS обект (опростен)</text>
+<text x="1282" y="1746" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.7" font-weight="400" text-anchor="end">01</text>
+<text x="1302" y="1746" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.7"><tspan fill="#C7A7FA">const</tspan><tspan fill="#F1FCFA"> vnode = {</tspan></text>
+<text x="1282" y="1775" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.7" font-weight="400" text-anchor="end">02</text>
+<text x="1302" y="1775" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.7"><tspan fill="#F1FCFA">  </tspan><tspan fill="#86C9FF">type</tspan><tspan fill="#F1FCFA">: </tspan><tspan fill="#FFCF8C">'button'</tspan><tspan fill="#F1FCFA">,</tspan></text>
+<text x="1282" y="1804" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.7" font-weight="400" text-anchor="end">03</text>
+<text x="1302" y="1804" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.7"><tspan fill="#F1FCFA">  </tspan><tspan fill="#86C9FF">props</tspan><tspan fill="#F1FCFA">: { onClick: handler },</tspan></text>
+<text x="1282" y="1833" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.7" font-weight="400" text-anchor="end">04</text>
+<text x="1302" y="1833" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.7"><tspan fill="#F1FCFA">  </tspan><tspan fill="#86C9FF">children</tspan><tspan fill="#F1FCFA">: </tspan><tspan fill="#FFCF8C">'0'</tspan><tspan fill="#F1FCFA">,</tspan></text>
+<text x="1282" y="1862" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.7" font-weight="400" text-anchor="end">05</text>
+<text x="1302" y="1862" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.7"><tspan fill="#F1FCFA">  </tspan><tspan fill="#86C9FF">key</tspan><tspan fill="#F1FCFA">: </tspan><tspan fill="#FDAAAA">null</tspan><tspan fill="#F1FCFA">,</tspan></text>
+<text x="1282" y="1891" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.7" font-weight="400" text-anchor="end">06</text>
+<text x="1302" y="1891" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.7"><tspan fill="#F1FCFA">  </tspan><tspan fill="#86C9FF">el</tspan><tspan fill="#F1FCFA">: buttonEl,         </tspan><tspan fill="#88AFAD">// след mount</tspan></text>
+<text x="1282" y="1920" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.7" font-weight="400" text-anchor="end">07</text>
+<text x="1302" y="1920" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.7"><tspan fill="#F1FCFA">  </tspan><tspan fill="#86C9FF">patchFlag</tspan><tspan fill="#F1FCFA">: </tspan><tspan fill="#FDAAAA">1</tspan><tspan fill="#F1FCFA">          </tspan><tspan fill="#88AFAD">// TEXT</tspan></text>
+<text x="1282" y="1949" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.7" font-weight="400" text-anchor="end">08</text>
+<text x="1302" y="1949" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.7"><tspan fill="#F1FCFA">}</tspan></text>
+<text x="1234" y="2036" font-family="DejaVu Sans, sans-serif" fill="#C7A7FA" font-size="24" font-weight="750">VNode дърво + компонентни инстанции</text>
+<rect x="1448" y="2060" width="575" height="66" rx="12" fill="#203B45" stroke="#C7A7FA" stroke-width="1.4"/>
+<text x="1735.5" y="2102" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="23" font-weight="710" text-anchor="middle">App: instance + VNode</text>
+<rect x="1448" y="2155" width="575" height="66" rx="12" fill="#203B45" stroke="#86C9FF" stroke-width="1.4"/>
+<text x="1735.5" y="2197" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="23" font-weight="710" text-anchor="middle">main VNode</text>
+<path d="M1735 2129 L1735 2146" fill="none" stroke="#C7A7FA" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1726 2137 L1735 2146 L1744 2137" fill="none" stroke="#C7A7FA" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1735 2223 V2254 H1380 M1735 2254 H2087 M1380 2254 V2274 M1735 2254 V2274 M2087 2254 V2274" fill="none" stroke="#88AFAD" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1228" y="2282" width="314" height="74" rx="13" fill="#1A3840" stroke="#73E7B0" stroke-width="1.4"/>
+<text x="1385.0" y="2327" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21.5" font-weight="725" text-anchor="middle">button VNode</text>
+<rect x="1574" y="2282" width="325" height="74" rx="13" fill="#1A3840" stroke="#FFCF8C" stroke-width="1.4"/>
+<text x="1736.5" y="2327" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21.5" font-weight="725" text-anchor="middle">Child A</text>
+<rect x="1935" y="2282" width="309" height="74" rx="13" fill="#1A3840" stroke="#51DBCB" stroke-width="1.4"/>
+<text x="2089.5" y="2327" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21.5" font-weight="725" text-anchor="middle">Child B</text>
+<text x="1228" y="2384" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.5" font-weight="400">VNode.el → DOM node; компонентен VNode → instance → subTree.</text>
+<rect x="65" y="2502" width="89" height="44" rx="22" fill="#3D3B2C" stroke="#FFCF8C" stroke-width="1.2"/>
+<text x="109.5" y="2531.92" font-family="DejaVu Sans, sans-serif" fill="#FFCF8C" font-size="22" font-weight="740" text-anchor="middle">03</text>
+<text x="177" y="2534" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="35" font-weight="810">Какво точно става при click?</text>
+<text x="177" y="2574" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="23" font-weight="400">App.vue: натискаш бутона. count: 0 → 1. Следи и какво се случва с двете деца.</text>
+<rect x="69" y="2593" width="2231" height="222" rx="20" fill="#102E33" stroke="#4B7277" stroke-width="1.5"/>
+<rect x="92" y="2621" width="415" height="162" rx="14" fill="#17393F" stroke="#51DBCB" stroke-width="1.4"/>
+<rect x="105" y="2636" width="44" height="34" rx="17" fill="#233E44" stroke="#51DBCB" stroke-width="1.2"/>
+<text x="127.0" y="2659.84" font-family="DejaVu Sans, sans-serif" fill="#51DBCB" font-size="19" font-weight="740" text-anchor="middle">1</text>
+<text x="157" y="2664" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="22" font-weight="760">count.value++</text>
+<text x="113" y="2721" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">Сигнал за промяна</text>
+<text x="113" y="2754" font-family="DejaVu Sans, sans-serif" fill="#51DBCB" font-size="18.5" font-weight="700">ref setter / trigger</text>
+<path d="M509 2704 L531 2704" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M522 2695 L531 2704 L522 2713" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="534" y="2621" width="415" height="162" rx="14" fill="#17393F" stroke="#86C9FF" stroke-width="1.4"/>
+<rect x="547" y="2636" width="44" height="34" rx="17" fill="#233E44" stroke="#86C9FF" stroke-width="1.2"/>
+<text x="569.0" y="2659.84" font-family="DejaVu Sans, sans-serif" fill="#86C9FF" font-size="19" font-weight="740" text-anchor="middle">2</text>
+<text x="599" y="2664" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="22" font-weight="760">SCHEDULER</text>
+<text x="555" y="2721" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">Queue / batching</text>
+<text x="555" y="2754" font-family="DejaVu Sans, sans-serif" fill="#86C9FF" font-size="18.5" font-weight="700">Vue runtime-core</text>
+<path d="M951 2704 L973 2704" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M964 2695 L973 2704 L964 2713" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="976" y="2621" width="415" height="162" rx="14" fill="#17393F" stroke="#C7A7FA" stroke-width="1.4"/>
+<rect x="989" y="2636" width="44" height="34" rx="17" fill="#233E44" stroke="#C7A7FA" stroke-width="1.2"/>
+<text x="1011.0" y="2659.84" font-family="DejaVu Sans, sans-serif" fill="#C7A7FA" font-size="19" font-weight="740" text-anchor="middle">3</text>
+<text x="1041" y="2664" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="22" font-weight="760">RENDER EFFECT</text>
+<text x="997" y="2721" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">Нови VNodes</text>
+<text x="997" y="2754" font-family="DejaVu Sans, sans-serif" fill="#C7A7FA" font-size="18.5" font-weight="700">runtime-core</text>
+<path d="M1393 2704 L1415 2704" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1406 2695 L1415 2704 L1406 2713" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1418" y="2621" width="415" height="162" rx="14" fill="#17393F" stroke="#FFCF8C" stroke-width="1.4"/>
+<rect x="1431" y="2636" width="44" height="34" rx="17" fill="#233E44" stroke="#FFCF8C" stroke-width="1.2"/>
+<text x="1453.0" y="2659.84" font-family="DejaVu Sans, sans-serif" fill="#FFCF8C" font-size="19" font-weight="740" text-anchor="middle">4</text>
+<text x="1483" y="2664" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="22" font-weight="760">PATCH(old,new)</text>
+<text x="1439" y="2721" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">Сравнява VNodes</text>
+<text x="1439" y="2754" font-family="DejaVu Sans, sans-serif" fill="#FFCF8C" font-size="18.5" font-weight="700">runtime-core</text>
+<path d="M1835 2704 L1857 2704" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1848 2695 L1857 2704 L1848 2713" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1860" y="2621" width="415" height="162" rx="14" fill="#17393F" stroke="#73E7B0" stroke-width="1.4"/>
+<rect x="1873" y="2636" width="44" height="34" rx="17" fill="#233E44" stroke="#73E7B0" stroke-width="1.2"/>
+<text x="1895.0" y="2659.84" font-family="DejaVu Sans, sans-serif" fill="#73E7B0" font-size="19" font-weight="740" text-anchor="middle">5</text>
+<text x="1925" y="2664" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="22" font-weight="760">REAL DOM</text>
+<text x="1881" y="2721" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="20" font-weight="400">Прилага промени</text>
+<text x="1881" y="2754" font-family="DejaVu Sans, sans-serif" fill="#73E7B0" font-size="18.5" font-weight="700">runtime-dom</text>
+<rect x="69" y="2837" width="1097" height="477" rx="21" fill="#103037" stroke="#4C8376" stroke-width="1.5"/>
+<rect x="101" y="2869" width="7" height="55" rx="3" fill="#73E7B0"/>
+<text x="129" y="2893" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="29" font-weight="790">CHILD UPDATES · как се отличава от React?</text>
+<text x="129" y="2930" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="21" font-weight="400">Родителят има 2 Child инстанции</text>
+<rect x="104" y="2964" width="1027" height="75" rx="14" fill="#214341" stroke="#51DBCB" stroke-width="1.3"/>
+<text x="132" y="3011" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="23" font-weight="740">App render effect   →   изпълнява се пак</text>
+<path d="M615 3042 L615 3061" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M606 3052 L615 3061 L624 3052" fill="none" stroke="#51DBCB" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="104" y="3071" width="1027" height="78" rx="13" fill="#1B3B39" stroke="#73E7B0" stroke-width="1.3"/>
+<text x="132" y="3120" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="22.5" font-weight="720">Child A · label=&quot;A&quot;   →   обичайно SKIP</text>
+<rect x="104" y="3162" width="1027" height="78" rx="13" fill="#263B42" stroke="#FFCF8C" stroke-width="1.3"/>
+<text x="132" y="3210" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="22.5" font-weight="720">Child B · label: &quot;0&quot; → &quot;1&quot;  → UPDATE</text>
+<text x="103" y="3284" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="21.5" font-weight="400">Props стабилни → Vue често пропуска child render effect.</text>
+<rect x="1193" y="2837" width="1107" height="477" rx="21" fill="#102D33" stroke="#57758C" stroke-width="1.5"/>
+<rect x="1225" y="2869" width="7" height="55" rx="3" fill="#86C9FF"/>
+<text x="1253" y="2893" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="29" font-weight="790">DOM UPDATE ≠ COMPONENT UPDATE</text>
+<text x="1253" y="2930" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="21" font-weight="400">render() изчислява VNodes, patch() променя DOM</text>
+<rect x="1228" y="2965" width="1040" height="98" rx="15" fill="#0B3335" stroke="#497E6D" stroke-width="1.3"/>
+<text x="1252" y="3028" font-family="DejaVu Sans Mono, monospace" fill="#73E7B0" font-size="24.5" font-weight="690">&lt;button&gt;0&lt;/button&gt;   →   &lt;button&gt;1&lt;/button&gt;</text>
+<rect x="1228" y="3076" width="1040" height="106" rx="15" fill="#0B3335" stroke="#497E6D" stroke-width="1.3"/>
+<text x="1251" y="3119" font-family="DejaVu Sans Mono, monospace" fill="#F1FCFA" font-size="22" font-weight="550">&lt;p&gt;A&lt;/p&gt;   остава същият DOM възел</text>
+<text x="1251" y="3155" font-family="DejaVu Sans Mono, monospace" fill="#FFCF8C" font-size="22" font-weight="550">&lt;p&gt;0&lt;/p&gt;   →   &lt;p&gt;1&lt;/p&gt;</text>
+<text x="1234" y="3221" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.8" font-weight="400">За разлика от React, Vue може да пропусне Child A</text>
+<text x="1234" y="3249" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.8" font-weight="400">без React.memo — чрез проверка на props и compiler hints.</text>
+<text x="1234" y="3277" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.8" font-weight="400">Child B изпълнява render(), НЕ своя &lt;script setup&gt;.</text>
+<rect x="65" y="3349" width="89" height="44" rx="22" fill="#3D3B2C" stroke="#FFCF8C" stroke-width="1.2"/>
+<text x="109.5" y="3378.92" font-family="DejaVu Sans, sans-serif" fill="#FFCF8C" font-size="22" font-weight="740" text-anchor="middle">04</text>
+<text x="177" y="3381" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="35" font-weight="810">Четири механизма за истинско разбиране на Vue</text>
+<text x="177" y="3421" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="23" font-weight="400">Identity, batching, computed, watchers и lifecycle — на една карта.</text>
+<rect x="69" y="3439" width="1097" height="360" rx="21" fill="#112F37" stroke="#796DAD" stroke-width="1.5"/>
+<rect x="100" y="3460" width="74" height="42" rx="21" fill="#35364B" stroke="#C7A7FA" stroke-width="1.2"/>
+<text x="137.0" y="3488.56" font-family="DejaVu Sans, sans-serif" fill="#C7A7FA" font-size="21" font-weight="740" text-anchor="middle">А</text>
+<text x="198" y="3493" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="27" font-weight="760">IDENTITY · key / mount / unmount</text>
+<rect x="102" y="3521" width="1024" height="151" rx="17" fill="#081E26" stroke="#38656B" stroke-width="1.4"/>
+<rect x="103" y="3522" width="1022" height="56" rx="16" fill="#1A373E"/>
+<rect x="103" y="3562" width="1022" height="15" rx="0" fill="#1A373E"/>
+<circle cx="128" cy="3549" r="6" fill="#FDAAAA"/>
+<circle cx="152" cy="3549" r="6" fill="#FFCF8C"/>
+<circle cx="176" cy="3549" r="6" fill="#73E7B0"/>
+<text x="220" y="3558" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21" font-weight="740">Стабилни key за v-for</text>
+<text x="154" y="3617" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.5" font-weight="400" text-anchor="end">01</text>
+<text x="174" y="3617" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.5"><tspan fill="#73E7B0">&lt;Child</tspan><tspan fill="#F1FCFA"> v-for=</tspan><tspan fill="#FFCF8C">&quot;item in items&quot;</tspan></text>
+<text x="154" y="3650" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.5" font-weight="400" text-anchor="end">02</text>
+<text x="174" y="3650" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.5"><tspan fill="#F1FCFA">       :</tspan><tspan fill="#86C9FF">key</tspan><tspan fill="#F1FCFA">=</tspan><tspan fill="#FFCF8C">&quot;item.id&quot;</tspan><tspan fill="#F1FCFA"> :</tspan><tspan fill="#86C9FF">label</tspan><tspan fill="#F1FCFA">=</tspan><tspan fill="#FFCF8C">&quot;item.label&quot;</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#73E7B0">/&gt;</tspan></text>
+<text x="104" y="3702" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">Същият type + key в един parent → reuse; нов key → recreate.</text>
+<text x="104" y="3731" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">Изчезнал component → unmount; DOM се премахва.</text>
+<text x="104" y="3760" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">Vue Router сменя изгледа, не непременно целия bundle.</text>
+<rect x="1193" y="3439" width="1107" height="360" rx="21" fill="#112F37" stroke="#8C784E" stroke-width="1.5"/>
+<rect x="1223" y="3460" width="75" height="42" rx="21" fill="#413B30" stroke="#FFCF8C" stroke-width="1.2"/>
+<text x="1260.5" y="3488.56" font-family="DejaVu Sans, sans-serif" fill="#FFCF8C" font-size="21" font-weight="740" text-anchor="middle">Б</text>
+<text x="1319" y="3493" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="28" font-weight="760">BATCHING · nextTick()</text>
+<rect x="1226" y="3521" width="1041" height="151" rx="17" fill="#081E26" stroke="#38656B" stroke-width="1.4"/>
+<rect x="1227" y="3522" width="1039" height="56" rx="16" fill="#1A373E"/>
+<rect x="1227" y="3562" width="1039" height="15" rx="0" fill="#1A373E"/>
+<circle cx="1252" cy="3549" r="6" fill="#FDAAAA"/>
+<circle cx="1276" cy="3549" r="6" fill="#FFCF8C"/>
+<circle cx="1300" cy="3549" r="6" fill="#73E7B0"/>
+<text x="1344" y="3558" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21" font-weight="740">При count = 0</text>
+<text x="1278" y="3617" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="18" font-weight="400" text-anchor="end">01</text>
+<text x="1298" y="3617" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="21"><tspan fill="#86C9FF">count</tspan><tspan fill="#F1FCFA">.</tspan><tspan fill="#86C9FF">value</tspan><tspan fill="#F1FCFA">++; </tspan><tspan fill="#86C9FF">count</tspan><tspan fill="#F1FCFA">.</tspan><tspan fill="#86C9FF">value</tspan><tspan fill="#F1FCFA">++; </tspan><tspan fill="#86C9FF">count</tspan><tspan fill="#F1FCFA">.</tspan><tspan fill="#86C9FF">value</tspan><tspan fill="#F1FCFA">++;</tspan></text>
+<text x="1278" y="3650" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="18" font-weight="400" text-anchor="end">02</text>
+<text x="1298" y="3650" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="21"><tspan fill="#C7A7FA">await</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#51DBCB">nextTick</tspan><tspan fill="#F1FCFA">() </tspan><tspan fill="#88AFAD">// DOM вече показва 3</tspan></text>
+<text x="1227" y="3702" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">count става 3 синхронно. DOM patch се групира.</text>
+<text x="1227" y="3731" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">Vue обединява многократните промени в update queue.</text>
+<text x="1227" y="3760" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">nextTick() изчаква прилагането на DOM updates.</text>
+<rect x="69" y="3825" width="1097" height="368" rx="21" fill="#112F37" stroke="#568B8A" stroke-width="1.5"/>
+<rect x="100" y="3846" width="74" height="42" rx="21" fill="#244446" stroke="#51DBCB" stroke-width="1.2"/>
+<text x="137.0" y="3874.56" font-family="DejaVu Sans, sans-serif" fill="#51DBCB" font-size="21" font-weight="740" text-anchor="middle">В</text>
+<text x="198" y="3879" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="27" font-weight="750">COMPUTED / WATCHERS</text>
+<rect x="102" y="3907" width="1025" height="151" rx="17" fill="#081E26" stroke="#38656B" stroke-width="1.4"/>
+<rect x="103" y="3908" width="1023" height="56" rx="16" fill="#1A373E"/>
+<rect x="103" y="3948" width="1023" height="15" rx="0" fill="#1A373E"/>
+<circle cx="128" cy="3935" r="6" fill="#FDAAAA"/>
+<circle cx="152" cy="3935" r="6" fill="#FFCF8C"/>
+<circle cx="176" cy="3935" r="6" fill="#73E7B0"/>
+<text x="220" y="3944" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21" font-weight="740">Derived state vs side effects</text>
+<text x="154" y="4003" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.4" font-weight="400" text-anchor="end">01</text>
+<text x="174" y="4003" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.4"><tspan fill="#C7A7FA">const</tspan><tspan fill="#F1FCFA"> double = </tspan><tspan fill="#51DBCB">computed</tspan><tspan fill="#F1FCFA">(() =</tspan><tspan fill="#73E7B0">&gt;</tspan><tspan fill="#F1FCFA"> </tspan><tspan fill="#86C9FF">count</tspan><tspan fill="#F1FCFA">.</tspan><tspan fill="#86C9FF">value</tspan><tspan fill="#F1FCFA"> * </tspan><tspan fill="#FDAAAA">2</tspan><tspan fill="#F1FCFA">)</tspan></text>
+<text x="154" y="4036" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.4" font-weight="400" text-anchor="end">02</text>
+<text x="174" y="4036" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.4"><tspan fill="#51DBCB">watch</tspan><tspan fill="#F1FCFA">(</tspan><tspan fill="#86C9FF">count</tspan><tspan fill="#F1FCFA">, n =</tspan><tspan fill="#73E7B0">&gt;</tspan><tspan fill="#F1FCFA"> console.log(n))</tspan></text>
+<text x="104" y="4093" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.3" font-weight="400">computed() кешира и следи своите dependencies.</text>
+<text x="104" y="4121" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.3" font-weight="400">watch() реагира на промени (API, logging и др.).</text>
+<text x="104" y="4149" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.3" font-weight="400">watch по подразбиране: преди собствения DOM update;</text>
+<text x="104" y="4175" font-family="DejaVu Sans Mono, monospace" fill="#51DBCB" font-size="19.7" font-weight="690">flush: 'post' → след DOM update.</text>
+<rect x="1193" y="3825" width="1107" height="368" rx="21" fill="#112F37" stroke="#6B83A4" stroke-width="1.5"/>
+<rect x="1223" y="3846" width="75" height="42" rx="21" fill="#273E4A" stroke="#86C9FF" stroke-width="1.2"/>
+<text x="1260.5" y="3874.56" font-family="DejaVu Sans, sans-serif" fill="#86C9FF" font-size="21" font-weight="740" text-anchor="middle">Г</text>
+<text x="1319" y="3879" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="27" font-weight="750">LIFECYCLE / v-if vs v-show</text>
+<rect x="1226" y="3907" width="1041" height="151" rx="17" fill="#081E26" stroke="#38656B" stroke-width="1.4"/>
+<rect x="1227" y="3908" width="1039" height="56" rx="16" fill="#1A373E"/>
+<rect x="1227" y="3948" width="1039" height="15" rx="0" fill="#1A373E"/>
+<circle cx="1252" cy="3935" r="6" fill="#FDAAAA"/>
+<circle cx="1276" cy="3935" r="6" fill="#FFCF8C"/>
+<circle cx="1300" cy="3935" r="6" fill="#73E7B0"/>
+<text x="1344" y="3944" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="21" font-weight="740">Hooks + conditional render</text>
+<text x="1278" y="4003" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.2" font-weight="400" text-anchor="end">01</text>
+<text x="1298" y="4003" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.2"><tspan fill="#51DBCB">onMounted</tspan><tspan fill="#F1FCFA">(() =</tspan><tspan fill="#73E7B0">&gt;</tspan><tspan fill="#F1FCFA"> { /* DOM е създаден */ })</tspan></text>
+<text x="1278" y="4036" font-family="DejaVu Sans Mono, monospace" fill="#88AFAD" font-size="17.2" font-weight="400" text-anchor="end">02</text>
+<text x="1298" y="4036" xml:space="preserve" font-family="DejaVu Sans Mono, monospace" font-size="20.2"><tspan fill="#51DBCB">onUnmounted</tspan><tspan fill="#F1FCFA">(() =</tspan><tspan fill="#73E7B0">&gt;</tspan><tspan fill="#F1FCFA"> { /* cleanup */ })</tspan></text>
+<text x="1227" y="4093" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">onUpdated() се извиква след DOM update.</text>
+<text x="1227" y="4121" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">v-if=false → component unmount (ако е в този клон).</text>
+<text x="1227" y="4149" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">v-show=false → DOM остава, сменя се display.</text>
+<text x="1227" y="4177" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.7" font-weight="400">При mount се създават инстанции; setup() не е render().</text>
+<rect x="69" y="4224" width="2231" height="158" rx="20" fill="#173E3C" stroke="#64A58B" stroke-width="1.7"/>
+<text x="102" y="4274" font-family="DejaVu Sans, sans-serif" fill="#73E7B0" font-size="27" font-weight="840">КЛЮЧОВАТА РАЗЛИКА:</text>
+<text x="524" y="4274" font-family="DejaVu Sans Mono, monospace" fill="#F1FCFA" font-size="25" font-weight="710">Vue: ref/reactive → tracked render effect → VNodes → patch → DOM</text>
+<text x="102" y="4319" font-family="DejaVu Sans, sans-serif" fill="#F1FCFA" font-size="23" font-weight="640">Virtual DOM във Vue е конкретно VNode дървото. Vue няма Fiber; няма сравнение с Real DOM.</text>
+<text x="102" y="4355" font-family="DejaVu Sans, sans-serif" fill="#B5D2D0" font-size="19.5" font-weight="400">Vue 3.5.43 = последна стабилна към 12.10.2026; 3.6 RC / Vapor Mode не са част от тази стандартна VDOM схема.</text>
+<text x="70" y="4426" font-family="DejaVu Sans, sans-serif" fill="#88AFAD" font-size="18.6" font-weight="400">Източници: vuejs.org/guide/extras/rendering-mechanism · /reactivity-in-depth · /best-practices/performance · /scaling-up/sfc</text>
+<text x="2297" y="4426" font-family="DejaVu Sans, sans-serif" fill="#88AFAD" font-size="18" font-weight="740" text-anchor="end">VUE CORE MAP</text>
+</svg>

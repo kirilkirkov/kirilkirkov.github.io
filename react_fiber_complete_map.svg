@@ -1,0 +1,306 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2360" height="3970" viewBox="0 0 2360 3970" role="img" aria-labelledby="title description">
+<title id="title">Как работи React: от JSX и Vite до React Elements, Fiber, Reconciliation и DOM</title>
+<desc id="description">Техническа карта на български с четим JSX код, React Element и Fiber обекти, рендиране на вложени компоненти, memo, key, batching, effects и scheduling.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071523"/><stop offset="0.5" stop-color="#071826"/><stop offset="1" stop-color="#161B2D"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#3A4F9F" stop-opacity="0.22"/><stop offset="1" stop-color="#3A4F9F" stop-opacity="0"/></radialGradient>
+<pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.3" fill="#B5D9EF" opacity="0.09"/></pattern>
+</defs>
+<rect width="2360" height="3970" fill="url(#bg)"/>
+<rect width="2360" height="3970" fill="url(#dots)"/>
+<circle cx="2190" cy="150" r="1040" fill="url(#glow)"/>
+
+<rect x="66" y="49" width="365" height="49" rx="24.5" fill="#173246" stroke="#78E7B8" stroke-width="1"/>
+<text x="248.5" y="80.98" fill="#78E7B8" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" opacity="1" text-anchor="middle">REACT · АРХИТЕКТУРА</text>
+<rect x="1725" y="65" width="571" height="47" rx="23.5" fill="#142D44" stroke="#76DCEB" stroke-width="1"/>
+<text x="2010.5" y="95.98" fill="#76DCEB" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" opacity="1" text-anchor="middle">BUILD  →  RENDER  →  COMMIT</text>
+<text x="64" y="158" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="77" font-weight="850" opacity="1">Как React работи отвътре</text>
+<text x="67" y="211" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="30" font-weight="400" opacity="1">JSX, Fiber, Virtual DOM, пререндиране и реални DOM промени — с примери</text>
+<rect x="64" y="252" width="90" height="42" rx="21.0" fill="#3C3040" stroke="#FFD38E" stroke-width="1"/>
+<text x="109.0" y="280.14" fill="#FFD38E" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="700" opacity="1" text-anchor="middle">01</text>
+<text x="174" y="283" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="37" font-weight="800" opacity="1">От твоя код до браузъра</text>
+<text x="174" y="322" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" opacity="1">В bundle-а има JavaScript код, не предварително изградено Fiber дърво.</text>
+<rect x="64" y="347" width="540" height="177" rx="21" fill="#11263A" stroke="#FFD38E" stroke-width="1.5"/>
+<rect x="80" y="364" width="6" height="143" rx="3" fill="#FFD38E"/>
+<text x="102" y="393" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="25" font-weight="730" opacity="1">ТВОЯТ JSX</text>
+<text x="104" y="437" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">App.jsx · Child.jsx</text>
+<text x="104" y="470" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">React компоненти = JS функции</text>
+<rect x="422" y="366" width="162" height="35" rx="17.5" fill="#1A3045" stroke="#FFD38E" stroke-width="1"/>
+<text x="503.0" y="388.94" fill="#FFD38E" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="700" opacity="1" text-anchor="middle">Твоят код</text>
+<path d="M609 437 L620 437" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M611 428 L620 437 L611 446" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="628" y="347" width="540" height="177" rx="21" fill="#11263A" stroke="#FFD38E" stroke-width="1.5"/>
+<rect x="644" y="364" width="6" height="143" rx="3" fill="#FFD38E"/>
+<text x="666" y="393" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="25" font-weight="730" opacity="1">VITE BUILD</text>
+<text x="668" y="437" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">JSX → jsx(...) извиквания</text>
+<text x="668" y="470" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">Трансформация + chunks</text>
+<rect x="986" y="366" width="162" height="35" rx="17.5" fill="#1A3045" stroke="#FFD38E" stroke-width="1"/>
+<text x="1067.0" y="388.94" fill="#FFD38E" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="700" opacity="1" text-anchor="middle">Vite</text>
+<path d="M1173 437 L1184 437" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M1175 428 L1184 437 L1175 446" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1192" y="347" width="540" height="177" rx="21" fill="#11263A" stroke="#88BFFD" stroke-width="1.5"/>
+<rect x="1208" y="364" width="6" height="143" rx="3" fill="#88BFFD"/>
+<text x="1230" y="393" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="25" font-weight="730" opacity="1">JS BUNDLE / CHUNKS</text>
+<text x="1232" y="437" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">Компоненти + React + DOM renderer</text>
+<text x="1232" y="470" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">JavaScript за браузъра</text>
+<rect x="1550" y="366" width="162" height="35" rx="17.5" fill="#1A3045" stroke="#88BFFD" stroke-width="1"/>
+<text x="1631.0" y="388.94" fill="#88BFFD" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="700" opacity="1" text-anchor="middle">Vite output</text>
+<path d="M1737 437 L1748 437" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M1739 428 L1748 437 L1739 446" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1756" y="347" width="540" height="177" rx="21" fill="#11263A" stroke="#78E7B8" stroke-width="1.5"/>
+<rect x="1772" y="364" width="6" height="143" rx="3" fill="#78E7B8"/>
+<text x="1794" y="393" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="25" font-weight="730" opacity="1">БРАУЗЪР</text>
+<text x="1796" y="437" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">Изтегля и изпълнява JS</text>
+<text x="1796" y="470" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">#root е празен преди render</text>
+<rect x="2114" y="366" width="162" height="35" rx="17.5" fill="#1A3045" stroke="#78E7B8" stroke-width="1"/>
+<text x="2195.0" y="388.94" fill="#78E7B8" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="700" opacity="1" text-anchor="middle">Browser</text>
+<rect x="64" y="597" width="2232" height="1196" rx="30" fill="#111C37" stroke="#C5ACFF" stroke-width="2.5" stroke-dasharray="13 8"/>
+<rect x="88" y="572" width="740" height="54" rx="27.0" fill="#342A55" stroke="#C5ACFF" stroke-width="1"/>
+<text x="458.0" y="607.5" fill="#C5ACFF" font-family="DejaVu Sans, sans-serif" font-size="25" font-weight="700" opacity="1" text-anchor="middle">VIRTUAL DOM = ВИРТУАЛНО UI ПРЕДСТАВЯНЕ</text>
+<text x="95" y="666" fill="#D9CAFF" font-family="DejaVu Sans, sans-serif" font-size="27" font-weight="570" opacity="1">Не е отделна библиотека или JSON между Fiber и Real DOM.</text>
+<rect x="89" y="697" width="1084" height="1053" rx="23" fill="#102337" stroke="#3F6982" stroke-width="1.6"/>
+<text x="121" y="752" fill="#76DCEB" font-family="DejaVu Sans, sans-serif" font-size="31" font-weight="800" opacity="1">A. JSX → REACT ELEMENTS</text>
+<text x="121" y="790" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" opacity="1">react/jsx-runtime · описания на желания UI</text>
+<rect x="119" y="813" width="1025" height="651" rx="15" fill="#061725" stroke="#33516A" stroke-width="1.5"/>
+<rect x="120" y="814" width="1023" height="57" rx="14" fill="#19324A"/>
+<rect x="120" y="858" width="1023" height="13" rx="0" fill="#19324A"/>
+<circle cx="144" cy="842" r="6" fill="#FFABAB"/>
+<circle cx="168" cy="842" r="6" fill="#FFD38E"/>
+<circle cx="192" cy="842" r="6" fill="#78E7B8"/>
+<text x="238" y="852" fill="#E7EFF8" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="680" opacity="1">App.jsx · реален, опростен пример</text>
+<text x="167" y="911" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">01</text>
+<text x="187" y="911" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#C5ACFF">import</tspan><tspan fill="#EFF6FF"> { </tspan><tspan fill="#76DCEB">useState</tspan><tspan fill="#EFF6FF">, </tspan><tspan fill="#76DCEB">memo</tspan><tspan fill="#EFF6FF"> } </tspan><tspan fill="#C5ACFF">from</tspan><tspan fill="#EFF6FF"> </tspan><tspan fill="#FFD38E">'react'</tspan><tspan fill="#EFF6FF">;</tspan></text>
+<text x="167" y="944" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">02</text>
+<text x="187" y="944" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#C5ACFF">function</tspan><tspan fill="#EFF6FF"> App() {</tspan></text>
+<text x="167" y="977" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">03</text>
+<text x="187" y="977" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#C5ACFF">const</tspan><tspan fill="#EFF6FF"> [n, </tspan><tspan fill="#76DCEB">setN</tspan><tspan fill="#EFF6FF">] = </tspan><tspan fill="#76DCEB">useState</tspan><tspan fill="#EFF6FF">(</tspan><tspan fill="#FFABAB">0</tspan><tspan fill="#EFF6FF">);</tspan></text>
+<text x="167" y="1010" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">04</text>
+<text x="187" y="1010" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#C5ACFF">return</tspan><tspan fill="#EFF6FF"> (</tspan></text>
+<text x="167" y="1043" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">05</text>
+<text x="187" y="1043" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">    </tspan><tspan fill="#78E7B8">&lt;main</tspan><tspan fill="#78E7B8">&gt;</tspan></text>
+<text x="167" y="1076" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">06</text>
+<text x="187" y="1076" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">      </tspan><tspan fill="#78E7B8">&lt;button</tspan><tspan fill="#EFF6FF"> onClick={() =</tspan><tspan fill="#78E7B8">&gt;</tspan><tspan fill="#EFF6FF"> </tspan><tspan fill="#76DCEB">setN</tspan><tspan fill="#EFF6FF">(n + </tspan><tspan fill="#FFABAB">1</tspan><tspan fill="#EFF6FF">)}</tspan><tspan fill="#78E7B8">&gt;</tspan></text>
+<text x="167" y="1109" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">07</text>
+<text x="187" y="1109" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">        {n}</tspan></text>
+<text x="167" y="1142" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">08</text>
+<text x="187" y="1142" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">      </tspan><tspan fill="#78E7B8">&lt;/button</tspan><tspan fill="#78E7B8">&gt;</tspan></text>
+<text x="167" y="1175" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">09</text>
+<text x="187" y="1175" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">      </tspan><tspan fill="#78E7B8">&lt;Child</tspan><tspan fill="#EFF6FF"> </tspan><tspan fill="#88BFFD">label</tspan><tspan fill="#EFF6FF">=</tspan><tspan fill="#FFD38E">&quot;A&quot;</tspan><tspan fill="#EFF6FF"> </tspan><tspan fill="#78E7B8">/&gt;</tspan></text>
+<text x="167" y="1208" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">10</text>
+<text x="187" y="1208" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">      </tspan><tspan fill="#78E7B8">&lt;MemoChild</tspan><tspan fill="#EFF6FF"> </tspan><tspan fill="#88BFFD">label</tspan><tspan fill="#EFF6FF">=</tspan><tspan fill="#FFD38E">&quot;B&quot;</tspan><tspan fill="#EFF6FF"> </tspan><tspan fill="#78E7B8">/&gt;</tspan></text>
+<text x="167" y="1241" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">11</text>
+<text x="187" y="1241" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">    </tspan><tspan fill="#78E7B8">&lt;/main</tspan><tspan fill="#78E7B8">&gt;</tspan></text>
+<text x="167" y="1274" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">12</text>
+<text x="187" y="1274" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">  );</tspan></text>
+<text x="167" y="1307" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">13</text>
+<text x="187" y="1307" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">}</tspan></text>
+<text x="167" y="1340" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">14</text>
+<text x="187" y="1340" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#C5ACFF">function</tspan><tspan fill="#EFF6FF"> Child({ </tspan><tspan fill="#88BFFD">label</tspan><tspan fill="#EFF6FF"> }) {</tspan></text>
+<text x="167" y="1373" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">15</text>
+<text x="187" y="1373" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#C5ACFF">return</tspan><tspan fill="#EFF6FF"> </tspan><tspan fill="#78E7B8">&lt;p</tspan><tspan fill="#78E7B8">&gt;</tspan><tspan fill="#EFF6FF">{</tspan><tspan fill="#88BFFD">label</tspan><tspan fill="#EFF6FF">}</tspan><tspan fill="#78E7B8">&lt;/p</tspan><tspan fill="#78E7B8">&gt;</tspan><tspan fill="#EFF6FF">;</tspan></text>
+<text x="167" y="1406" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">16</text>
+<text x="187" y="1406" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#EFF6FF">}</tspan></text>
+<text x="167" y="1439" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="20" font-weight="400" opacity="1" text-anchor="end">17</text>
+<text x="187" y="1439" font-family="DejaVu Sans Mono, monospace" font-size="23" xml:space="preserve"><tspan fill="#C5ACFF">const</tspan><tspan fill="#EFF6FF"> MemoChild = </tspan><tspan fill="#76DCEB">memo</tspan><tspan fill="#EFF6FF">(Child);</tspan></text>
+<rect x="119" y="1486" width="1025" height="227" rx="16" fill="#0C2334" stroke="#376A83" stroke-width="1.5"/>
+<text x="148" y="1532" fill="#76DCEB" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="740" opacity="1">След JSX трансформация и при изпълнение:</text>
+<text x="148" y="1580" fill="#EFF6FF" font-family="DejaVu Sans Mono, monospace" font-size="24" font-weight="500" opacity="1">_jsx(App, {})  →  { type: App, props: {} }</text>
+<text x="148" y="1625" fill="#78E7B8" font-family="DejaVu Sans, sans-serif" font-size="25" font-weight="640" opacity="1">React Element = обикновен JS обект.</text>
+<text x="148" y="1665" fill="#EFF6FF" font-family="DejaVu Sans Mono, monospace" font-size="21" font-weight="500" opacity="1">react-dom/client: createRoot(root).render(_jsx(App, {}));</text>
+<text x="148" y="1700" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">_jsx() НЕ извиква App(). Reconciler-ът го прави.</text>
+<rect x="1198" y="697" width="1074" height="1053" rx="23" fill="#151F39" stroke="#665B94" stroke-width="1.8"/>
+<text x="1227" y="752" fill="#C5ACFF" font-family="DejaVu Sans, sans-serif" font-size="30" font-weight="800" opacity="1">Б. REACT RECONCILER / FIBER</text>
+<text x="1227" y="790" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">Изпълнява компоненти (напр. App()); управлява Fiber дървото.</text>
+<rect x="1507" y="823" width="450" height="65" rx="14" fill="#1B3047" stroke="#C5ACFF" stroke-width="1.5"/>
+<text x="1732.0" y="866" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="25" font-weight="720" opacity="1" text-anchor="middle">App Fiber</text>
+<rect x="1507" y="909" width="450" height="65" rx="14" fill="#1B3047" stroke="#88BFFD" stroke-width="1.5"/>
+<text x="1732.0" y="952" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="25" font-weight="720" opacity="1" text-anchor="middle">main Fiber</text>
+<path d="M1732 892 L1732 904" stroke="#C5ACFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M1723 895 L1732 904 L1741 895" stroke="#C5ACFF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1732 974 V1001 H1377 M1732 1001 H2085 M1377 1001 V1022 M1732 1001 V1022 M2085 1001 V1022" stroke="#88A2BD" stroke-width="2.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1222" y="1028" width="308" height="72" rx="12" fill="#172D43" stroke="#78E7B8" stroke-width="1.4"/>
+<text x="1376.0" y="1072" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="680" opacity="1" text-anchor="middle">button Fiber</text>
+<rect x="1568" y="1028" width="326" height="72" rx="12" fill="#172D43" stroke="#76DCEB" stroke-width="1.4"/>
+<text x="1731.0" y="1072" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="680" opacity="1" text-anchor="middle">Child Fiber</text>
+<rect x="1930" y="1028" width="314" height="72" rx="12" fill="#172D43" stroke="#FFD38E" stroke-width="1.4"/>
+<text x="2087.0" y="1072" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="680" opacity="1" text-anchor="middle">MemoChild</text>
+<text x="1227" y="1146" fill="#C5ACFF" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="750" opacity="1">App Fiber · примерен JS обект (опростен)</text>
+<rect x="1227" y="1163" width="1017" height="360" rx="15" fill="#061725" stroke="#33516A" stroke-width="1.5"/>
+<rect x="1228" y="1164" width="1015" height="57" rx="14" fill="#19324A"/>
+<rect x="1228" y="1208" width="1015" height="13" rx="0" fill="#19324A"/>
+<circle cx="1252" cy="1192" r="6" fill="#FFABAB"/>
+<circle cx="1276" cy="1192" r="6" fill="#FFD38E"/>
+<circle cx="1300" cy="1192" r="6" fill="#78E7B8"/>
+<text x="1346" y="1202" fill="#E7EFF8" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="680" opacity="1">ReactFiber.js · концептуален обект</text>
+<text x="1275" y="1261" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="18.5" font-weight="400" opacity="1" text-anchor="end">01</text>
+<text x="1295" y="1261" font-family="DejaVu Sans Mono, monospace" font-size="21.5" xml:space="preserve"><tspan fill="#C5ACFF">const</tspan><tspan fill="#EFF6FF"> fiber = {</tspan></text>
+<text x="1275" y="1290" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="18.5" font-weight="400" opacity="1" text-anchor="end">02</text>
+<text x="1295" y="1290" font-family="DejaVu Sans Mono, monospace" font-size="21.5" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#88BFFD">type</tspan><tspan fill="#EFF6FF">: App,              </tspan><tspan fill="#88A2BD">// JS function</tspan></text>
+<text x="1275" y="1319" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="18.5" font-weight="400" opacity="1" text-anchor="end">03</text>
+<text x="1295" y="1319" font-family="DejaVu Sans Mono, monospace" font-size="21.5" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#88BFFD">child</tspan><tspan fill="#EFF6FF">: mainFiber,       </tspan><tspan fill="#88A2BD">// първо дете</tspan></text>
+<text x="1275" y="1348" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="18.5" font-weight="400" opacity="1" text-anchor="end">04</text>
+<text x="1295" y="1348" font-family="DejaVu Sans Mono, monospace" font-size="21.5" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#88BFFD">sibling</tspan><tspan fill="#EFF6FF">: </tspan><tspan fill="#FFABAB">null</tspan><tspan fill="#EFF6FF">,</tspan></text>
+<text x="1275" y="1377" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="18.5" font-weight="400" opacity="1" text-anchor="end">05</text>
+<text x="1295" y="1377" font-family="DejaVu Sans Mono, monospace" font-size="21.5" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#C5ACFF">return</tspan><tspan fill="#EFF6FF">: rootFiber,      </tspan><tspan fill="#88A2BD">// родител</tspan></text>
+<text x="1275" y="1406" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="18.5" font-weight="400" opacity="1" text-anchor="end">06</text>
+<text x="1295" y="1406" font-family="DejaVu Sans Mono, monospace" font-size="21.5" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#88BFFD">memoizedState</tspan><tspan fill="#EFF6FF">: hookN,   </tspan><tspan fill="#88A2BD">// hook state</tspan></text>
+<text x="1275" y="1435" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="18.5" font-weight="400" opacity="1" text-anchor="end">07</text>
+<text x="1295" y="1435" font-family="DejaVu Sans Mono, monospace" font-size="21.5" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#88BFFD">stateNode</tspan><tspan fill="#EFF6FF">: </tspan><tspan fill="#FFABAB">null</tspan><tspan fill="#EFF6FF">,        </tspan><tspan fill="#88A2BD">// App няма DOM</tspan></text>
+<text x="1275" y="1464" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="18.5" font-weight="400" opacity="1" text-anchor="end">08</text>
+<text x="1295" y="1464" font-family="DejaVu Sans Mono, monospace" font-size="21.5" xml:space="preserve"><tspan fill="#EFF6FF">  </tspan><tspan fill="#88BFFD">alternate</tspan><tspan fill="#EFF6FF">: previousFiber</tspan></text>
+<text x="1275" y="1493" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="18.5" font-weight="400" opacity="1" text-anchor="end">09</text>
+<text x="1295" y="1493" font-family="DejaVu Sans Mono, monospace" font-size="21.5" xml:space="preserve"><tspan fill="#EFF6FF">};</tspan></text>
+<rect x="1227" y="1538" width="1017" height="176" rx="13" fill="#102640" stroke="#685B9D" stroke-width="1.3"/>
+<text x="1253" y="1584" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="680" opacity="1">Fiber ≠ JSON и ≠ само DOM елементи.</text>
+<text x="1253" y="1623" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">Възлите пазят props, hooks/state и работни флагове.</text>
+<text x="1253" y="1656" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">При DOM Fiber: stateNode → реален HTML елемент.</text>
+<text x="1253" y="1689" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">alternate: current ↔ work-in-progress; първо е null.</text>
+<rect x="64" y="1832" width="90" height="42" rx="21.0" fill="#3C3040" stroke="#FFD38E" stroke-width="1"/>
+<text x="109.0" y="1860.14" fill="#FFD38E" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="700" opacity="1" text-anchor="middle">02</text>
+<text x="174" y="1863" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="37" font-weight="800" opacity="1">При setState: от заявка до DOM</text>
+<text x="174" y="1902" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" opacity="1">React сравнява новите Elements със съществуващата Fiber структура — НЕ с Real DOM.</text>
+<rect x="64" y="1924" width="2232" height="240" rx="22" fill="#0F2436" stroke="#3F637F" stroke-width="1.5"/>
+<rect x="88" y="1953" width="416" height="175" rx="15" fill="#152D43" stroke="#76DCEB" stroke-width="1.5"/>
+<rect x="103" y="1967" width="45" height="35" rx="17.5" fill="#263B51" stroke="#76DCEB" stroke-width="1"/>
+<text x="125.5" y="1991.3" fill="#76DCEB" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="700" opacity="1" text-anchor="middle">1</text>
+<text x="161" y="1997" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="770" opacity="1">setN(1)</text>
+<text x="107" y="2052" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="580" opacity="1">Заявка за update</text>
+<text x="107" y="2094" fill="#76DCEB" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="680" opacity="1">react · useState</text>
+<path d="M506 2040 L526 2040" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M517 2031 L526 2040 L517 2049" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="529" y="1953" width="416" height="175" rx="15" fill="#152D43" stroke="#88BFFD" stroke-width="1.5"/>
+<rect x="544" y="1967" width="45" height="35" rx="17.5" fill="#263B51" stroke="#88BFFD" stroke-width="1"/>
+<text x="566.5" y="1991.3" fill="#88BFFD" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="700" opacity="1" text-anchor="middle">2</text>
+<text x="602" y="1997" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="770" opacity="1">UPDATE QUEUE</text>
+<text x="548" y="2052" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="580" opacity="1">Batching / scheduling</text>
+<text x="548" y="2094" fill="#88BFFD" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="680" opacity="1">React Reconciler</text>
+<path d="M947 2040 L967 2040" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M958 2031 L967 2040 L958 2049" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="970" y="1953" width="416" height="175" rx="15" fill="#152D43" stroke="#C5ACFF" stroke-width="1.5"/>
+<rect x="985" y="1967" width="45" height="35" rx="17.5" fill="#263B51" stroke="#C5ACFF" stroke-width="1"/>
+<text x="1007.5" y="1991.3" fill="#C5ACFF" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="700" opacity="1" text-anchor="middle">3</text>
+<text x="1043" y="1997" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="770" opacity="1">RENDER</text>
+<text x="989" y="2052" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="580" opacity="1">App() → нови Elements</text>
+<text x="989" y="2094" fill="#C5ACFF" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="680" opacity="1">React Reconciler</text>
+<path d="M1388 2040 L1408 2040" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M1399 2031 L1408 2040 L1399 2049" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1411" y="1953" width="416" height="175" rx="15" fill="#152D43" stroke="#C5ACFF" stroke-width="1.5"/>
+<rect x="1426" y="1967" width="45" height="35" rx="17.5" fill="#263B51" stroke="#C5ACFF" stroke-width="1"/>
+<text x="1448.5" y="1991.3" fill="#C5ACFF" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="700" opacity="1" text-anchor="middle">4</text>
+<text x="1484" y="1997" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="770" opacity="1">RECONCILIATION</text>
+<text x="1430" y="2052" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="580" opacity="1">Elements ↔ current Fiber</text>
+<text x="1430" y="2094" fill="#C5ACFF" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="680" opacity="1">React Reconciler</text>
+<path d="M1829 2040 L1849 2040" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M1840 2031 L1849 2040 L1840 2049" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1852" y="1953" width="416" height="175" rx="15" fill="#152D43" stroke="#78E7B8" stroke-width="1.5"/>
+<rect x="1867" y="1967" width="45" height="35" rx="17.5" fill="#263B51" stroke="#78E7B8" stroke-width="1"/>
+<text x="1889.5" y="1991.3" fill="#78E7B8" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="700" opacity="1" text-anchor="middle">5</text>
+<text x="1925" y="1997" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="770" opacity="1">COMMIT</text>
+<text x="1871" y="2052" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="580" opacity="1">DOM API → промените</text>
+<text x="1871" y="2094" fill="#78E7B8" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="680" opacity="1">React DOM</text>
+<rect x="64" y="2203" width="90" height="42" rx="21.0" fill="#3C3040" stroke="#FFD38E" stroke-width="1"/>
+<text x="109.0" y="2231.14" fill="#FFD38E" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="700" opacity="1" text-anchor="middle">03</text>
+<text x="174" y="2234" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="37" font-weight="800" opacity="1">Защо се пререндират child компонентите?</text>
+<text x="174" y="2273" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" opacity="1">Пример: кликаш бутона в App; n: 0 → 1. React извиква отново App().</text>
+<rect x="64" y="2295" width="1094" height="501" rx="22" fill="#11263C" stroke="#6677A7" stroke-width="1.5"/>
+<text x="94" y="2350" fill="#C5ACFF" font-family="DejaVu Sans, sans-serif" font-size="28" font-weight="800" opacity="1">Кой компонент се извиква?</text>
+<rect x="103" y="2385" width="994" height="80" rx="16" fill="#21314B" stroke="#C5ACFF" stroke-width="1.5"/>
+<text x="130" y="2433" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="26" font-weight="700" opacity="1">App()   — извиква се от React отново</text>
+<path d="M591 2467 L591 2493" stroke="#C5ACFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M582 2484 L591 2493 L600 2484" stroke="#C5ACFF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="103" y="2503" width="994" height="84" rx="15" fill="#152F42" stroke="#76DCEB" stroke-width="1.5"/>
+<text x="129" y="2552" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="700" opacity="1">Child({ label: &quot;A&quot; })   →   извиква се пак</text>
+<rect x="103" y="2601" width="994" height="82" rx="15" fill="#243044" stroke="#FFD38E" stroke-width="1.5"/>
+<text x="129" y="2648" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="670" opacity="1">MemoChild({ label: &quot;B&quot; })   →   може да се пропусне</text>
+<text x="106" y="2725" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">Без memo/React Compiler: децата обикновено се рендират пак.</text>
+<text x="106" y="2759" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">Дете със собствен state може да се обнови без App() да се изпълни.</text>
+<rect x="1186" y="2295" width="1110" height="501" rx="22" fill="#102A32" stroke="#437C69" stroke-width="1.5"/>
+<text x="1217" y="2350" fill="#78E7B8" font-family="DejaVu Sans, sans-serif" font-size="28" font-weight="800" opacity="1">А какво става с истинския DOM?</text>
+<rect x="1218" y="2387" width="1042" height="141" rx="16" fill="#0B252A" stroke="#386C5C" stroke-width="1.4"/>
+<text x="1243" y="2454" fill="#B4C7DA" font-family="DejaVu Sans Mono, monospace" font-size="26" font-weight="500" opacity="1">&lt;button&gt;0&lt;/button&gt;</text>
+<path d="M1682 2442 L1749 2442" stroke="#78E7B8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M1740 2433 L1749 2442 L1740 2451" stroke="#78E7B8" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1770" y="2454" fill="#78E7B8" font-family="DejaVu Sans Mono, monospace" font-size="26" font-weight="720" opacity="1">&lt;button&gt;1&lt;/button&gt;</text>
+<text x="1243" y="2501" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="400" opacity="1">Текущият HTMLButtonElement остава; текстът се сменя.</text>
+<rect x="1218" y="2547" width="1042" height="142" rx="16" fill="#0B252A" stroke="#386C5C" stroke-width="1.4"/>
+<text x="1243" y="2610" fill="#EFF6FF" font-family="DejaVu Sans Mono, monospace" font-size="25" font-weight="520" opacity="1">&lt;p&gt;A&lt;/p&gt;   и   &lt;p&gt;B&lt;/p&gt;</text>
+<text x="1243" y="2658" fill="#78E7B8" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" opacity="1">Може да има re-render БЕЗ реална DOM промяна.</text>
+<text x="1220" y="2725" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">memo проверява props; не блокира собствения state/context.</text>
+<text x="1220" y="2759" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">При включен React Compiler част от re-render-ите се пропускат.</text>
+<rect x="64" y="2820" width="2232" height="83" rx="18" fill="#1A3044" stroke="#47708A" stroke-width="1.5"/>
+<text x="95" y="2856" fill="#78E7B8" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="780" opacity="1">Unmount:</text>
+<text x="236" y="2856" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">Fiber възлите излизат от текущото дърво; DOM се премахва; Effects се почистват.</text>
+<text x="95" y="2887" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="400" opacity="1">JS функциите остават в заредения bundle. Сменен route ≠ непременно пълен reload.</text>
+<rect x="64" y="2939" width="90" height="42" rx="21.0" fill="#3C3040" stroke="#FFD38E" stroke-width="1"/>
+<text x="109.0" y="2967.14" fill="#FFD38E" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="700" opacity="1" text-anchor="middle">04</text>
+<text x="174" y="2970" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="37" font-weight="800" opacity="1">Още четири механизма, които трябва да знаеш</text>
+<text x="174" y="3009" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="400" opacity="1">Кратки правила, за да свържеш state, render, effects и scheduling.</text>
+<rect x="64" y="3030" width="1094" height="370" rx="22" fill="#12283B" stroke="#8276BC" stroke-width="1.8"/>
+<rect x="91" y="3050" width="75" height="40" rx="20.0" fill="#332B53" stroke="#C5ACFF" stroke-width="1"/>
+<text x="128.5" y="3077.14" fill="#C5ACFF" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="700" opacity="1" text-anchor="middle">A</text>
+<text x="187" y="3083" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="27" font-weight="750" opacity="1">IDENTITY · type / position / key</text>
+<rect x="92" y="3112" width="1039" height="152" rx="15" fill="#061725" stroke="#33516A" stroke-width="1.5"/>
+<rect x="93" y="3113" width="1037" height="57" rx="14" fill="#19324A"/>
+<rect x="93" y="3157" width="1037" height="13" rx="0" fill="#19324A"/>
+<circle cx="117" cy="3141" r="6" fill="#FFABAB"/>
+<circle cx="141" cy="3141" r="6" fill="#FFD38E"/>
+<circle cx="165" cy="3141" r="6" fill="#78E7B8"/>
+<text x="211" y="3151" fill="#E7EFF8" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="680" opacity="1">State identity · пример</text>
+<text x="140" y="3210" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="19.5" font-weight="400" opacity="1" text-anchor="end">01</text>
+<text x="160" y="3210" font-family="DejaVu Sans Mono, monospace" font-size="22.5" xml:space="preserve"><tspan fill="#78E7B8">&lt;Counter</tspan><tspan fill="#EFF6FF"> </tspan><tspan fill="#88BFFD">key</tspan><tspan fill="#EFF6FF">={player} </tspan><tspan fill="#78E7B8">/&gt;</tspan></text>
+<text x="140" y="3245" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="19.5" font-weight="400" opacity="1" text-anchor="end">02</text>
+<text x="160" y="3245" font-family="DejaVu Sans Mono, monospace" font-size="22.5" xml:space="preserve"><tspan fill="#88A2BD">// player: A → B</tspan></text>
+<text x="95" y="3290" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">Същият тип + позиция + key → React запазва state.</text>
+<text x="95" y="3324" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">Сменен key (A → B) → unmount + нов mount,</text>
+<text x="95" y="3358" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">state на Counter се нулира.</text>
+<rect x="1186" y="3030" width="1110" height="370" rx="22" fill="#12283B" stroke="#B58D59" stroke-width="1.8"/>
+<rect x="1212" y="3050" width="75" height="40" rx="20.0" fill="#43352F" stroke="#FFD38E" stroke-width="1"/>
+<text x="1249.5" y="3077.14" fill="#FFD38E" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="700" opacity="1" text-anchor="middle">Б</text>
+<text x="1308" y="3083" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="27" font-weight="750" opacity="1">BATCHING · update queue</text>
+<rect x="1212" y="3112" width="1056" height="152" rx="15" fill="#061725" stroke="#33516A" stroke-width="1.5"/>
+<rect x="1213" y="3113" width="1054" height="57" rx="14" fill="#19324A"/>
+<rect x="1213" y="3157" width="1054" height="13" rx="0" fill="#19324A"/>
+<circle cx="1237" cy="3141" r="6" fill="#FFABAB"/>
+<circle cx="1261" cy="3141" r="6" fill="#FFD38E"/>
+<circle cx="1285" cy="3141" r="6" fill="#78E7B8"/>
+<text x="1331" y="3151" fill="#E7EFF8" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="680" opacity="1">Два отделни примера (n = 0)</text>
+<text x="1260" y="3210" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="19" font-weight="400" opacity="1" text-anchor="end">01</text>
+<text x="1280" y="3210" font-family="DejaVu Sans Mono, monospace" font-size="22" xml:space="preserve"><tspan fill="#76DCEB">setN</tspan><tspan fill="#EFF6FF">(n + </tspan><tspan fill="#FFABAB">1</tspan><tspan fill="#EFF6FF">); </tspan><tspan fill="#76DCEB">setN</tspan><tspan fill="#EFF6FF">(n + </tspan><tspan fill="#FFABAB">1</tspan><tspan fill="#EFF6FF">); </tspan><tspan fill="#76DCEB">setN</tspan><tspan fill="#EFF6FF">(n + </tspan><tspan fill="#FFABAB">1</tspan><tspan fill="#EFF6FF">);</tspan></text>
+<text x="1260" y="3245" fill="#88A2BD" font-family="DejaVu Sans Mono, monospace" font-size="19" font-weight="400" opacity="1" text-anchor="end">02</text>
+<text x="1280" y="3245" font-family="DejaVu Sans Mono, monospace" font-size="22" xml:space="preserve"><tspan fill="#76DCEB">setN</tspan><tspan fill="#EFF6FF">(p =</tspan><tspan fill="#78E7B8">&gt;</tspan><tspan fill="#EFF6FF"> p + </tspan><tspan fill="#FFABAB">1</tspan><tspan fill="#EFF6FF">); </tspan><tspan fill="#76DCEB">setN</tspan><tspan fill="#EFF6FF">(p =</tspan><tspan fill="#78E7B8">&gt;</tspan><tspan fill="#EFF6FF"> p + </tspan><tspan fill="#FFABAB">1</tspan><tspan fill="#EFF6FF">); </tspan><tspan fill="#76DCEB">setN</tspan><tspan fill="#EFF6FF">(p =</tspan><tspan fill="#78E7B8">&gt;</tspan><tspan fill="#EFF6FF"> p + </tspan><tspan fill="#FFABAB">1</tspan><tspan fill="#EFF6FF">);</tspan></text>
+<text x="1214" y="3290" fill="#FFD38E" font-family="DejaVu Sans Mono, monospace" font-size="23" font-weight="740" opacity="1">3 × setN(n + 1)  →  n = 1</text>
+<text x="1214" y="3331" fill="#78E7B8" font-family="DejaVu Sans Mono, monospace" font-size="23" font-weight="740" opacity="1">3 × setN(p =&gt; p + 1)  →  n = 3</text>
+<text x="1214" y="3373" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="400" opacity="1">React обединява заявките в един event handler.</text>
+<rect x="64" y="3423" width="1094" height="387" rx="22" fill="#12283B" stroke="#498D80" stroke-width="1.8"/>
+<rect x="91" y="3444" width="75" height="40" rx="20.0" fill="#183E3C" stroke="#78E7B8" stroke-width="1"/>
+<text x="128.5" y="3471.14" fill="#78E7B8" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="700" opacity="1" text-anchor="middle">В</text>
+<text x="187" y="3476" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="26" font-weight="760" opacity="1">EFFECTS · след render / commit</text>
+<rect x="99" y="3512" width="306" height="70" rx="13" fill="#182F42" stroke="#C5ACFF" stroke-width="1.4"/>
+<text x="252" y="3557" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="730" opacity="1" text-anchor="middle">RENDER</text>
+<path d="M409 3547 L432 3547" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M423 3538 L432 3547 L423 3556" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="434" y="3512" width="306" height="70" rx="13" fill="#182F42" stroke="#78E7B8" stroke-width="1.4"/>
+<text x="587" y="3557" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="730" opacity="1" text-anchor="middle">COMMIT</text>
+<path d="M744 3547 L767 3547" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M758 3538 L767 3547 L758 3556" stroke="#76DCEB" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="769" y="3512" width="306" height="70" rx="13" fill="#182F42" stroke="#88BFFD" stroke-width="1.4"/>
+<text x="922" y="3557" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="730" opacity="1" text-anchor="middle">PAINT</text>
+<text x="97" y="3625" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">useLayoutEffect: при commit, след DOM, преди paint.</text>
+<text x="97" y="3663" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">useEffect: след commit; обикновено след paint,</text>
+<text x="97" y="3701" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">но при някои interaction updates — и преди.</text>
+<text x="97" y="3739" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">Cleanup: преди повторен Effect и при unmount.</text>
+<rect x="1186" y="3423" width="1110" height="387" rx="22" fill="#12283B" stroke="#527CB3" stroke-width="1.8"/>
+<rect x="1212" y="3444" width="75" height="40" rx="20.0" fill="#203B55" stroke="#88BFFD" stroke-width="1"/>
+<text x="1249.5" y="3471.14" fill="#88BFFD" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="700" opacity="1" text-anchor="middle">Г</text>
+<text x="1308" y="3476" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="26" font-weight="760" opacity="1">SCHEDULING · Concurrent Rendering</text>
+<rect x="1212" y="3512" width="1055" height="115" rx="13" fill="#0C2238" stroke="#395E89" stroke-width="1.3"/>
+<text x="1237" y="3556" fill="#76DCEB" font-family="DejaVu Sans Mono, monospace" font-size="23" font-weight="560" opacity="1">startTransition(() =&gt; setFilter(value));</text>
+<text x="1237" y="3600" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">По-нисък приоритет от спешен input update</text>
+<text x="1216" y="3670" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">React може да прекъсне / рестартира render работата.</text>
+<text x="1216" y="3708" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">Render може да бъде изоставен без commit.</text>
+<text x="1216" y="3746" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">Commit не се прекъсва по средата.</text>
+<text x="1216" y="3784" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="400" opacity="1">Това НЕ прекъсва произволен тежък JS код.</text>
+<rect x="64" y="3843" width="2232" height="86" rx="18" fill="#182E42" stroke="#406B85" stroke-width="1.5"/>
+<text x="1180" y="3877" fill="#EFF6FF" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="740" opacity="1" text-anchor="middle">JSX  →  VITE  →  JS BUNDLE  →  REACT ELEMENTS  →  FIBER / RECONCILIATION  →  REACT DOM  →  REAL DOM</text>
+<text x="1180" y="3910" fill="#B4C7DA" font-family="DejaVu Sans, sans-serif" font-size="16" font-weight="400" opacity="1" text-anchor="middle">Източници: react.dev/learn/render-and-commit  ·  preserving-and-resetting-state  ·  queueing-a-series-of-state-updates  ·  useEffect  ·  useTransition</text>
+</svg>
